@@ -4,6 +4,8 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Components/ShooterHealthComponent.h"
+#include "Components/TextRenderComponent.h"
 
 // Sets default values
 AShooterBaseCharacter::AShooterBaseCharacter()
@@ -20,12 +22,27 @@ AShooterBaseCharacter::AShooterBaseCharacter()
 
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
     CameraComponent->SetupAttachment(SpringArmComponent);
+
+    HealthComponent = CreateDefaultSubobject<UShooterHealthComponent>("HealthComponent");
+
+    HealthTextRender = CreateDefaultSubobject<UTextRenderComponent>("TextRender");
+    HealthTextRender->SetupAttachment(GetMesh());
 }
 
 // Called when the game starts or when spawned
 void AShooterBaseCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    check(HealthComponent);
+    check(HealthTextRender);
+    check(GetCharacterMovement());
+
+    OnHealthChanged(HealthComponent->GetHealth());
+    HealthComponent->OnDeath.AddUObject(this, &AShooterBaseCharacter::OnDeath);
+    HealthComponent->OnHealthChanged.AddDynamic(this, &AShooterBaseCharacter::OnHealthChanged);
+
+    LandedDelegate.AddDynamic(this, &AShooterBaseCharacter::OnGroundLanded);
 }
 
 // Called every frame
@@ -52,7 +69,7 @@ bool AShooterBaseCharacter::IsSprinting() const
 {
     if (WantsToSprint && MovingForward && !GetVelocity().IsZero())
     {
-        GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+        GetCharacterMovement()->MaxWalkSpeed = SprintWalkSpeed;
         return true;
     }
 
@@ -75,6 +92,10 @@ float AShooterBaseCharacter::GetMovementDirection() const
 void AShooterBaseCharacter::MoveForward(float Amount)
 {
     MovingForward = Amount > 0;
+
+    if (Amount == 0.0f)
+        return;
+
     AddMovementInput(GetActorForwardVector(), Amount);
 }
 
@@ -94,4 +115,36 @@ void AShooterBaseCharacter::StartSprint()
 void AShooterBaseCharacter::StopSprint()
 {
     WantsToSprint = false;
+}
+
+void AShooterBaseCharacter::OnDeath()
+{
+    PlayAnimMontage(DeathAnimMontage);
+
+    GetCharacterMovement()->DisableMovement();
+
+    SetLifeSpan(LifeSpanOnDeath);
+
+    if (Controller)
+    {
+        Controller->ChangeState(NAME_Spectating);
+    }
+}
+
+void AShooterBaseCharacter::OnHealthChanged(float Health)
+{
+    HealthTextRender->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
+}
+
+void AShooterBaseCharacter::OnGroundLanded(const FHitResult& Hit)
+{
+    const auto LandedVelocityZ = -GetVelocity().Z;
+
+    if (LandedVelocityZ < LandedDamageVelocity.X)
+        return;
+
+    const auto FinalDamage =
+        FMath::GetMappedRangeValueClamped(LandedDamageVelocity, LandedDamageValue, LandedVelocityZ);
+
+    TakeDamage(FinalDamage, FDamageEvent(), nullptr, nullptr);
 }
