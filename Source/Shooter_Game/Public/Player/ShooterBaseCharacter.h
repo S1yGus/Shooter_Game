@@ -12,33 +12,39 @@ class UCameraComponent;
 class USpringArmComponent;
 class UShooterHealthComponent;
 class UTextRenderComponent;
+class UShooterWeaponComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
 {
     GENERATED_BODY()
 
-  public:
+public:
     // Sets default values for this character's properties
     AShooterBaseCharacter();
 
-  protected:
+    UShooterHealthComponent* GetHealthComponent() { return HealthComponent; }
+
+protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "500", ClampMax = "800"))
     float NormalWalkSpeed = 600.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "800", ClampMax = "1200"))
     float SprintWalkSpeed = 1200.0f;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     USpringArmComponent* SpringArmComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UCameraComponent* CameraComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterHealthComponent* HealthComponent;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UShooterWeaponComponent* WeaponComponent;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UTextRenderComponent* HealthTextRender;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AnimMontage")
@@ -56,7 +62,7 @@ class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
-  public:
+public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
 
@@ -69,7 +75,7 @@ class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
     UFUNCTION(BlueprintCallable, Category = "Movement")
     float GetMovementDirection() const;
 
-  private:
+private:
     bool WantsToSprint = false;
     bool MovingForward = false;
 

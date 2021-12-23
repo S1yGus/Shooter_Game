@@ -16,7 +16,7 @@ public:
 	AShooterDevDamageActor();
 
 protected:
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     USceneComponent* SceneComponent;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")

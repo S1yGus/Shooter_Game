@@ -6,6 +6,9 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/ShooterHealthComponent.h"
 #include "Components/TextRenderComponent.h"
+#include "Components/ShooterWeaponComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Camera/CameraShakeSourceComponent.h"
 
 // Sets default values
 AShooterBaseCharacter::AShooterBaseCharacter()
@@ -19,14 +22,19 @@ AShooterBaseCharacter::AShooterBaseCharacter()
     SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
     SpringArmComponent->SetupAttachment(GetRootComponent());
     SpringArmComponent->bUsePawnControlRotation = true;
+    SpringArmComponent->TargetArmLength = 170.0f;
+    SpringArmComponent->SocketOffset = FVector(0.0f, 40.0f, 80.0f);
 
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
     CameraComponent->SetupAttachment(SpringArmComponent);
-
+    CameraComponent->SetFieldOfView(100);
+    
     HealthComponent = CreateDefaultSubobject<UShooterHealthComponent>("HealthComponent");
 
     HealthTextRender = CreateDefaultSubobject<UTextRenderComponent>("TextRender");
     HealthTextRender->SetupAttachment(GetMesh());
+
+    WeaponComponent = CreateDefaultSubobject<UShooterWeaponComponent>("WeaponComponent");
 }
 
 // Called when the game starts or when spawned
@@ -63,12 +71,27 @@ void AShooterBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AShooterBaseCharacter::Jump);
     PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AShooterBaseCharacter::StartSprint);
     PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AShooterBaseCharacter::StopSprint);
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::StartFire);
+    PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &UShooterWeaponComponent::StopFire);
+    PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::NextWeapon);
+    PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::ReloadWeapon);
+
+    DECLARE_DELEGATE_OneParam(FEquipWeaponSignature, int32);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, 0);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("SecondWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, 1);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("ThirdWeapom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, 2);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FourthWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, 3);
+
+    DECLARE_DELEGATE_OneParam(FZoomSignature, bool);
+    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::Zoom, true);
+    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Released, WeaponComponent, &UShooterWeaponComponent::Zoom, false);
 }
 
 bool AShooterBaseCharacter::IsSprinting() const
 {
     if (WantsToSprint && MovingForward && !GetVelocity().IsZero())
     {
+        WeaponComponent->StopFire();
         GetCharacterMovement()->MaxWalkSpeed = SprintWalkSpeed;
         return true;
     }
@@ -119,16 +142,21 @@ void AShooterBaseCharacter::StopSprint()
 
 void AShooterBaseCharacter::OnDeath()
 {
+    WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
+
     PlayAnimMontage(DeathAnimMontage);
 
     GetCharacterMovement()->DisableMovement();
 
+    GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+
     SetLifeSpan(LifeSpanOnDeath);
 
-    if (Controller)
-    {
-        Controller->ChangeState(NAME_Spectating);
-    }
+    if (!Controller)
+        return;
+
+    Controller->ChangeState(NAME_Spectating);
 }
 
 void AShooterBaseCharacter::OnHealthChanged(float Health)

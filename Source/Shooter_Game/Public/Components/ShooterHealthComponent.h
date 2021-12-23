@@ -4,36 +4,33 @@
 
 #include "Components/ActorComponent.h"
 #include "CoreMinimal.h"
+#include "ShooterCoreTypes.h"
 #include "ShooterHealthComponent.generated.h"
-
-DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, Name);
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTER_GAME_API UShooterHealthComponent : public UActorComponent
 {
     GENERATED_BODY()
 
-  public:
+public:
     // Sets default values for this component's properties
     UShooterHealthComponent();
-
-    float GetHealth() const { return Health; }
-
-    UFUNCTION(BlueprintCallable)
-    bool IsDead() const { return FMath::IsNearlyZero(Health); }
 
     FOnDeathSignature OnDeath;
 
     UPROPERTY(BlueprintAssignable)
     FOnHealthChangedSignature OnHealthChanged;
 
-  protected:
+    float GetHealth() const { return Health; }
+
+    UFUNCTION(BlueprintCallable)
+    bool IsDead() const { return FMath::IsNearlyZero(Health); }
+
+protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "1000.0"))
     float MaxHealth = 100.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health",
-              Meta = (ClampMin = "0.0", ClampMax = "100", EditCondition = "AutoHeal"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "100", EditCondition = "AutoHeal"))
     float MaxAutoHealHealth = 50.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
@@ -54,7 +51,7 @@ class SHOOTER_GAME_API UShooterHealthComponent : public UActorComponent
     // Called when the game starts
     virtual void BeginPlay() override;
 
-  private:
+private:
     float Health = 0.0f;
 
     FTimerHandle AutoHealTimerHandle;
