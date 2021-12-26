@@ -69,7 +69,6 @@ void AShooterBaseWeaponActor::MakeShot()
 
     DecreaseAmmo();
     MakeCameraShake();
-    AmmoInfo();
 }
 
 void AShooterBaseWeaponActor::CalculateOneShot()

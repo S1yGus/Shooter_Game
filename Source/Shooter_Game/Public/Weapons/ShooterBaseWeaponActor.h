@@ -28,6 +28,9 @@ public:
 
     FName GetArmorySocketName() const { return WeaponArmorySocketName; }
 
+    FWeaponUIData GetUIData() const { return UIData; }
+    FAmmoData GetAmmoData() const { return CurrentAmmo; }
+
     FOnClipEmptySignature OnClipEmpty;
 
 protected:
@@ -60,6 +63,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     TSubclassOf<UMatineeCameraShake> CameraShakeClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    FWeaponUIData UIData;
 
     virtual void BeginPlay() override;
     virtual void MakeShot();

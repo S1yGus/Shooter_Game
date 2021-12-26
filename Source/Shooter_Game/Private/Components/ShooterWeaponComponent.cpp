@@ -100,6 +100,24 @@ void UShooterWeaponComponent::ReloadWeapon()
     ChangeClip();
 }
 
+bool UShooterWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& Data)
+{
+    if (!CurrentWeapon)
+        return false;
+
+    Data = CurrentWeapon->GetUIData();
+    return true;
+}
+
+bool UShooterWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& Data)
+{
+    if (!CurrentWeapon)
+        return false;
+
+    Data = CurrentWeapon->GetAmmoData();
+    return true;
+}
+
 void UShooterWeaponComponent::BeginPlay()
 {
 	Super::BeginPlay();

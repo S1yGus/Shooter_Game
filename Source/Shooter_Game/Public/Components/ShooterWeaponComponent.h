@@ -30,6 +30,9 @@ public:
     void EquipWeapon(int32 WeaponIndex);
     void ReloadWeapon();
 
+    bool GetCurrentWeaponUIData(FWeaponUIData& Data);
+    bool GetCurrentWeaponAmmoData(FAmmoData& Data);
+
 protected:
 	virtual void BeginPlay() override;
 

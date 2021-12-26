@@ -21,10 +21,13 @@ public:
     UPROPERTY(BlueprintAssignable)
     FOnHealthChangedSignature OnHealthChanged;
 
-    float GetHealth() const { return Health; }
-
     UFUNCTION(BlueprintCallable)
     bool IsDead() const { return FMath::IsNearlyZero(Health); }
+
+    UFUNCTION(BlueprintCallable)
+    float GetHealthPercent() const { return Health / MaxHealth; }
+
+    float GetHealth() const { return Health; }
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "1000.0"))
