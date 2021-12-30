@@ -7,6 +7,7 @@
 AShooterRifleWeaponActor::AShooterRifleWeaponActor() : AShooterBaseWeaponActor()
 {
     WeaponArmorySocketName = "WeaponArmoryRifleSocket";
+    WeaponType = EWeaponType::Rifle;
 }
 
 void AShooterRifleWeaponActor::StartFire()

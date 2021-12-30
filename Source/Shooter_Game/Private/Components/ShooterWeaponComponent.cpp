@@ -8,7 +8,6 @@
 #include "Animations/ShooterReloadFinishedAnimNotify.h"
 #include "Player/ShooterBaseCharacter.h"
 #include "Animations/AnimUtils.h"
-#include "..\..\Public\Components\ShooterWeaponComponent.h"
 
 UShooterWeaponComponent::UShooterWeaponComponent()
 {
@@ -21,13 +20,15 @@ void UShooterWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
     CurrentWeapon = nullptr;
 
-    for (auto Weapon : Weapons)
+    TArray<AShooterBaseWeaponActor*> WeaponsArray;
+    WeaponsMap.GenerateValueArray(WeaponsArray);
+    for (auto Weapon : WeaponsArray)
     {
         Weapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
         Weapon->Destroy();
     }
 
-    Weapons.Empty();
+    WeaponsMap.Empty();
 }
 
 void UShooterWeaponComponent::StartFire()
@@ -53,19 +54,21 @@ void UShooterWeaponComponent::Zoom(bool condition)
 
 void UShooterWeaponComponent::NextWeapon()
 {
-    if (!CanEquip())
+    if (!CanEquip() || WeaponsMap.Num() == 0)
         return;
 
-    CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
-    EquipWeapon(CurrentWeaponIndex);
+    CurrentWeaponIndex = (CurrentWeaponIndex + 1) % StaticCast<int32>(EWeaponType::Max);
+    if (WeaponsMap.Contains(StaticCast<EWeaponType>(CurrentWeaponIndex))) {
+        EquipWeapon(StaticCast<EWeaponType>(CurrentWeaponIndex));
+        return;
+    }
+
+    NextWeapon();
 }
 
-void UShooterWeaponComponent::EquipWeapon(int32 WeaponIndex)
+void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
 {
-    if (WeaponIndex < 0 || WeaponIndex >= Weapons.Num())
-        return;
-
-    if (!CanEquip() || CurrentWeapon == Weapons[WeaponIndex])
+    if (!WeaponsMap.Contains(WeapontType) || !CanEquip())
         return;
 
     ACharacter* Character = Cast<ACharacter>(GetOwner());
@@ -74,13 +77,16 @@ void UShooterWeaponComponent::EquipWeapon(int32 WeaponIndex)
 
     if (CurrentWeapon)
     {
+        if (CurrentWeapon->GetWeaponType() == WeapontType)
+            return;
+
         StopFire();
         Zoom(false);
 
         AttachToSocket(CurrentWeapon, Character->GetMesh(), CurrentWeapon->GetArmorySocketName());
     }
 
-    CurrentWeapon = Weapons[WeaponIndex];
+    CurrentWeapon = WeaponsMap[WeapontType];
     AttachToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
 
     const auto CurrentWeaponData = WeaponData.FindByPredicate(
@@ -98,6 +104,43 @@ void UShooterWeaponComponent::EquipWeapon(int32 WeaponIndex)
 void UShooterWeaponComponent::ReloadWeapon()
 {
     ChangeClip();
+}
+
+bool UShooterWeaponComponent::TryToAddAmmo(TSubclassOf<AShooterBaseWeaponActor> WeaponClass, int32 ClipsAmount)
+{
+    TArray<AShooterBaseWeaponActor*> WeaponsArray;
+    WeaponsMap.GenerateValueArray(WeaponsArray);
+    for (const auto Weapon : WeaponsArray)
+    {
+        if (Weapon->IsA(WeaponClass))
+        {
+            return Weapon->TryToAddAmmo(ClipsAmount);
+        }
+    }
+
+    return false;
+}
+
+bool UShooterWeaponComponent::TryToAddWeapon(const FWeaponData& NewWeaponData)
+{
+    TArray<AShooterBaseWeaponActor*> WeaponsArray;
+    WeaponsMap.GenerateValueArray(WeaponsArray);
+    for (const auto Weapon : WeaponsArray)
+    {
+        if (Weapon->GetClass() == NewWeaponData.WeaponClasse)
+        {
+            return false;
+        }
+    }
+
+    WeaponData.Add(NewWeaponData);
+    if (!SpawnWeapon(NewWeaponData.WeaponClasse))
+    {
+        //WeaponData.Remove(NewWeaponData);
+        return false;
+    }
+
+    return true;
 }
 
 bool UShooterWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& Data)
@@ -127,27 +170,40 @@ void UShooterWeaponComponent::BeginPlay()
     BindNotifys();
 
 	SpawnWeapons();
-    EquipWeapon(CurrentWeaponIndex);
+    EquipWeapon(EWeaponType::Pistol);
 }
+    
 
 void UShooterWeaponComponent::SpawnWeapons()
 {
-    ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character)
-        return;
-
     for (const auto OneWeaponData : WeaponData)
     {
-        const auto Weapon = GetWorld()->SpawnActor<AShooterBaseWeaponActor>(OneWeaponData.WeaponClasse);
-        if (!Weapon)
-            continue;
-
-        Weapon->OnClipEmpty.AddUObject(this, &UShooterWeaponComponent::OnClipEmpty);
-        Weapon->SetOwner(Character);
-        Weapons.Add(Weapon);
-
-        AttachToSocket(Weapon, Character->GetMesh(), Weapon->GetArmorySocketName());
+        SpawnWeapon(OneWeaponData.WeaponClasse);
     }
+}
+
+bool UShooterWeaponComponent::SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> WeaponClass)
+{
+    ACharacter* Character = Cast<ACharacter>(GetOwner());
+    if (!Character)
+        return false;
+
+    const auto Weapon = GetWorld()->SpawnActor<AShooterBaseWeaponActor>(WeaponClass);
+    if (!Weapon)
+        return false;
+
+    Weapon->OnClipEmpty.AddUObject(this, &UShooterWeaponComponent::OnClipEmpty);
+    Weapon->SetOwner(Character);
+    WeaponsMap.Add(Weapon->GetWeaponType(), Weapon);
+
+    AttachToSocket(Weapon, Character->GetMesh(), Weapon->GetArmorySocketName());
+    
+    return true;
+}
+
+void UShooterWeaponComponent::GetWeaponsArrayFromWeaponsMap(TArray<AShooterBaseWeaponActor*>& WeaponsArray) const
+{
+    WeaponsMap.GenerateValueArray(WeaponsArray);
 }
 
 void UShooterWeaponComponent::AttachToSocket(AShooterBaseWeaponActor* Weapon, USceneComponent* ScenComponent,

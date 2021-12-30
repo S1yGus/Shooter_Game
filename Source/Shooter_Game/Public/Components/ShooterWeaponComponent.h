@@ -27,15 +27,15 @@ public:
     void Zoom(bool condition);
 
     void NextWeapon();
-    void EquipWeapon(int32 WeaponIndex);
+    void EquipWeapon(EWeaponType WeapontType);
     void ReloadWeapon();
+    bool TryToAddAmmo(TSubclassOf<AShooterBaseWeaponActor> WeaponClass, int32 ClipsAmount);
+    bool TryToAddWeapon(const FWeaponData& NewWeaponData);
 
     bool GetCurrentWeaponUIData(FWeaponUIData& Data);
     bool GetCurrentWeaponAmmoData(FAmmoData& Data);
 
 protected:
-	virtual void BeginPlay() override;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     TArray<FWeaponData> WeaponData;
 
@@ -48,12 +48,14 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
     UAnimMontage* EquipAnimMontage;
 
+    virtual void BeginPlay() override;
+
 private:
     UPROPERTY()
     AShooterBaseWeaponActor* CurrentWeapon;
 
 	UPROPERTY()
-    TArray<AShooterBaseWeaponActor*> Weapons;
+    TMap<EWeaponType, AShooterBaseWeaponActor*> WeaponsMap;
 
     UPROPERTY()
     UAnimMontage* CurrentReloadAnimMontage = nullptr;
@@ -63,6 +65,8 @@ private:
     bool ReloadMontageInProgress = false;
 
     void SpawnWeapons();
+    bool SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> WeaponClass);
+    void GetWeaponsArrayFromWeaponsMap(TArray<AShooterBaseWeaponActor*>& WeaponsArray) const;
     void AttachToSocket(AShooterBaseWeaponActor* Weapon, USceneComponent* ScenComponent, FName SocketName);
     void PlayAnimMontage(UAnimMontage* AnimMontage);
     void BindNotifys();

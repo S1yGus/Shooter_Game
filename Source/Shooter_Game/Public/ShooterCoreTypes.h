@@ -2,7 +2,18 @@
 
 #include "ShooterCoreTypes.generated.h"
 
+//Weapon
 DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature)
+
+UENUM(BlueprintType)
+enum class EWeaponType : uint8 
+{
+    Pistol,
+    Rifle,
+    Shotgun,
+    Launcher,
+    Max
+};
 
 class AShooterBaseWeaponActor;
 
@@ -11,10 +22,10 @@ struct FWeaponData
 {
     GENERATED_USTRUCT_BODY()
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
     TSubclassOf<AShooterBaseWeaponActor> WeaponClasse;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
     UAnimMontage* RaloadAnimMontage;
 };
 
@@ -46,5 +57,6 @@ struct FWeaponUIData
     UTexture2D* CrossHairIcon;
 };
 
+//Health
 DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, Name);

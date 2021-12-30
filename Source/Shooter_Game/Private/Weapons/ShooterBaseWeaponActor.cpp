@@ -228,7 +228,27 @@ bool AShooterBaseWeaponActor::ReloadClip()
     if (!CurrentAmmo.InfiniteClips)
         --CurrentAmmo.Clips;
 
-    UE_LOG(BaseWeaponLog, Display, TEXT("Reloaded"))
+    return true;
+}
+
+bool AShooterBaseWeaponActor::IsNumberOfClipsMax()
+{
+    return !IsClipEmpty() && CurrentAmmo.Clips == DefaultAmmo.Clips;
+}
+
+bool AShooterBaseWeaponActor::TryToAddAmmo(int32 ClipsAmount)
+{
+    if (DefaultAmmo.InfiniteClips || IsNumberOfClipsMax() || ClipsAmount <= 0)
+        return false;
+
+    if (IsClipEmpty())
+    {
+        CurrentAmmo.Clips = FMath::Clamp(CurrentAmmo.Clips + ClipsAmount, 0, DefaultAmmo.Clips + 1);
+    }
+    else
+    {
+        CurrentAmmo.Clips = FMath::Clamp(CurrentAmmo.Clips + ClipsAmount, 0, DefaultAmmo.Clips);
+    }
 
     return true;
 }

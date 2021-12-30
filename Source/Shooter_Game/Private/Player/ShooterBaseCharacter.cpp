@@ -10,11 +10,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraShakeSourceComponent.h"
 
-// Sets default values
 AShooterBaseCharacter::AShooterBaseCharacter()
 {
-    // Set this character to call Tick() every frame.  You can turn this off to
-    // improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
     GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
@@ -76,12 +73,16 @@ void AShooterBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
     PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::NextWeapon);
     PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::ReloadWeapon);
 
-    DECLARE_DELEGATE_OneParam(FEquipWeaponSignature, int32);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, 0);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("SecondWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, 1);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("ThirdWeapom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, 2);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FourthWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, 3);
-
+    DECLARE_DELEGATE_OneParam(FEquipWeaponSignature, EWeaponType);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>(
+        "FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Pistol);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>(
+        "SecondWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Rifle);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>(
+        "ThirdWeapom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Shotgun);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>(
+        "FourthWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Launcher);
+        
     DECLARE_DELEGATE_OneParam(FZoomSignature, bool);
     PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::Zoom, true);
     PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Released, WeaponComponent, &UShooterWeaponComponent::Zoom, false);

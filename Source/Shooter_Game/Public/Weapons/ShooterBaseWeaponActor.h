@@ -25,11 +25,13 @@ public:
     virtual void Zoom(bool condition);
 
     bool ReloadClip();
+    bool IsNumberOfClipsMax();
+    bool TryToAddAmmo(int32 ClipsAmount);
 
     FName GetArmorySocketName() const { return WeaponArmorySocketName; }
-
     FWeaponUIData GetUIData() const { return UIData; }
     FAmmoData GetAmmoData() const { return CurrentAmmo; }
+    EWeaponType GetWeaponType() const { return WeaponType; }
 
     FOnClipEmptySignature OnClipEmpty;
 
@@ -66,6 +68,8 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     FWeaponUIData UIData;
+
+    EWeaponType WeaponType;
 
     virtual void BeginPlay() override;
     virtual void MakeShot();

@@ -3,11 +3,11 @@
 
 #include "Weapons/ShooterLauncherWeaponActor.h"
 #include "Weapons/ShooterProjectileBaseActor.h"
-#include "..\..\Public\Weapons\ShooterLauncherWeaponActor.h"
 
 AShooterLauncherWeaponActor::AShooterLauncherWeaponActor() : AShooterBaseWeaponActor()
 {
     WeaponArmorySocketName = "WeaponArmoryLauncherSocket";
+    WeaponType = EWeaponType::Launcher;
 }
 
 void AShooterLauncherWeaponActor::StartFire()

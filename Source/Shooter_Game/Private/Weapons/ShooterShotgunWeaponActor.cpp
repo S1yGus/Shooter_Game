@@ -6,6 +6,7 @@
 AShooterShotgunWeaponActor::AShooterShotgunWeaponActor() : AShooterBaseWeaponActor()
 {
     WeaponArmorySocketName = "WeaponArmoryShotgunSocket";
+    WeaponType = EWeaponType::Shotgun;
 }
 
 void AShooterShotgunWeaponActor::StartFire()

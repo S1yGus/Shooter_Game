@@ -3,19 +3,24 @@
 
 #include "Components/ShooterHealthComponent.h"
 #include "TimerManager.h"
+#include "..\..\Public\Components\ShooterHealthComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentLog, All, All)
 
-// Sets default values for this component's properties
 UShooterHealthComponent::UShooterHealthComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+bool UShooterHealthComponent::TryToHeal(float HealAmount)
+{
+    if (IsCompletelyHealthy() || HealAmount <= 0)
+        return false;
+    
+    SetHealth(Health + HealAmount);
+    return true;
+}
 
-// Called when the game starts
 void UShooterHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -67,4 +72,9 @@ void UShooterHealthComponent::SetHealth(float NewHealth)
 {
     Health = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
     OnHealthChanged.Broadcast(Health);
+}
+
+bool UShooterHealthComponent::IsCompletelyHealthy()
+{
+    return FMath::IsNearlyEqual(Health, MaxHealth);
 }
