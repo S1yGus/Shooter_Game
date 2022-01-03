@@ -6,13 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "UI/ShooterPlayerHUDWidget.h"
 
-void AShooterGameHUD::DrawHUD()
-{
-    Super::DrawHUD();
-
-    //DrawCrossHair();
-}
-
 void AShooterGameHUD::BeginPlay()
 {
     Super::BeginPlay();

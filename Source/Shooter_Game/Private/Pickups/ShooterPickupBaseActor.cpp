@@ -10,7 +10,7 @@ DEFINE_LOG_CATEGORY_STATIC(PickupLog, All, All);
 
 AShooterPickupBaseActor::AShooterPickupBaseActor()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
     SphereComponent->InitSphereRadius(50);

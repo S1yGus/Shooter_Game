@@ -24,7 +24,7 @@ public:
 
 	void StartFire();
     void StopFire();
-    void Zoom(bool condition);
+    void Zoom(bool Condition);
 
     void NextWeapon();
     void EquipWeapon(EWeaponType WeapontType);
@@ -38,9 +38,6 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     TArray<FWeaponData> WeaponData;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-    bool AutoReload = false;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FName WeaponEquipSocketName = "WeaponEquipSocket";
@@ -64,9 +61,14 @@ private:
     bool EquipMontageInProgress = false;
     bool ReloadMontageInProgress = false;
 
+    float DefaultFOVAngle = 90.0f;
+    float ZoomFOVAngle = DefaultFOVAngle;
+    float TargetFOVAngle;
+    FTimerHandle ZoomTimerHandle;
+
+    APlayerController* GetPlayerController() const;
     void SpawnWeapons();
     bool SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> WeaponClass);
-    void GetWeaponsArrayFromWeaponsMap(TArray<AShooterBaseWeaponActor*>& WeaponsArray) const;
     void AttachToSocket(AShooterBaseWeaponActor* Weapon, USceneComponent* ScenComponent, FName SocketName);
     void PlayAnimMontage(UAnimMontage* AnimMontage);
     void BindNotifys();
@@ -77,4 +79,5 @@ private:
     bool CanReload() const;
     void OnClipEmpty();
     void ChangeClip();
+    void ZoomTick();
 };

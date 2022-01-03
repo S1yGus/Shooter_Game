@@ -16,6 +16,8 @@ class SHOOTER_GAME_API UShooterPlayerHUDWidget : public UUserWidget
 	GENERATED_BODY()
 	
 public:
+    virtual bool Initialize();
+
     UFUNCTION(BlueprintCallable)
     float GetHelthPercent() const;
 
@@ -30,4 +32,12 @@ public:
 
     UFUNCTION(BlueprintCallable)
     bool IsPlayerSpectating() const;
+
+    UFUNCTION(BlueprintImplementableEvent)
+    void OnTakeDamage();
+
+protected:
+    UFUNCTION()
+    void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy,
+                         AActor* DamageCauser);
 };

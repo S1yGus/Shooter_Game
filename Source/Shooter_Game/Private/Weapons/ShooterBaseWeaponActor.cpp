@@ -10,7 +10,10 @@
 #include "Camera/CameraShake.h"
 #include "Player/ShooterBaseCharacter.h"
 #include "Components/ShooterHealthComponent.h"
-#include "..\..\Public\Weapons\ShooterBaseWeaponActor.h"
+#include "Weapons/Components/ShooterWeaponFXComponent.h"
+#include "ShooterUtils.h"
+
+constexpr static float MaxShotDirectionDegrees = 80.0f;
 
 AShooterBaseWeaponActor::AShooterBaseWeaponActor()
 {
@@ -18,6 +21,8 @@ AShooterBaseWeaponActor::AShooterBaseWeaponActor()
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>("WeaponMesh");
     SetRootComponent(WeaponMesh);
+
+    FXComponent = CreateDefaultSubobject<UShooterWeaponFXComponent>("WeaonFXComponent");
 }
 
 void AShooterBaseWeaponActor::StartFire()
@@ -28,18 +33,15 @@ void AShooterBaseWeaponActor::StopFire()
 {
 }
 
-void AShooterBaseWeaponActor::Zoom(bool condition)
+bool AShooterBaseWeaponActor::GetZoomFOV(float& ZoomFOV) const
 {
-    APlayerController* Controller = Cast<APlayerController>(GetController());
-    if (!Controller || !Controller->PlayerCameraManager)
-        return;
-
-    if (condition)
+    if (CanZoom)
     {
-        DefaultFOVAngle = Controller->PlayerCameraManager->GetFOVAngle();
+        ZoomFOV = ZoomFOVAngle;
+        return true;
     }
 
-    Controller->PlayerCameraManager->SetFOV(condition ? ZoomFOVAngle : DefaultFOVAngle);
+    return false;
 }
 
 void AShooterBaseWeaponActor::BeginPlay()
@@ -47,7 +49,7 @@ void AShooterBaseWeaponActor::BeginPlay()
 	Super::BeginPlay();
 
     check(WeaponMesh);
-    check(CameraShakeClass);
+    check(FXComponent);
 
     CurrentAmmo = DefaultAmmo;
 }
@@ -68,7 +70,7 @@ void AShooterBaseWeaponActor::MakeShot()
     CalculateOneShot();
 
     DecreaseAmmo();
-    MakeCameraShake();
+    FXComponent->MakeCameraShake();
 }
 
 void AShooterBaseWeaponActor::CalculateOneShot()
@@ -79,46 +81,48 @@ void AShooterBaseWeaponActor::CalculateOneShot()
         StopFire();
         return;
     }
-        
+    
+    FVector TraceFXEnd = TraceEnd;
     FHitResult HitResult;
     if (MakeTrace(HitResult, TraceStart, TraceEnd))
     {
         if (CheckShotDirection(HitResult))
         {
-            DrawDebugLine(GetWorld(), GetMuzzleLocation(), HitResult.ImpactPoint, FColor::Red, false, 2.0f, 0, 2.0f);
-            DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10, 12, FColor::Purple, false, 2.0f, 0, 2.0f);
+            TraceFXEnd = HitResult.ImpactPoint;
+            //DrawDebugLine(GetWorld(), GetMuzzleLocation(), HitResult.ImpactPoint, FColor::Red, false, 2.0f, 0, 2.0f);
+            //DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10, 12, FColor::Purple, false, 2.0f, 0, 2.0f);
             DealDamage(HitResult.GetActor());
         }
         else
         {
-            FVector TraceEndLimited =
-                GetMuzzleLocation() + GetShotDirection(GetMuzzleQuaternion().GetForwardVector()) * TraceMaxDistance;
-            DrawDebugLine(GetWorld(), GetMuzzleLocation(), TraceEndLimited, FColor::Red, false, 2.0f, 0, 2.0f);
+            FVector TraceEndLimited = GetMuzzleLocation() + GetShotDirection(GetMuzzleQuaternion().GetForwardVector()) * TraceMaxDistance;
+            TraceFXEnd = TraceEndLimited;
+            //DrawDebugLine(GetWorld(), GetMuzzleLocation(), TraceEndLimited, FColor::Red, false, 2.0f, 0, 2.0f);
 
             if (MakeTrace(HitResult, GetMuzzleLocation(), TraceEndLimited))
             {
                 DealDamage(HitResult.GetActor());
             }
         }
+        
+        FXComponent->MakeImactFX(HitResult);
     }
-    else
-    {
-        DrawDebugLine(GetWorld(), GetMuzzleLocation(), TraceEnd, FColor::Red, false, 2.0f, 0, 2.0f);
-    }
+    
+    FXComponent->MakeTraceFX(GetMuzzleLocation(), TraceFXEnd);
 }
 
-AShooterBaseCharacter* AShooterBaseWeaponActor::GetCharacter() const
+APawn* AShooterBaseWeaponActor::GetOwnerPawn() const
 {
-    return Cast<AShooterBaseCharacter>(GetOwner());
+    return Cast<APawn>(GetOwner());
 }
 
 AController* AShooterBaseWeaponActor::GetController() const
 {
-    AShooterBaseCharacter* Character = GetCharacter();
-    if (!Character)
+    APawn* OwnerPawn = GetOwnerPawn();
+    if (!OwnerPawn)
         return nullptr;
 
-    return Character->GetController();
+    return OwnerPawn->GetController();
 }
 
 bool AShooterBaseWeaponActor::GetViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
@@ -147,6 +151,8 @@ bool AShooterBaseWeaponActor::MakeTrace(FHitResult& HitResult, const FVector& Tr
 {
     FCollisionQueryParams CollisionParams;
     CollisionParams.AddIgnoredActor(GetOwner());
+    CollisionParams.bReturnPhysicalMaterial = true;
+
     return GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionParams);
 }
 
@@ -162,9 +168,20 @@ FQuat AShooterBaseWeaponActor::GetMuzzleQuaternion() const
 
 FVector AShooterBaseWeaponActor::GetShotDirection(const FVector& Direction) const
 {
-    const float CurrentHealth = GetCharacter()->GetHealthComponent()->GetHealth();
-    const float CurrentShotSpread = FMath::GetMappedRangeValueClamped(FVector2D(100.0f, 1.0f), ShotSpread, CurrentHealth);
-    float ConeHalfAngleRad = FMath::DegreesToRadians(CurrentShotSpread / 2);
+    const auto OwnerPawn = GetOwnerPawn();
+    float ConeHalfAngleRad;
+    if (OwnerPawn)
+    {
+        const auto HealthComponent = ShooterUtils::GetShooterPlayerComponent<UShooterHealthComponent>(OwnerPawn);
+        const float CurrentHealth = HealthComponent->GetHealth();
+        const float CurrentShotSpread = FMath::GetMappedRangeValueClamped(FVector2D(100.0f, 1.0f), ShotSpread, CurrentHealth);
+        ConeHalfAngleRad = FMath::DegreesToRadians(CurrentShotSpread / 2);
+    }
+    else
+    {
+        ConeHalfAngleRad = FMath::DegreesToRadians(ShotSpread.X / 2);
+    }
+
     return FMath::VRandCone(Direction, ConeHalfAngleRad);
 }
 
@@ -178,7 +195,7 @@ bool AShooterBaseWeaponActor::CheckShotDirection(const FHitResult& HitResult) co
     const float DotProduct = FVector::DotProduct(GetMuzzleQuaternion().GetForwardVector(), GetShotDirectionNormal(HitResult));
     const float Radians = FMath::Acos(DotProduct);
     const float Degries = FMath::RadiansToDegrees(Radians);
-    return Degries < 80;
+    return Degries < MaxShotDirectionDegrees;
 }
 
 void AShooterBaseWeaponActor::DealDamage(AActor* Actor)
@@ -188,20 +205,6 @@ void AShooterBaseWeaponActor::DealDamage(AActor* Actor)
 
     float DamageAmount = FMath::FRandRange(MinDamage, MaxDamage);
     UGameplayStatics::ApplyDamage(Actor, DamageAmount, GetController(), this, nullptr);
-}
-
-void AShooterBaseWeaponActor::MakeCameraShake()
-{
-    APlayerController* PlayerController = Cast<APlayerController>(GetController());
-    if (!PlayerController)
-        return;
-
-    if (!CameraShakeClass)
-        return;
-
-    const float CurrentHealth = GetCharacter()->GetHealthComponent()->GetHealth();
-    const float Scale = FMath::GetMappedRangeValueClamped(FVector2D(100.0f, 1.0f), FVector2D(0.2, 1.0), CurrentHealth);
-    PlayerController->PlayerCameraManager->StartMatineeCameraShake(CameraShakeClass, Scale);
 }
 
 bool AShooterBaseWeaponActor::IsClipEmpty() const
@@ -253,6 +256,7 @@ bool AShooterBaseWeaponActor::TryToAddAmmo(int32 ClipsAmount)
     return true;
 }
 
+//Debug
 void AShooterBaseWeaponActor::AmmoInfo()
 {
     FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.BulletsInClip) + " / ";

@@ -8,6 +8,7 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
+class UShooterWeaponFXComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterProjectileBaseActor : public AActor
@@ -25,6 +26,9 @@ protected:
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UProjectileMovementComponent* ProjectileMovement;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UShooterWeaponFXComponent* FXComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
     float LifeSpan = 5.0f;

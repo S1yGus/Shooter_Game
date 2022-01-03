@@ -9,6 +9,7 @@
 #include "Components/ShooterWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Camera/CameraShakeSourceComponent.h"
+#include "Components/ShooterVFXComponent.h"
 
 AShooterBaseCharacter::AShooterBaseCharacter()
 {
@@ -32,9 +33,10 @@ AShooterBaseCharacter::AShooterBaseCharacter()
     HealthTextRender->SetupAttachment(GetMesh());
 
     WeaponComponent = CreateDefaultSubobject<UShooterWeaponComponent>("WeaponComponent");
+
+    VFXComponent = CreateDefaultSubobject<UShooterVFXComponent>("VFXComponent");
 }
 
-// Called when the game starts or when spawned
 void AShooterBaseCharacter::BeginPlay()
 {
     Super::BeginPlay();
@@ -50,13 +52,11 @@ void AShooterBaseCharacter::BeginPlay()
     LandedDelegate.AddDynamic(this, &AShooterBaseCharacter::OnGroundLanded);
 }
 
-// Called every frame
 void AShooterBaseCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
 }
 
-// Called to bind functionality to input
 void AShooterBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -146,13 +146,14 @@ void AShooterBaseCharacter::OnDeath()
     WeaponComponent->StopFire();
     WeaponComponent->Zoom(false);
 
-    PlayAnimMontage(DeathAnimMontage);
-
     GetCharacterMovement()->DisableMovement();
 
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 
     SetLifeSpan(LifeSpanOnDeath);
+
+    GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+    GetMesh()->SetSimulatePhysics(true);
 
     if (!Controller)
         return;

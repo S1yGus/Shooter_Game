@@ -12,8 +12,8 @@ AShooterRifleWeaponActor::AShooterRifleWeaponActor() : AShooterBaseWeaponActor()
 
 void AShooterRifleWeaponActor::StartFire()
 {
-    MakeShot();
     GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &AShooterRifleWeaponActor::MakeShot, TimeBetweenShots, true);
+    MakeShot();
 }
 
 void AShooterRifleWeaponActor::StopFire()

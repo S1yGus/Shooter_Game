@@ -6,10 +6,20 @@
 #include "Components/ShooterWeaponComponent.h"
 #include "ShooterUtils.h"
 
+bool UShooterPlayerHUDWidget::Initialize()
+{
+    const auto PlayerPawn = GetOwningPlayerPawn();
+    if (!PlayerPawn)
+        return Super::Initialize();
+
+    PlayerPawn->OnTakeAnyDamage.AddDynamic(this, &UShooterPlayerHUDWidget::OnTakeAnyDamage);
+
+    return Super::Initialize();
+}
+
 float UShooterPlayerHUDWidget::GetHelthPercent() const
 {
-    const auto HealthComponent =
-        ShooterUtils::GetShooterPlayerComponent<UShooterHealthComponent>(GetOwningPlayerPawn());
+    const auto HealthComponent = ShooterUtils::GetShooterPlayerComponent<UShooterHealthComponent>(GetOwningPlayerPawn());
     if (!HealthComponent)
         return 0.0f;
     
@@ -18,8 +28,7 @@ float UShooterPlayerHUDWidget::GetHelthPercent() const
 
 bool UShooterPlayerHUDWidget::GetCurrentWeaponUIData(FWeaponUIData& Data) const
 {
-    const auto WeaponComponent =
-        ShooterUtils::GetShooterPlayerComponent<UShooterWeaponComponent>(GetOwningPlayerPawn());
+    const auto WeaponComponent = ShooterUtils::GetShooterPlayerComponent<UShooterWeaponComponent>(GetOwningPlayerPawn());
     if (!WeaponComponent)
         return false;
 
@@ -28,8 +37,7 @@ bool UShooterPlayerHUDWidget::GetCurrentWeaponUIData(FWeaponUIData& Data) const
 
 bool UShooterPlayerHUDWidget::GetCurrentWeaponAmmoData(FAmmoData& Data) const
 {
-    const auto WeaponComponent =
-        ShooterUtils::GetShooterPlayerComponent<UShooterWeaponComponent>(GetOwningPlayerPawn());
+    const auto WeaponComponent = ShooterUtils::GetShooterPlayerComponent<UShooterWeaponComponent>(GetOwningPlayerPawn());
     if (!WeaponComponent)
         return false;
 
@@ -38,8 +46,7 @@ bool UShooterPlayerHUDWidget::GetCurrentWeaponAmmoData(FAmmoData& Data) const
 
 bool UShooterPlayerHUDWidget::IsPlayerAlive() const
 {
-    const auto HealthComponent =
-        ShooterUtils::GetShooterPlayerComponent<UShooterHealthComponent>(GetOwningPlayerPawn());
+    const auto HealthComponent = ShooterUtils::GetShooterPlayerComponent<UShooterHealthComponent>(GetOwningPlayerPawn());
     if (!HealthComponent)
         return false;
 
@@ -50,4 +57,13 @@ bool UShooterPlayerHUDWidget::IsPlayerSpectating() const
 {
     const auto Controller = GetOwningPlayer();
     return Controller && Controller->GetStateName() == NAME_Spectating;
+}
+
+void UShooterPlayerHUDWidget::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+    const auto HealthComponent = ShooterUtils::GetShooterPlayerComponent<UShooterHealthComponent>(GetOwningPlayerPawn());
+    if (!HealthComponent || HealthComponent->IsDead())
+        return;
+
+    OnTakeDamage();
 }

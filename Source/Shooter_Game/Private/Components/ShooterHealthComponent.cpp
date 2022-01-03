@@ -3,7 +3,6 @@
 
 #include "Components/ShooterHealthComponent.h"
 #include "TimerManager.h"
-#include "..\..\Public\Components\ShooterHealthComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentLog, All, All)
 

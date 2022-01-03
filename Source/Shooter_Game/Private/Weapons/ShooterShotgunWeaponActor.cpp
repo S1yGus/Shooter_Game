@@ -2,6 +2,7 @@
 
 
 #include "Weapons/ShooterShotgunWeaponActor.h"
+#include "Weapons/Components/ShooterWeaponFXComponent.h"
 
 AShooterShotgunWeaponActor::AShooterShotgunWeaponActor() : AShooterBaseWeaponActor()
 {
@@ -33,6 +34,5 @@ void AShooterShotgunWeaponActor::MakeShot()
     }
 
     DecreaseAmmo();
-    MakeCameraShake();
-    AmmoInfo();
+    FXComponent->MakeCameraShake();
 }

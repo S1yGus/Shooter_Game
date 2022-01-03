@@ -11,6 +11,7 @@ DEFINE_LOG_CATEGORY_STATIC(BaseWeaponLog, All, All)
 
 class USkeletalMeshComponent;
 class AShooterBaseCharacter;
+class UShooterWeaponFXComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterBaseWeaponActor : public AActor
@@ -22,7 +23,7 @@ public:
 
     virtual void StartFire();
     virtual void StopFire();
-    virtual void Zoom(bool condition);
+    bool GetZoomFOV(float& ZoomFOV) const;
 
     bool ReloadClip();
     bool IsNumberOfClipsMax();
@@ -38,6 +39,12 @@ public:
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     USkeletalMeshComponent* WeaponMesh;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UShooterWeaponFXComponent* FXComponent;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    EWeaponType WeaponType;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FAmmoData DefaultAmmo;
@@ -60,16 +67,14 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
     FVector2D ShotSpread = FVector2D(3.0f, 10.0f);
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-    float ZoomFOVAngle = 70.0f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|Zoom")
+    bool CanZoom = true;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-    TSubclassOf<UMatineeCameraShake> CameraShakeClass;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|Zoom", Meta = (EditCondition = "CanZoom"))
+    float ZoomFOVAngle = 70.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     FWeaponUIData UIData;
-
-    EWeaponType WeaponType;
 
     virtual void BeginPlay() override;
     virtual void MakeShot();
@@ -83,7 +88,6 @@ protected:
     FVector GetShotDirection(const FVector& Direction) const;
     bool CheckShotDirection(const FHitResult& HitResult) const;
     void DealDamage(AActor* Actor);
-    void MakeCameraShake();
     bool IsClipEmpty() const;
     bool IsAmmoEmpty() const;
     void DecreaseAmmo();
@@ -91,9 +95,8 @@ protected:
 
 private:
     FAmmoData CurrentAmmo;
-    float DefaultFOVAngle;
 
-    AShooterBaseCharacter* GetCharacter() const;
+    APawn* GetOwnerPawn() const;
     bool GetViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
     FVector GetShotDirectionNormal(const FHitResult& HitResult) const;
 };

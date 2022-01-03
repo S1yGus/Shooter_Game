@@ -6,6 +6,7 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "Weapons/Components/ShooterWeaponFXComponent.h"
 
 AShooterProjectileBaseActor::AShooterProjectileBaseActor()
 {
@@ -15,11 +16,14 @@ AShooterProjectileBaseActor::AShooterProjectileBaseActor()
     SphereComponent->SetSphereRadius(5.0f);
     SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     SphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+    SphereComponent->bReturnMaterialOnMove = true;
     SetRootComponent(SphereComponent);
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovment");
     ProjectileMovement->InitialSpeed = 3000.0f;
     ProjectileMovement->ProjectileGravityScale = 0.3f;
+
+    FXComponent = CreateDefaultSubobject<UShooterWeaponFXComponent>("FXComponent");
 }
 
 void AShooterProjectileBaseActor::BeginPlay()
@@ -44,6 +48,7 @@ void AShooterProjectileBaseActor::OnProjectileHit(UPrimitiveComponent* HitCompon
     ProjectileMovement->StopMovementImmediately();
     UGameplayStatics::ApplyRadialDamage(GetWorld(), DamageAmount, GetActorLocation(), DamageRadius, UDamageType::StaticClass(), {}, this, GetController(), DoFullDamage);
     DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 20, FColor::Purple, false, 2.0f);
+    FXComponent->MakeImactFX(Hit);
     MakeCameraShake();
 
     Destroy();

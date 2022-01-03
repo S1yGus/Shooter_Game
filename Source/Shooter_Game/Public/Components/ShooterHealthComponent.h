@@ -13,7 +13,6 @@ class SHOOTER_GAME_API UShooterHealthComponent : public UActorComponent
     GENERATED_BODY()
 
 public:
-    // Sets default values for this component's properties
     UShooterHealthComponent();
 
     FOnDeathSignature OnDeath;
@@ -28,7 +27,6 @@ public:
     float GetHealthPercent() const { return Health / MaxHealth; }
 
     float GetHealth() const { return Health; }
-
     bool TryToHeal(float HealAmount);
 
 protected:
@@ -53,7 +51,6 @@ protected:
               Meta = (ClampMin = "0.0", ClampMax = "100", EditCondition = "AutoHeal"))
     float HealModifier = 1.0f;
 
-    // Called when the game starts
     virtual void BeginPlay() override;
 
 private:
@@ -65,8 +62,6 @@ private:
     void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
 
     void AutoHealTick();
-
     void SetHealth(float NewHealth);
-
     bool IsCompletelyHealthy();
 };

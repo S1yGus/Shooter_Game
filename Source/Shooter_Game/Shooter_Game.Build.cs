@@ -8,7 +8,13 @@ public class Shooter_Game : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore" });
+		PublicDependencyModuleNames.AddRange(new string[] { 
+			"Core", 
+			"CoreUObject", 
+			"Engine", 
+			"InputCore", 
+			"Niagara",
+			"PhysicsCore"});
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
@@ -19,7 +25,8 @@ public class Shooter_Game : ModuleRules
 			"Shoother_Game/Public/Weapons", 
 			"Shoother_Game/Public/UI",
 			"Shoother_Game/Public/Misc",
-			"Shoother_Game/Public/Animations"});
+			"Shoother_Game/Public/Animations",
+			"Shoother_Game/Public/Weapons/Components"});
 
 		// Uncomment if you are using Slate UI
 		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });

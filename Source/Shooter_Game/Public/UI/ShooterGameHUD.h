@@ -13,9 +13,6 @@ class SHOOTER_GAME_API AShooterGameHUD : public AHUD
 {
     GENERATED_BODY()
 
-public:
-    virtual void DrawHUD() override;
-
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     TSubclassOf<UShooterPlayerHUDWidget> PlayerHUDWidgetClass;

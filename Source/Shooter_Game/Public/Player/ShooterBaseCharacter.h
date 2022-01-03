@@ -13,6 +13,7 @@ class USpringArmComponent;
 class UShooterHealthComponent;
 class UTextRenderComponent;
 class UShooterWeaponComponent;
+class UShooterVFXComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
@@ -20,17 +21,14 @@ class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
     GENERATED_BODY()
 
 public:
-    // Sets default values for this character's properties
     AShooterBaseCharacter();
-
-    UShooterHealthComponent* GetHealthComponent() { return HealthComponent; }
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "500", ClampMax = "800"))
-    float NormalWalkSpeed = 600.0f;
+    float NormalWalkSpeed = 800.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "800", ClampMax = "1200"))
-    float SprintWalkSpeed = 1200.0f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "800", ClampMax = "1400"))
+    float SprintWalkSpeed = 1400.0f;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     USpringArmComponent* SpringArmComponent;
@@ -43,6 +41,9 @@ protected:
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterWeaponComponent* WeaponComponent;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UShooterVFXComponent* VFXComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UTextRenderComponent* HealthTextRender;
@@ -59,14 +60,11 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     FVector2D LandedDamageValue = FVector2D(10.0f, 100.0f);
 
-    // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
 public:
-    // Called every frame
     virtual void Tick(float DeltaTime) override;
 
-    // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
