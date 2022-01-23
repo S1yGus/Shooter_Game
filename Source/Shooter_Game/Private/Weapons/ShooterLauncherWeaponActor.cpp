@@ -1,6 +1,5 @@
 // Shooter_Game, All rights reserved.
 
-
 #include "Weapons/ShooterLauncherWeaponActor.h"
 #include "Weapons/ShooterProjectileBaseActor.h"
 
@@ -36,8 +35,7 @@ void AShooterLauncherWeaponActor::CalculateOneShot()
     }
 
     FTransform Transform(FRotator::ZeroRotator, GetMuzzleLocation());
-    AShooterProjectileBaseActor* Projectile =
-        GetWorld()->SpawnActorDeferred<AShooterProjectileBaseActor>(ProjectileClass, Transform);
+    AShooterProjectileBaseActor* Projectile = GetWorld()->SpawnActorDeferred<AShooterProjectileBaseActor>(ProjectileClass, Transform);
     if (!Projectile)
         return;
 

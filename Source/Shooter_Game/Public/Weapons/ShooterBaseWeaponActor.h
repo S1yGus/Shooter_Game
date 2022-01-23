@@ -26,13 +26,16 @@ public:
     bool GetZoomFOV(float& ZoomFOV) const;
 
     bool ReloadClip();
-    bool IsNumberOfClipsMax();
+    bool IsNumberOfClipsMax() const;
     bool TryToAddAmmo(int32 ClipsAmount);
+    bool IsAmmoEmpty() const;
 
     FName GetArmorySocketName() const { return WeaponArmorySocketName; }
     FWeaponUIData GetUIData() const { return UIData; }
     FAmmoData GetAmmoData() const { return CurrentAmmo; }
     EWeaponType GetWeaponType() const { return WeaponType; }
+    float GetOptimalAttackDistance() const;
+    float GetMaxAttackDistance() const;
 
     FOnClipEmptySignature OnClipEmpty;
 
@@ -59,6 +62,9 @@ protected:
     float TraceMaxDistance = 1500.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
+    float OptimalDistance = 0.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
     float MinDamage = 10.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
@@ -66,6 +72,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
     FVector2D ShotSpread = FVector2D(3.0f, 10.0f);
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
+    FVector2D AIShotSpread = FVector2D(3.0f, 10.0f);
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|Zoom")
     bool CanZoom = true;
@@ -80,6 +89,8 @@ protected:
     virtual void MakeShot();
     virtual void CalculateOneShot();
 
+    virtual void MakeMuzzleFX();
+
     AController* GetController() const;
     bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
     bool MakeTrace(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
@@ -89,7 +100,6 @@ protected:
     bool CheckShotDirection(const FHitResult& HitResult) const;
     void DealDamage(AActor* Actor);
     bool IsClipEmpty() const;
-    bool IsAmmoEmpty() const;
     void DecreaseAmmo();
     void AmmoInfo();
 

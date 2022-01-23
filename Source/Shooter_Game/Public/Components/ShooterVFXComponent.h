@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "ShooterVFXComponent.generated.h"
 
-
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTER_GAME_API UShooterVFXComponent : public UActorComponent
 {
@@ -25,8 +24,7 @@ protected:
     TSubclassOf<UMatineeCameraShake> LocomotionCameraShakeClass;
 
     UFUNCTION()
-    void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy,
-                    AActor* DamageCauser);
+    void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
 
     virtual void BeginPlay() override;
 };

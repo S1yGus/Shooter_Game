@@ -1,6 +1,5 @@
 // Shooter_Game, All rights reserved.
 
-
 #include "Weapons/Components/ShooterWeaponFXComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
@@ -12,7 +11,7 @@
 
 UShooterWeaponFXComponent::UShooterWeaponFXComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+    PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UShooterWeaponFXComponent::MakeImactFX(const FHitResult& HitResult)
@@ -26,12 +25,24 @@ void UShooterWeaponFXComponent::MakeImactFX(const FHitResult& HitResult)
         }
     }
 
-    UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ImpactFXData.NiagaraEffect, HitResult.ImpactPoint,
-                                                   HitResult.ImpactNormal.Rotation());
+    UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),                           //
+                                             ImpactFXData.ImpactParticleSystem,    //
+                                             FTransform(HitResult.ImpactNormal.Rotation() + FRotator(-90.0f, 0.0f, 0.0f), HitResult.ImpactPoint));
 
-    auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(), ImpactFXData.DecalData.Material, ImpactFXData.DecalData.Size,
-                                           HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
-    DecalComponent->SetFadeOut(ImpactFXData.DecalData.LifeTime, ImpactFXData.DecalData.FadeOutTime);
+    int32 RandomDecalArrayIndex = FMath::RandHelper(ImpactFXData.DecalData.Material.Num());
+    if (ImpactFXData.DecalData.Material.IsValidIndex(RandomDecalArrayIndex))
+    {
+        auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(),                                                //
+                                                                     ImpactFXData.DecalData.Material[RandomDecalArrayIndex],    //
+                                                                     ImpactFXData.DecalData.Size,                               //
+                                                                     HitResult.ImpactPoint,                                     //
+                                                                     (HitResult.ImpactNormal * -1.0f).Rotation());
+
+        if (DecalComponent)
+        {
+            DecalComponent->SetFadeOut(ImpactFXData.DecalData.LifeTime, ImpactFXData.DecalData.FadeOutTime);
+        }
+    }
 }
 
 void UShooterWeaponFXComponent::MakeTraceFX(const FVector& TraceStart, const FVector& TraceEnd)
@@ -69,5 +80,5 @@ void UShooterWeaponFXComponent::MakeCameraShake()
 
 void UShooterWeaponFXComponent::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 }

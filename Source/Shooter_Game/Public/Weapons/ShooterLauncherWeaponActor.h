@@ -11,8 +11,8 @@ class AShooterProjectileBaseActor;
 UCLASS()
 class SHOOTER_GAME_API AShooterLauncherWeaponActor : public AShooterBaseWeaponActor
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
     AShooterLauncherWeaponActor();
 

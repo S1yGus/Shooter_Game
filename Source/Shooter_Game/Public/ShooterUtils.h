@@ -3,7 +3,7 @@
 class ShooterUtils
 {
 public:
-	template<class T> 
+    template <class T>
     static T* GetShooterPlayerComponent(APawn* PlayerPawn)
     {
         if (!PlayerPawn)

@@ -13,6 +13,9 @@ class SHOOTER_GAME_API AShooterPickupAmmoActor : public AShooterPickupBaseActor
 {
     GENERATED_BODY()
 
+public:
+    TSubclassOf<AShooterBaseWeaponActor> GetWeaponClass() const { return AmmoWeaponClass; }
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings");
     TSubclassOf<AShooterBaseWeaponActor> AmmoWeaponClass;

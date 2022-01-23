@@ -13,18 +13,18 @@ class UShooterHealthComponent;
 UCLASS()
 class SHOOTER_GAME_API UShooterPlayerHUDWidget : public UUserWidget
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
     virtual bool Initialize();
 
     UFUNCTION(BlueprintCallable)
     float GetHelthPercent() const;
 
-	UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable)
     bool GetCurrentWeaponUIData(FWeaponUIData& Data) const;
 
-	UFUNCTION(BlueprintCallable)
+    UFUNCTION(BlueprintCallable)
     bool GetCurrentWeaponAmmoData(FAmmoData& Data) const;
 
     UFUNCTION(BlueprintCallable)
@@ -38,6 +38,5 @@ public:
 
 protected:
     UFUNCTION()
-    void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy,
-                         AActor* DamageCauser);
+    void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
 };

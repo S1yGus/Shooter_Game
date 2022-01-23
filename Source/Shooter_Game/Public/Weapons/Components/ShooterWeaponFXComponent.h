@@ -10,33 +10,37 @@
 class UNiagaraSystem;
 class UPhysicalMaterial;
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTER_GAME_API UShooterWeaponFXComponent : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-public:	
-	UShooterWeaponFXComponent();
+public:
+    UShooterWeaponFXComponent();
 
-	void MakeImactFX(const FHitResult& HitResult);
+    void MakeImactFX(const FHitResult& HitResult);
     void MakeTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
+    UParticleSystem* GetMuzzleFX() { return MuzzleFX; }
     void MakeCameraShake();
 
 protected:
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     FImpactFXData DefaultImpactFXData;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     TMap<UPhysicalMaterial*, FImpactFXData> ImpactFXDataMap;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     UNiagaraSystem* TraceFX;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     FName TraceEndVariableName = "TraceEnd";
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UParticleSystem* MuzzleFX;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     TSubclassOf<UMatineeCameraShake> CameraShakeClass;
 };

@@ -1,6 +1,5 @@
 // Shooter_Game, All rights reserved.
 
-
 #include "Components/ShooterHealthComponent.h"
 #include "TimerManager.h"
 
@@ -8,33 +7,39 @@ DEFINE_LOG_CATEGORY_STATIC(HealthComponentLog, All, All)
 
 UShooterHealthComponent::UShooterHealthComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+    PrimaryComponentTick.bCanEverTick = false;
 }
 
 bool UShooterHealthComponent::TryToHeal(float HealAmount)
 {
     if (IsCompletelyHealthy() || HealAmount <= 0)
         return false;
-    
+
     SetHealth(Health + HealAmount);
+    if (Health >= MaxAutoHealHealth)
+        GetWorld()->GetTimerManager().ClearTimer(AutoHealTimerHandle);
+
     return true;
 }
 
 void UShooterHealthComponent::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
-	SetHealth(MaxHealth);
+    SetHealth(MaxHealth);
 
-	const auto ComponentOwner = GetOwner();
+    const auto ComponentOwner = GetOwner();
     if (ComponentOwner)
     {
         ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &UShooterHealthComponent::OnTakeAnyDamage);
     }
 }
 
-void UShooterHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType,
-                                              AController* InstigatedBy, AActor* DamageCauser)
+void UShooterHealthComponent::OnTakeAnyDamage(AActor* DamagedActor,             //
+                                              float Damage,                     //
+                                              const UDamageType* DamageType,    //
+                                              AController* InstigatedBy,        //
+                                              AActor* DamageCauser)
 {
     if (Damage <= 0.0f || IsDead())
         return;
@@ -52,8 +57,7 @@ void UShooterHealthComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage
     }
     else if (AutoHeal && Health < MaxAutoHealHealth)
     {
-        GetWorld()->GetTimerManager().SetTimer(AutoHealTimerHandle, this, &UShooterHealthComponent::AutoHealTick,
-                                               HealUpdateTime, true, HealDelay);
+        GetWorld()->GetTimerManager().SetTimer(AutoHealTimerHandle, this, &UShooterHealthComponent::AutoHealTick, HealUpdateTime, true, HealDelay);
     }
 }
 

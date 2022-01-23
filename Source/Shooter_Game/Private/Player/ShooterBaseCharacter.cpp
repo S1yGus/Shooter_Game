@@ -11,7 +11,7 @@
 #include "Camera/CameraShakeSourceComponent.h"
 #include "Components/ShooterVFXComponent.h"
 
-AShooterBaseCharacter::AShooterBaseCharacter()
+AShooterBaseCharacter::AShooterBaseCharacter(const FObjectInitializer& ObjectInitializer)
 {
     PrimaryActorTick.bCanEverTick = true;
 
@@ -26,7 +26,7 @@ AShooterBaseCharacter::AShooterBaseCharacter()
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
     CameraComponent->SetupAttachment(SpringArmComponent);
     CameraComponent->SetFieldOfView(100);
-    
+
     HealthComponent = CreateDefaultSubobject<UShooterHealthComponent>("HealthComponent");
 
     HealthTextRender = CreateDefaultSubobject<UTextRenderComponent>("TextRender");
@@ -74,15 +74,15 @@ void AShooterBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
     PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::ReloadWeapon);
 
     DECLARE_DELEGATE_OneParam(FEquipWeaponSignature, EWeaponType);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>(
-        "FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Pistol);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>(
-        "SecondWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Rifle);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>(
-        "ThirdWeapom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Shotgun);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>(
-        "FourthWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Launcher);
-        
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
+                                                            EWeaponType::Pistol);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("SecondWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
+                                                            EWeaponType::Rifle);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("ThirdWeapom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
+                                                            EWeaponType::Shotgun);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FourthWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
+                                                            EWeaponType::Launcher);
+
     DECLARE_DELEGATE_OneParam(FZoomSignature, bool);
     PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::Zoom, true);
     PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Released, WeaponComponent, &UShooterWeaponComponent::Zoom, false);
@@ -173,8 +173,7 @@ void AShooterBaseCharacter::OnGroundLanded(const FHitResult& Hit)
     if (LandedVelocityZ < LandedDamageVelocity.X)
         return;
 
-    const auto FinalDamage =
-        FMath::GetMappedRangeValueClamped(LandedDamageVelocity, LandedDamageValue, LandedVelocityZ);
+    const auto FinalDamage = FMath::GetMappedRangeValueClamped(LandedDamageVelocity, LandedDamageValue, LandedVelocityZ);
 
     TakeDamage(FinalDamage, FDamageEvent(), nullptr, nullptr);
 }

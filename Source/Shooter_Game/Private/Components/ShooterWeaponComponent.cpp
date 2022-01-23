@@ -1,6 +1,5 @@
 // Shooter_Game, All rights reserved.
 
-
 #include "Components/ShooterWeaponComponent.h"
 #include "Weapons/ShooterBaseWeaponActor.h"
 #include "GameFramework/Character.h"
@@ -10,11 +9,11 @@
 #include "Animations/AnimUtils.h"
 
 constexpr static float ZoomTimerRate = 0.01f;
-constexpr static float ZoomChangeSpeed = 12.0f;
+constexpr static float ZoomChangeSpeed = 10.0f;
 
 UShooterWeaponComponent::UShooterWeaponComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
+    PrimaryComponentTick.bCanEverTick = false;
 }
 
 void UShooterWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -59,6 +58,10 @@ void UShooterWeaponComponent::Zoom(bool Condition)
     if (!CurrentWeapon->GetZoomFOV(ZoomFOVAngle))
         return;
 
+    if (GetOwner<AShooterBaseCharacter>()->IsSprinting())
+        return;
+
+    ZoomingNow = Condition;
     TargetFOVAngle = Condition ? ZoomFOVAngle : DefaultFOVAngle;
 
     if (!ZoomTimerHandle.IsValid())
@@ -73,7 +76,8 @@ void UShooterWeaponComponent::NextWeapon()
         return;
 
     CurrentWeaponIndex = (CurrentWeaponIndex + 1) % StaticCast<int32>(EWeaponType::Max);
-    if (WeaponsMap.Contains(StaticCast<EWeaponType>(CurrentWeaponIndex))) {
+    if (WeaponsMap.Contains(StaticCast<EWeaponType>(CurrentWeaponIndex)))
+    {
         EquipWeapon(StaticCast<EWeaponType>(CurrentWeaponIndex));
         return;
     }
@@ -104,11 +108,7 @@ void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
     CurrentWeapon = WeaponsMap[WeapontType];
     AttachToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
 
-    const auto CurrentWeaponData = WeaponData.FindByPredicate(
-        [&](const FWeaponData& Data) 
-        {
-            return Data.WeaponClass == CurrentWeapon->GetClass();
-        });
+    const auto CurrentWeaponData = WeaponData.FindByPredicate([&](const FWeaponData& Data) { return Data.WeaponClass == CurrentWeapon->GetClass(); });
 
     CurrentReloadAnimMontage = CurrentWeaponData->ReloadAnimMontage;
 
@@ -148,20 +148,17 @@ bool UShooterWeaponComponent::TryToAddWeapon(const FWeaponData& NewWeaponData)
         }
     }
 
-    WeaponData.Add(NewWeaponData);
-
     const auto ReloadFinishedNotify = AnimUtils::FindNotifyByClass<UShooterReloadFinishedAnimNotify>(NewWeaponData.ReloadAnimMontage);
     if (!ReloadFinishedNotify)
         return false;
+
     ReloadFinishedNotify->OnNotified.AddUObject(this, &UShooterWeaponComponent::OnReloadFinished);
+
+    WeaponData.Add(NewWeaponData);
 
     if (!SpawnWeapon(NewWeaponData.WeaponClass))
     {
-        WeaponData.RemoveAllSwap(
-            [&](const FWeaponData& WeaponData) 
-            { 
-                return WeaponData.WeaponClass == NewWeaponData.WeaponClass; 
-            });
+        WeaponData.RemoveAllSwap([&](const FWeaponData& WeaponData) { return WeaponData.WeaponClass == NewWeaponData.WeaponClass; });
         return false;
     }
 
@@ -188,14 +185,20 @@ bool UShooterWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& Data)
 
 void UShooterWeaponComponent::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
     check(EquipAnimMontage);
 
     BindNotifys();
 
-	SpawnWeapons();
+    SpawnWeapons();
     EquipWeapon(EWeaponType::Pistol);
+
+    const auto PlayerController = GetPlayerController();
+    if (PlayerController && PlayerController->PlayerCameraManager)
+    {
+        DefaultFOVAngle = PlayerController->PlayerCameraManager->GetFOVAngle();
+    }
 }
 
 APlayerController* UShooterWeaponComponent::GetPlayerController() const
@@ -230,12 +233,11 @@ bool UShooterWeaponComponent::SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> W
     WeaponsMap.Add(Weapon->GetWeaponType(), Weapon);
 
     AttachToSocket(Weapon, Character->GetMesh(), Weapon->GetArmorySocketName());
-    
+
     return true;
 }
 
-void UShooterWeaponComponent::AttachToSocket(AShooterBaseWeaponActor* Weapon, USceneComponent* ScenComponent,
-                                             FName SocketName)
+void UShooterWeaponComponent::AttachToSocket(AShooterBaseWeaponActor* Weapon, USceneComponent* ScenComponent, FName SocketName)
 {
     if (!Weapon || !ScenComponent)
         return;

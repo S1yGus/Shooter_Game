@@ -2,16 +2,16 @@
 
 #include "ShooterCoreTypes.generated.h"
 
-//Weapon
+// Weapon
 DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature)
 
 UENUM(BlueprintType)
-enum class EWeaponType : uint8 
+enum class EWeaponType : uint8
 {
-    Pistol,
-    Rifle,
     Shotgun,
     Launcher,
+    Rifle,
+    Pistol,
     Max
 };
 
@@ -37,8 +37,7 @@ struct FAmmoData
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo", Meta = (ClampMin = "1"))
     int32 BulletsInClip = 0;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo",
-              Meta = (EditCondition = "!InfiniteClips", ClampMin = "0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo", Meta = (EditCondition = "!InfiniteClips", ClampMin = "0"))
     int32 Clips = 0;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
@@ -57,29 +56,27 @@ struct FWeaponUIData
     UTexture2D* CrossHairIcon;
 };
 
-//Health
+// Health
 DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, Name);
 
-//VFX
-class UNiagaraSystem;
-
+// VFX
 USTRUCT(BlueprintType)
 struct FDecalData
 {
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    UMaterialInterface* Material;
+    TArray<UMaterialInterface*> Material;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    FVector Size = FVector(10.0f);
+    FVector Size = FVector(9.0f);
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    float LifeTime = 10.0f;
+    float LifeTime = 120.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    float FadeOutTime = 1.0f;
+    float FadeOutTime = 10.0f;
 };
 
 USTRUCT(BlueprintType)
@@ -88,7 +85,7 @@ struct FImpactFXData
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    UNiagaraSystem* NiagaraEffect;
+    UParticleSystem* ImpactParticleSystem;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
     FDecalData DecalData;

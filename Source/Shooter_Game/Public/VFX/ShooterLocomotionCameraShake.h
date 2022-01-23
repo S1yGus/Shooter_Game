@@ -9,9 +9,12 @@
 UCLASS()
 class SHOOTER_GAME_API UShooterLocomotionCameraShake : public UMatineeCameraShake
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 protected:
     UFUNCTION(BlueprintCallable)
     float GetPlayerVelocityNormalized() const;
+
+    UFUNCTION(BlueprintCallable)
+    bool IsZooming() const;
 };

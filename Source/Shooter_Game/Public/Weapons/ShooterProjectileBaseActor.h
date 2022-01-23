@@ -13,47 +13,46 @@ class UShooterWeaponFXComponent;
 UCLASS()
 class SHOOTER_GAME_API AShooterProjectileBaseActor : public AActor
 {
-	GENERATED_BODY()
-	
-public:	
-	AShooterProjectileBaseActor();
+    GENERATED_BODY()
 
-	void SetShotDirection(const FVector& Direction) { ShotDirection = Direction; }
+public:
+    AShooterProjectileBaseActor();
+
+    void SetShotDirection(const FVector& Direction) { ShotDirection = Direction; }
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-	USphereComponent* SphereComponent;
+    USphereComponent* SphereComponent;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UProjectileMovementComponent* ProjectileMovement;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterWeaponFXComponent* FXComponent;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
     float LifeSpan = 5.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile", Meta = (ClampMin = "0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile", Meta = (ClampMin = "0"))
     float DamageAmount = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile", Meta = (ClampMin = "0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile", Meta = (ClampMin = "0"))
     float DamageRadius = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
     bool DoFullDamage = false;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
     TSubclassOf<UMatineeCameraShake> CameraShakeClass;
 
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
 private:
     FVector ShotDirection;
 
-	UFUNCTION()
-    void OnProjectileHit(UPrimitiveComponent * HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
-                          FVector NormalImpulse, const FHitResult& Hit);
+    UFUNCTION()
+    void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-	AController* GetController() const;
+    AController* GetController() const;
     void MakeCameraShake();
 };

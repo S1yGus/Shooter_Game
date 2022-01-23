@@ -1,6 +1,5 @@
 // Shooter_Game, All rights reserved.
 
-
 #include "Weapons/ShooterShotgunWeaponActor.h"
 #include "Weapons/Components/ShooterWeaponFXComponent.h"
 
@@ -34,5 +33,7 @@ void AShooterShotgunWeaponActor::MakeShot()
     }
 
     DecreaseAmmo();
+
     FXComponent->MakeCameraShake();
+    MakeMuzzleFX();
 }

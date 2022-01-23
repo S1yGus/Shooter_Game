@@ -6,11 +6,13 @@
 #include "Weapons/ShooterBaseWeaponActor.h"
 #include "ShooterRifleWeaponActor.generated.h"
 
+class UParticleSystemComponent;
+
 UCLASS()
 class SHOOTER_GAME_API AShooterRifleWeaponActor : public AShooterBaseWeaponActor
 {
-	GENERATED_BODY()
-	
+    GENERATED_BODY()
+
 public:
     AShooterRifleWeaponActor();
 
@@ -21,6 +23,11 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.01", ClampMax = "100.0"))
     float TimeBetweenShots = 0.15f;
 
+    virtual void MakeMuzzleFX() override;
+    void StopMuzzleFX();
+
 private:
     FTimerHandle ShotTimerHandle;
+
+    UParticleSystemComponent* MuzzleFXComponent;
 };

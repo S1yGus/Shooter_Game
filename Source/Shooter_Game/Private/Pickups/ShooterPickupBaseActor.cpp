@@ -1,6 +1,5 @@
 // Shooter_Game, All rights reserved.
 
-
 #include "Pickups/ShooterPickupBaseActor.h"
 #include "Components/SphereComponent.h"
 
@@ -10,28 +9,32 @@ DEFINE_LOG_CATEGORY_STATIC(PickupLog, All, All);
 
 AShooterPickupBaseActor::AShooterPickupBaseActor()
 {
-	PrimaryActorTick.bCanEverTick = false;
+    PrimaryActorTick.bCanEverTick = true;
 
-	SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
+    SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
     SphereComponent->InitSphereRadius(50);
     SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
     SphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
     SetRootComponent(SphereComponent);
 }
 
+bool AShooterPickupBaseActor::CanBeTaken()
+{
+    return !GetWorldTimerManager().IsTimerActive(RespawnTimerHandle);
+}
+
 void AShooterPickupBaseActor::BeginPlay()
 {
-	Super::BeginPlay();
-	
+    Super::BeginPlay();
+
     check(SphereComponent);
 
-    GetWorldTimerManager().SetTimer(RotationTimerHandle, this, &AShooterPickupBaseActor::RotatePickup,
-                                    RotationTimerRate, true);
+    GetWorldTimerManager().SetTimer(RotationTimerHandle, this, &AShooterPickupBaseActor::RotatePickup, RotationTimerRate, true);
 }
 
 void AShooterPickupBaseActor::Tick(float DeltaTime)
 {
-	Super::Tick(DeltaTime);
+    Super::Tick(DeltaTime);
 
     TryToGivePickupToOverlapedPawns();
 }
@@ -95,7 +98,6 @@ void AShooterPickupBaseActor::PickupWasTaken()
     SphereComponent->SetVisibility(false, true);
     SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-    FTimerHandle RespawnTimerHandle;
     GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &AShooterPickupBaseActor::Respawn, RespawnTime);
 }
 

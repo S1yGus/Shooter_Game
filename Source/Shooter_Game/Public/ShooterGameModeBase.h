@@ -6,9 +6,6 @@
 #include "GameFramework/GameModeBase.h"
 #include "ShooterGameModeBase.generated.h"
 
-/**
- *
- */
 UCLASS()
 class SHOOTER_GAME_API AShooterGameModeBase : public AGameModeBase
 {

@@ -1,6 +1,5 @@
 // Shooter_Game, All rights reserved.
 
-
 #include "UI/ShooterPlayerHUDWidget.h"
 #include "Components/ShooterHealthComponent.h"
 #include "Components/ShooterWeaponComponent.h"
@@ -22,7 +21,7 @@ float UShooterPlayerHUDWidget::GetHelthPercent() const
     const auto HealthComponent = ShooterUtils::GetShooterPlayerComponent<UShooterHealthComponent>(GetOwningPlayerPawn());
     if (!HealthComponent)
         return 0.0f;
-    
+
     return HealthComponent->GetHealthPercent();
 }
 
@@ -59,7 +58,11 @@ bool UShooterPlayerHUDWidget::IsPlayerSpectating() const
     return Controller && Controller->GetStateName() == NAME_Spectating;
 }
 
-void UShooterPlayerHUDWidget::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+void UShooterPlayerHUDWidget::OnTakeAnyDamage(AActor* DamagedActor,             //
+                                              float Damage,                     //
+                                              const UDamageType* DamageType,    //
+                                              AController* InstigatedBy,        //
+                                              AActor* DamageCauser)
 {
     const auto HealthComponent = ShooterUtils::GetShooterPlayerComponent<UShooterHealthComponent>(GetOwningPlayerPawn());
     if (!HealthComponent || HealthComponent->IsDead())

@@ -21,7 +21,16 @@ class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
     GENERATED_BODY()
 
 public:
-    AShooterBaseCharacter();
+    AShooterBaseCharacter(const FObjectInitializer& ObjectInitializer);
+
+    virtual void Tick(float DeltaTime) override;
+    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    bool IsSprinting() const;
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    float GetMovementDirection() const;
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "500", ClampMax = "800"))
@@ -55,23 +64,14 @@ protected:
     float LifeSpanOnDeath = 5.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
-    FVector2D LandedDamageVelocity = FVector2D(600.0f, 1200.0f);
+    FVector2D LandedDamageVelocity = FVector2D(800.0f, 1500.0f);
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     FVector2D LandedDamageValue = FVector2D(10.0f, 100.0f);
 
     virtual void BeginPlay() override;
 
-public:
-    virtual void Tick(float DeltaTime) override;
-
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    bool IsSprinting() const;
-
-    UFUNCTION(BlueprintCallable, Category = "Movement")
-    float GetMovementDirection() const;
+    virtual void OnDeath();
 
 private:
     bool WantsToSprint = false;
@@ -82,8 +82,6 @@ private:
 
     void StartSprint();
     void StopSprint();
-
-    void OnDeath();
 
     UFUNCTION()
     void OnHealthChanged(float Health);

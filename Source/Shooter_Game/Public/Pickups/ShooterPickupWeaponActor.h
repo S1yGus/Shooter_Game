@@ -14,6 +14,9 @@ class SHOOTER_GAME_API AShooterPickupWeaponActor : public AShooterPickupBaseActo
 {
     GENERATED_BODY()
 
+public:
+    TSubclassOf<AShooterBaseWeaponActor> GetWeaponClass() const { return WeaponData.WeaponClass; }
+
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
     FWeaponData WeaponData;
