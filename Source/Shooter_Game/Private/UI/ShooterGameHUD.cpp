@@ -3,13 +3,12 @@
 #include "UI/ShooterGameHUD.h"
 #include "Engine/Canvas.h"
 #include "Blueprint/UserWidget.h"
-#include "UI/ShooterPlayerHUDWidget.h"
 
 void AShooterGameHUD::BeginPlay()
 {
     Super::BeginPlay();
 
-    const auto PlayerHUDWidget = CreateWidget<UShooterPlayerHUDWidget>(GetWorld(), PlayerHUDWidgetClass);
+    const auto PlayerHUDWidget = CreateWidget<UUserWidget>(GetWorld(), PlayerHUDWidgetClass);
     if (!PlayerHUDWidget)
         return;
 

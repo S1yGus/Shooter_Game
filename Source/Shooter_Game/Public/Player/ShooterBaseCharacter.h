@@ -6,14 +6,8 @@
 #include "GameFramework/Character.h"
 #include "ShooterBaseCharacter.generated.h"
 
-DEFINE_LOG_CATEGORY_STATIC(ShooterBaseCharacterLog, All, All)
-
-class UCameraComponent;
-class USpringArmComponent;
 class UShooterHealthComponent;
-class UTextRenderComponent;
 class UShooterWeaponComponent;
-class UShooterVFXComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
@@ -23,8 +17,11 @@ class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
 public:
     AShooterBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
+    virtual void BeginPlay() override;
+
     virtual void Tick(float DeltaTime) override;
-    virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+    void SetColor(const FLinearColor& Color);
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     bool IsSprinting() const;
@@ -40,25 +37,10 @@ protected:
     float SprintWalkSpeed = 1400.0f;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    USpringArmComponent* SpringArmComponent;
-
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UCameraComponent* CameraComponent;
-
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterHealthComponent* HealthComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterWeaponComponent* WeaponComponent;
-
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UShooterVFXComponent* VFXComponent;
-
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UTextRenderComponent* HealthTextRender;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AnimMontage")
-    UAnimMontage* DeathAnimMontage;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     float LifeSpanOnDeath = 5.0f;
@@ -69,20 +51,15 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     FVector2D LandedDamageValue = FVector2D(10.0f, 100.0f);
 
-    virtual void BeginPlay() override;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Material")
+    FName MaterialColorParameterName = "Paint Color";
+
+    bool WantsToSprint = false;
+    bool MovingForward = false;
 
     virtual void OnDeath();
 
 private:
-    bool WantsToSprint = false;
-    bool MovingForward = false;
-
-    void MoveForward(float Amount);
-    void MoveRight(float Amount);
-
-    void StartSprint();
-    void StopSprint();
-
     UFUNCTION()
     void OnHealthChanged(float Health);
 

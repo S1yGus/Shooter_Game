@@ -1,15 +1,12 @@
 // Shooter_Game, All rights reserved.
 
 #include "Player/ShooterBaseCharacter.h"
-#include "Camera/CameraComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/ShooterHealthComponent.h"
-#include "Components/TextRenderComponent.h"
 #include "Components/ShooterWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Camera/CameraShakeSourceComponent.h"
-#include "Components/ShooterVFXComponent.h"
+
+DEFINE_LOG_CATEGORY_STATIC(ShooterBaseCharacterLog, All, All)
 
 AShooterBaseCharacter::AShooterBaseCharacter(const FObjectInitializer& ObjectInitializer)
 {
@@ -17,24 +14,9 @@ AShooterBaseCharacter::AShooterBaseCharacter(const FObjectInitializer& ObjectIni
 
     GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
 
-    SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
-    SpringArmComponent->SetupAttachment(GetRootComponent());
-    SpringArmComponent->bUsePawnControlRotation = true;
-    SpringArmComponent->TargetArmLength = 170.0f;
-    SpringArmComponent->SocketOffset = FVector(0.0f, 40.0f, 80.0f);
-
-    CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
-    CameraComponent->SetupAttachment(SpringArmComponent);
-    CameraComponent->SetFieldOfView(100);
-
     HealthComponent = CreateDefaultSubobject<UShooterHealthComponent>("HealthComponent");
 
-    HealthTextRender = CreateDefaultSubobject<UTextRenderComponent>("TextRender");
-    HealthTextRender->SetupAttachment(GetMesh());
-
     WeaponComponent = CreateDefaultSubobject<UShooterWeaponComponent>("WeaponComponent");
-
-    VFXComponent = CreateDefaultSubobject<UShooterVFXComponent>("VFXComponent");
 }
 
 void AShooterBaseCharacter::BeginPlay()
@@ -42,10 +24,10 @@ void AShooterBaseCharacter::BeginPlay()
     Super::BeginPlay();
 
     check(HealthComponent);
-    check(HealthTextRender);
+    check(WeaponComponent);
     check(GetCharacterMovement());
+    check(GetMesh());
 
-    OnHealthChanged(HealthComponent->GetHealth());
     HealthComponent->OnDeath.AddUObject(this, &AShooterBaseCharacter::OnDeath);
     HealthComponent->OnHealthChanged.AddDynamic(this, &AShooterBaseCharacter::OnHealthChanged);
 
@@ -57,35 +39,10 @@ void AShooterBaseCharacter::Tick(float DeltaTime)
     Super::Tick(DeltaTime);
 }
 
-void AShooterBaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AShooterBaseCharacter::SetColor(const FLinearColor& Color)
 {
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-    PlayerInputComponent->BindAxis("MoveForward", this, &AShooterBaseCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &AShooterBaseCharacter::MoveRight);
-    PlayerInputComponent->BindAxis("LookUp", this, &AShooterBaseCharacter::AddControllerPitchInput);
-    PlayerInputComponent->BindAxis("LookRight", this, &AShooterBaseCharacter::AddControllerYawInput);
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AShooterBaseCharacter::Jump);
-    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AShooterBaseCharacter::StartSprint);
-    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AShooterBaseCharacter::StopSprint);
-    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::StartFire);
-    PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &UShooterWeaponComponent::StopFire);
-    PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::NextWeapon);
-    PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::ReloadWeapon);
-
-    DECLARE_DELEGATE_OneParam(FEquipWeaponSignature, EWeaponType);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
-                                                            EWeaponType::Pistol);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("SecondWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
-                                                            EWeaponType::Rifle);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("ThirdWeapom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
-                                                            EWeaponType::Shotgun);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FourthWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
-                                                            EWeaponType::Launcher);
-
-    DECLARE_DELEGATE_OneParam(FZoomSignature, bool);
-    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::Zoom, true);
-    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Released, WeaponComponent, &UShooterWeaponComponent::Zoom, false);
+    const auto MaterialInstance = GetMesh()->CreateAndSetMaterialInstanceDynamic(0);
+    MaterialInstance->SetVectorParameterValue(MaterialColorParameterName, Color);
 }
 
 bool AShooterBaseCharacter::IsSprinting() const
@@ -113,34 +70,6 @@ float AShooterBaseCharacter::GetMovementDirection() const
     return CrossProduct.IsZero() ? Degrees : Degrees * FMath::Sign(CrossProduct.Z);
 }
 
-void AShooterBaseCharacter::MoveForward(float Amount)
-{
-    MovingForward = Amount > 0;
-
-    if (Amount == 0.0f)
-        return;
-
-    AddMovementInput(GetActorForwardVector(), Amount);
-}
-
-void AShooterBaseCharacter::MoveRight(float Amount)
-{
-    if (Amount == 0.0f || IsSprinting())
-        return;
-
-    AddMovementInput(GetActorRightVector(), Amount);
-}
-
-void AShooterBaseCharacter::StartSprint()
-{
-    WantsToSprint = true;
-}
-
-void AShooterBaseCharacter::StopSprint()
-{
-    WantsToSprint = false;
-}
-
 void AShooterBaseCharacter::OnDeath()
 {
     WeaponComponent->StopFire();
@@ -154,16 +83,10 @@ void AShooterBaseCharacter::OnDeath()
 
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     GetMesh()->SetSimulatePhysics(true);
-
-    if (!Controller)
-        return;
-
-    Controller->ChangeState(NAME_Spectating);
 }
 
 void AShooterBaseCharacter::OnHealthChanged(float Health)
 {
-    HealthTextRender->SetText(FText::FromString(FString::Printf(TEXT("%.0f"), Health)));
 }
 
 void AShooterBaseCharacter::OnGroundLanded(const FHitResult& Hit)

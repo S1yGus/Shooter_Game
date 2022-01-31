@@ -2,6 +2,7 @@
 
 #include "Components/ShooterHealthComponent.h"
 #include "TimerManager.h"
+#include "ShooterGameModeBase.h"
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentLog, All, All)
 
@@ -53,6 +54,8 @@ void UShooterHealthComponent::OnTakeAnyDamage(AActor* DamagedActor,             
 
     if (IsDead())
     {
+        const auto OwnerController = GetOwner<APawn>()->GetController();
+        Killed(InstigatedBy, OwnerController);
         OnDeath.Broadcast();
     }
     else if (AutoHeal && Health < MaxAutoHealHealth)
@@ -80,4 +83,13 @@ void UShooterHealthComponent::SetHealth(float NewHealth)
 bool UShooterHealthComponent::IsCompletelyHealthy()
 {
     return FMath::IsNearlyEqual(Health, MaxHealth);
+}
+
+void UShooterHealthComponent::Killed(AController* KillerController, AController* VictimController)
+{
+    const auto GameMode = GetWorld()->GetAuthGameMode<AShooterGameModeBase>();
+    if (!GameMode)
+        return;
+
+    GameMode->Killed(KillerController, VictimController);
 }

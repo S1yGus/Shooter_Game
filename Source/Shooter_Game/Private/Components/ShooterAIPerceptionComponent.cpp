@@ -7,6 +7,7 @@
 #include "Components/ShooterHealthComponent.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "ShooterUtils.h"
 
 void UShooterAIPerceptionComponent::BeginPlay()
 {
@@ -34,9 +35,17 @@ AActor* UShooterAIPerceptionComponent::GetNearestActor()
     AActor* NearestActor = nullptr;
     for (const auto PerceivedActor : PerceivedActors)
     {
+        const auto PerceivedPawn = Cast<APawn>(PerceivedActor);
+        if (!PerceivedPawn)
+            continue;
+
+        const auto PerceivedPawnController = PerceivedPawn->GetController();
+        if (!PerceivedPawnController)
+            continue;
+
         const auto HealthComponent = PerceivedActor->FindComponentByClass<UShooterHealthComponent>();
-        if (!HealthComponent || HealthComponent->IsDead())
-            return nullptr;
+        if (!HealthComponent || HealthComponent->IsDead() || !ShooterUtils::AreEnemy(AIController, PerceivedPawnController))
+            continue;
 
         float CurrentDistance = (PerceivedActor->GetActorLocation() - Pawn->GetActorLocation()).Size();
         if (CurrentDistance < NearestDistance)

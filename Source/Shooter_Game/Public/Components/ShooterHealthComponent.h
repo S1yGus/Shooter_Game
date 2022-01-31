@@ -61,4 +61,5 @@ private:
     void AutoHealTick();
     void SetHealth(float NewHealth);
     bool IsCompletelyHealthy();
+    void Killed(AController* KillerController, AController* VictimController);
 };

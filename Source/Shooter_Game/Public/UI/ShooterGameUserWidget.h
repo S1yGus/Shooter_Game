@@ -5,13 +5,13 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "ShooterCoreTypes.h"
-#include "ShooterPlayerHUDWidget.generated.h"
+#include "ShooterGameUserWidget.generated.h"
 
 class UShooterWeaponComponent;
 class UShooterHealthComponent;
 
 UCLASS()
-class SHOOTER_GAME_API UShooterPlayerHUDWidget : public UUserWidget
+class SHOOTER_GAME_API UShooterGameUserWidget : public UUserWidget
 {
     GENERATED_BODY()
 
@@ -28,15 +28,17 @@ public:
     bool GetCurrentWeaponAmmoData(FAmmoData& Data) const;
 
     UFUNCTION(BlueprintCallable)
-    bool IsPlayerAlive() const;
+    bool GetCurrentRaundInfo(float& Raund, float& RaundsAmount, float& RaundTime) const;
 
     UFUNCTION(BlueprintCallable)
-    bool IsPlayerSpectating() const;
+    bool GetPlayerStateInfo(float& Kills, float& Deaths) const;
 
     UFUNCTION(BlueprintImplementableEvent)
     void OnTakeDamage();
 
-protected:
+private:
     UFUNCTION()
     void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
+
+    void OnNewPawn(APawn* NewPawn);
 };

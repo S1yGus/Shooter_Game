@@ -15,7 +15,7 @@ class SHOOTER_GAME_API AShooterGameHUD : public AHUD
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    TSubclassOf<UShooterPlayerHUDWidget> PlayerHUDWidgetClass;
+    TSubclassOf<UUserWidget> PlayerHUDWidgetClass;
 
     virtual void BeginPlay() override;
 

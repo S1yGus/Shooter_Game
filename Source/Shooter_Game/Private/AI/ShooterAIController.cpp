@@ -5,11 +5,16 @@
 #include "Components/ShooterAIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AISense_Prediction.h"
+#include "Components/ShooterRespawnComponent.h"
 
 AShooterAIController::AShooterAIController()
 {
     AIPerceptionComponent = CreateDefaultSubobject<UShooterAIPerceptionComponent>("PerceptionComponent");
     SetPerceptionComponent(*AIPerceptionComponent);
+
+    RespawnComponent = CreateDefaultSubobject<UShooterRespawnComponent>("RespawnComponent");
+
+    bWantsPlayerState = true;
 }
 
 void AShooterAIController::Tick(float DeltaTime)
