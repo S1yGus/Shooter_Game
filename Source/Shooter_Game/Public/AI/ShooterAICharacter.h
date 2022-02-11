@@ -7,6 +7,7 @@
 #include "ShooterAICharacter.generated.h"
 
 class UBehaviorTree;
+class UWidgetComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterAICharacter : public AShooterBaseCharacter
@@ -18,9 +19,22 @@ public:
 
     UBehaviorTree* GetBehaviorTree() { return BehaviorTree; }
 
+    virtual void BeginPlay() override;
+
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     UBehaviorTree* BehaviorTree;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    float DistanceBetweenThreshold = 2500.0f;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UWidgetComponent* HealthWidgetComponent;
+
+    FTimerHandle UpdateHealthWidgetVisibilityTimerHandle;
+
+    virtual void OnHealthChanged(float Health) override;
+    void UpdateHealthWidgetVisibility();
 
     virtual void OnDeath() override;
 };

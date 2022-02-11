@@ -22,11 +22,15 @@ void UShooterFindNearestActorService::TickNode(UBehaviorTreeComponent& OwnerComp
     const auto PerceptionComponent = ShooterAIController->FindComponentByClass<UShooterAIPerceptionComponent>();
     if (!PerceptionComponent)
         return;
-    
+
     const auto NearestActor = PerceptionComponent->GetNearestActor();
     if (NearestActor)
     {
         Blackboard->ClearValue(LostEnemyBlackboardKey.SelectedKeyName);
+        Blackboard->SetValueAsObject(EnemyBlackboardKey.SelectedKeyName, NearestActor);
+
+        return;
     }
-    Blackboard->SetValueAsObject(EnemyBlackboardKey.SelectedKeyName, NearestActor);
+
+    Blackboard->ClearValue(EnemyBlackboardKey.SelectedKeyName);
 }

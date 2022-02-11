@@ -58,7 +58,7 @@ struct FWeaponUIData
 
 // Health
 DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, Name);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, Health);
 
 // VFX
 USTRUCT(BlueprintType)
@@ -118,3 +118,33 @@ struct FGameData
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", Meta = (ClampMin = "1", ClampMax = "60"))
     int32 RespawnTime = 5;
 };
+
+UENUM(BlueprintType)
+enum class EGameState : uint8
+{
+    WaitingToStart,
+    InProgress,
+    Pause,
+    GameOver
+};
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameStateChangedSignature, EGameState);
+
+//UI
+USTRUCT(BlueprintType)
+struct FLevelData
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    FName LevelName;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    FText LevelDisplayName;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    UTexture2D* LevelThumbnails;
+};
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClickedButtonSignature);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSelectedLevelSignature, const FLevelData&);

@@ -15,6 +15,7 @@ AShooterAIController::AShooterAIController()
     RespawnComponent = CreateDefaultSubobject<UShooterRespawnComponent>("RespawnComponent");
 
     bWantsPlayerState = true;
+    bAllowStrafe = true;
 }
 
 void AShooterAIController::Tick(float DeltaTime)

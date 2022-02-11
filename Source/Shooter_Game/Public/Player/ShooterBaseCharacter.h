@@ -57,12 +57,12 @@ protected:
     bool WantsToSprint = false;
     bool MovingForward = false;
 
+    UFUNCTION()
+    virtual void OnHealthChanged(float Health);
+
     virtual void OnDeath();
 
 private:
-    UFUNCTION()
-    void OnHealthChanged(float Health);
-
     UFUNCTION()
     void OnGroundLanded(const FHitResult& Hit);
 };

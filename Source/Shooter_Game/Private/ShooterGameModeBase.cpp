@@ -28,6 +28,8 @@ void AShooterGameModeBase::StartPlay()
     SpawnAIControllers();
     SetTeamsID();
     StartRaund();
+
+    SetGameState(EGameState::InProgress);
 }
 
 UClass* AShooterGameModeBase::GetDefaultPawnClassForController_Implementation(AController* InController)
@@ -67,8 +69,31 @@ void AShooterGameModeBase::RespawnRequest(AController* Controller)
     ResetOnePlayer(Controller);
 }
 
+bool AShooterGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate)
+{
+    const bool PauseSeted = Super::SetPause(PC, CanUnpauseDelegate);
+    if (PauseSeted)
+    {
+        SetGameState(EGameState::Pause);
+    }
+
+    return PauseSeted;
+}
+
+bool AShooterGameModeBase::ClearPause()
+{
+    const bool PauseCleared = Super::ClearPause();
+    if (PauseCleared)
+    {
+        SetGameState(EGameState::InProgress);
+    }
+
+    return PauseCleared;
+}
+
 void AShooterGameModeBase::SetTeamsID()
 {
+    int32 BotID = 0;
     int32 TeamID = 0;
 
     for (auto It = GetWorld()->GetControllerIterator(); It; ++It)
@@ -82,11 +107,14 @@ void AShooterGameModeBase::SetTeamsID()
             continue;
 
         ShooterPlayerState->SetTeamID(TeamID);
+        ShooterPlayerState->SetTeamColor(DetermenColorByTeamID(TeamID));
         TeamID = (TeamID + 1) % GameData.TeamsNum;
+
+        ShooterPlayerState->SetPlayerName(Controller->IsPlayerController() ? "Player" : "Bot_" + FString::FromInt(BotID++));
     }
 }
 
-FLinearColor AShooterGameModeBase::DetermenColorByID(int32 TeamID)
+FLinearColor AShooterGameModeBase::DetermenColorByTeamID(int32 TeamID) const
 {
     FLinearColor TeamColor = GameData.DefaultTeamColor;
     if (TeamID <= GameData.TeamsColors.Num() - 1)
@@ -102,8 +130,7 @@ void AShooterGameModeBase::SetPlayerColor(AController* Controller)
     if (!ShooterPlayerState || !ShooterBaseCharacter)
         return;
 
-    FLinearColor TeamColor = DetermenColorByID(ShooterPlayerState->GetTeamID());
-    ShooterBaseCharacter->SetColor(TeamColor);
+    ShooterBaseCharacter->SetColor(DetermenColorByTeamID(ShooterPlayerState->GetTeamID()));
 }
 
 void AShooterGameModeBase::SpawnAIControllers()
@@ -186,6 +213,8 @@ void AShooterGameModeBase::GameOver()
         Pawn->TurnOff();
         Pawn->DisableInput(nullptr);
     }
+
+    SetGameState(EGameState::GameOver);
 }
 
 void AShooterGameModeBase::LogGameInfo()
@@ -202,4 +231,14 @@ void AShooterGameModeBase::LogGameInfo()
 
         PlayerState->LogInfo();
     }
+}
+
+void AShooterGameModeBase::SetGameState(EGameState NewGameState)
+{
+    if (CurrentGameState == NewGameState)
+        return;
+
+    CurrentGameState = NewGameState;
+
+    OnGameStateChanged.Broadcast(NewGameState);
 }

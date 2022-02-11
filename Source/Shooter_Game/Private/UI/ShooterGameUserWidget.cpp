@@ -5,15 +5,15 @@
 #include "Components/ShooterWeaponComponent.h"
 #include "ShooterGameModeBase.h"
 #include "Player/ShooterPlayerState.h"
+#include "Components/ProgressBar.h"
 
-bool UShooterGameUserWidget::Initialize()
+void UShooterGameUserWidget::NativeOnInitialized()
 {
     const auto Controller = GetOwningPlayer();
     if (!Controller)
-        return Super::Initialize();
+        return;
 
     Controller->GetOnNewPawnNotifier().AddUObject(this, &UShooterGameUserWidget::OnNewPawn);
-    return Super::Initialize();
 }
 
 float UShooterGameUserWidget::GetHelthPercent() const
@@ -76,7 +76,18 @@ void UShooterGameUserWidget::OnTakeAnyDamage(AActor* DamagedActor,             /
     if (!HealthComponent || HealthComponent->IsDead())
         return;
 
+    if (GetDamageAnimation)
+    {
+        ShowGetDamageAnimation();
+    }
+
     OnTakeDamage();
+    UpdateHealthProgressBar();
+}
+
+void UShooterGameUserWidget::OnHealthChanged(float Health)
+{
+    UpdateHealthProgressBar();
 }
 
 void UShooterGameUserWidget::OnNewPawn(APawn* NewPawn)
@@ -85,4 +96,25 @@ void UShooterGameUserWidget::OnNewPawn(APawn* NewPawn)
         return;
 
     NewPawn->OnTakeAnyDamage.AddDynamic(this, &UShooterGameUserWidget::OnTakeAnyDamage);
+
+    const auto HealthComponent = NewPawn->FindComponentByClass<UShooterHealthComponent>();
+    HealthComponent->OnHealthChanged.AddDynamic(this, &UShooterGameUserWidget::OnHealthChanged);
+
+    UpdateHealthProgressBar();
+}
+
+void UShooterGameUserWidget::ShowGetDamageAnimation()
+{
+    if (!IsAnimationPlaying(GetDamageAnimation))
+    {
+        PlayAnimation(GetDamageAnimation);
+    }
+}
+
+void UShooterGameUserWidget::UpdateHealthProgressBar()
+{
+    if (!HealthProgressBar)
+        return;
+
+    HealthProgressBar->SetFillColorAndOpacity(GetHelthPercent() > HealthColorThreshold ? NormalHealthColor : LowHealthColor);
 }

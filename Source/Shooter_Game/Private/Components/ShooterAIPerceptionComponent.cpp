@@ -66,6 +66,8 @@ void UShooterAIPerceptionComponent::CheckForEnemyLost(const FActorPerceptionUpda
 
     const auto AIController = Cast<AAIController>(GetOwner());
     const auto Blackboard = AIController->GetBlackboardComponent();
+    if (!AIController || !Blackboard)
+        return;
 
     const auto NearestActor = GetNearestActor();
     if (NearestActor)
@@ -77,9 +79,6 @@ void UShooterAIPerceptionComponent::CheckForEnemyLost(const FActorPerceptionUpda
     {
         Blackboard->ClearValue(EnemyKeyName);
     }
-
-    if (!AIController || !Blackboard)
-        return;
 
     if (!UpdateInfo.Target.IsValid())
         return;

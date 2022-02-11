@@ -14,6 +14,8 @@ class SHOOTER_GAME_API AShooterPlayerState : public APlayerState
 public:
     int32 GetTeamID() const { return TeamID; }
     void SetTeamID(int32 NewTeamID) { TeamID = NewTeamID; }
+    FLinearColor GetTeamColor() const { return TeamColor; }
+    void SetTeamColor(const FLinearColor& NewTeamColor) { TeamColor = NewTeamColor; }
 
     int32 GetKillsNum() const { return KillsNum; }
     void AddKill() { ++KillsNum; }
@@ -23,6 +25,7 @@ public:
 
 private:
     int32 TeamID = 0;
+    FLinearColor TeamColor;
 
     int32 KillsNum = 0;
     int32 DeathsNum = 0;
