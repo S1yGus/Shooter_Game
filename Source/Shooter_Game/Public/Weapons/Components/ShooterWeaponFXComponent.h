@@ -8,7 +8,10 @@
 #include "ShooterWeaponFXComponent.generated.h"
 
 class UNiagaraSystem;
+class UParticleSystem;
 class UPhysicalMaterial;
+class UCameraShakeBase;
+class USoundCue;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTER_GAME_API UShooterWeaponFXComponent : public UActorComponent
@@ -20,8 +23,11 @@ public:
 
     void MakeImactFX(const FHitResult& HitResult);
     void MakeTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
-    UParticleSystem* GetMuzzleFX() { return MuzzleFX; }
     void MakeCameraShake();
+
+    UParticleSystem* GetMuzzleFX() { return MuzzleFX; }
+    USoundCue* GetFireSound() { return FireSound; }
+    USoundCue* GetNoAmmoSound() { return NoAmmoSound; }
 
 protected:
     virtual void BeginPlay() override;
@@ -42,5 +48,11 @@ protected:
     UParticleSystem* MuzzleFX;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    TSubclassOf<UMatineeCameraShake> CameraShakeClass;
+    TSubclassOf<UCameraShakeBase> CameraShakeClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* FireSound;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* NoAmmoSound;
 };

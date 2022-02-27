@@ -61,6 +61,14 @@ DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, Health);
 
 // VFX
+UENUM(BlueprintType)
+enum class ELocomotionType : uint8
+{
+    Run,
+    StartJump,
+    EndJump
+};
+
 USTRUCT(BlueprintType)
 struct FDecalData
 {
@@ -79,16 +87,74 @@ struct FDecalData
     float FadeOutTime = 10.0f;
 };
 
+class USoundCue;
+
 USTRUCT(BlueprintType)
 struct FImpactFXData
 {
     GENERATED_USTRUCT_BODY()
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     UParticleSystem* ImpactParticleSystem;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    FDecalData DecalData;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    USoundCue* ImpactSound;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    FDecalData ImpactDecalData;
+};
+
+USTRUCT(BlueprintType)
+struct FFootstepDecalDataPair
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    FDecalData Right;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    FDecalData Left;
+};
+
+class UNiagaraSystem;
+
+USTRUCT(BlueprintType)
+struct FFootstepFXData
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    UNiagaraSystem* FootstepNiagaraSystem;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    USoundCue* FootstepSound;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    FFootstepDecalDataPair FootstepDecalDataPair;
+};
+
+USTRUCT(BlueprintType)
+struct FFootstepFXDataMap
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    TMap<UPhysicalMaterial*, FFootstepFXData> FootstepFXDataMap;
+};
+
+USTRUCT(BlueprintType)
+struct FFootstepNotifyData
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+    ELocomotionType LocomotionType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+    bool IsLeft = false;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+    bool NoSound = false;
 };
 
 // Game
@@ -130,7 +196,7 @@ enum class EGameState : uint8
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameStateChangedSignature, EGameState);
 
-//UI
+// UI
 USTRUCT(BlueprintType)
 struct FLevelData
 {

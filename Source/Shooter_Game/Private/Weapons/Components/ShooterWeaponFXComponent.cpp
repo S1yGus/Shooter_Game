@@ -8,6 +8,7 @@
 #include "Components/DecalComponent.h"
 #include "Components/ShooterHealthComponent.h"
 #include "ShooterUtils.h"
+#include "Sound/SoundCue.h"
 
 UShooterWeaponFXComponent::UShooterWeaponFXComponent()
 {
@@ -25,23 +26,25 @@ void UShooterWeaponFXComponent::MakeImactFX(const FHitResult& HitResult)
         }
     }
 
+    // VFX
     UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),                           //
                                              ImpactFXData.ImpactParticleSystem,    //
                                              FTransform(HitResult.ImpactNormal.Rotation() + FRotator(-90.0f, 0.0f, 0.0f), HitResult.ImpactPoint));
 
-    int32 RandomDecalArrayIndex = FMath::RandHelper(ImpactFXData.DecalData.Material.Num());
-    if (ImpactFXData.DecalData.Material.IsValidIndex(RandomDecalArrayIndex))
-    {
-        auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(),                                                //
-                                                                     ImpactFXData.DecalData.Material[RandomDecalArrayIndex],    //
-                                                                     ImpactFXData.DecalData.Size,                               //
-                                                                     HitResult.ImpactPoint,                                     //
-                                                                     (HitResult.ImpactNormal * -1.0f).Rotation());
+    // Sound
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactFXData.ImpactSound, HitResult.ImpactPoint);
 
-        if (DecalComponent)
-        {
-            DecalComponent->SetFadeOut(ImpactFXData.DecalData.LifeTime, ImpactFXData.DecalData.FadeOutTime);
-        }
+    // Decal
+    const int32 RandomDecalArrayIndex = FMath::RandHelper(ImpactFXData.ImpactDecalData.Material.Num());
+    auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(),                                                      //
+                                                                 ImpactFXData.ImpactDecalData.Material[RandomDecalArrayIndex],    //
+                                                                 ImpactFXData.ImpactDecalData.Size,                               //
+                                                                 HitResult.ImpactPoint,                                           //
+                                                                 (HitResult.ImpactNormal * -1.0f).Rotation());
+
+    if (DecalComponent)
+    {
+        DecalComponent->SetFadeOut(ImpactFXData.ImpactDecalData.LifeTime, ImpactFXData.ImpactDecalData.FadeOutTime);
     }
 }
 
@@ -75,10 +78,12 @@ void UShooterWeaponFXComponent::MakeCameraShake()
         Scale = FMath::GetMappedRangeValueClamped(FVector2D(100.0f, 1.0f), FVector2D(0.5, 1.0), CurrentHealth);
     }
 
-    PlayerController->PlayerCameraManager->StartMatineeCameraShake(CameraShakeClass, Scale);
+    PlayerController->PlayerCameraManager->StartCameraShake(CameraShakeClass, Scale);
 }
 
 void UShooterWeaponFXComponent::BeginPlay()
 {
     Super::BeginPlay();
+
+    checkf(DefaultImpactFXData.ImpactDecalData.Material.Num() != 0, TEXT("DefaultImpactFXData must contains elements!"))
 }

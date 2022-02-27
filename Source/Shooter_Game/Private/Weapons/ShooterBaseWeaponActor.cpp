@@ -6,13 +6,15 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/Controller.h"
 #include "Kismet/GameplayStatics.h"
-#include "Camera/CameraShake.h"
 #include "Player/ShooterBaseCharacter.h"
 #include "Components/ShooterHealthComponent.h"
 #include "Weapons/Components/ShooterWeaponFXComponent.h"
 #include "ShooterUtils.h"
+#include "Sound/SoundCue.h"
 
 constexpr static float MaxShotDirectionDegrees = 80.0f;
+
+#define ECC_BulletTrace ECollisionChannel::ECC_GameTraceChannel2
 
 AShooterBaseWeaponActor::AShooterBaseWeaponActor()
 {
@@ -63,6 +65,11 @@ void AShooterBaseWeaponActor::MakeShot()
         {
             OnClipEmpty.Broadcast();
         }
+        else
+        {
+            UGameplayStatics::PlaySoundAtLocation(GetWorld(), FXComponent->GetNoAmmoSound(), GetActorLocation());
+        }
+
         return;
     }
 
@@ -70,8 +77,7 @@ void AShooterBaseWeaponActor::MakeShot()
 
     DecreaseAmmo();
 
-    FXComponent->MakeCameraShake();
-    MakeMuzzleFX();
+    MakeFX();
 }
 
 void AShooterBaseWeaponActor::CalculateOneShot()
@@ -92,7 +98,7 @@ void AShooterBaseWeaponActor::CalculateOneShot()
             TraceFXEnd = HitResult.ImpactPoint;
             // DrawDebugLine(GetWorld(), GetMuzzleLocation(), HitResult.ImpactPoint, FColor::Red, false, 2.0f, 0, 2.0f);
             // DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10, 12, FColor::Purple, false, 2.0f, 0, 2.0f);
-            DealDamage(HitResult.GetActor());
+            DealDamage(HitResult);
         }
         else
         {
@@ -102,23 +108,33 @@ void AShooterBaseWeaponActor::CalculateOneShot()
 
             if (MakeTrace(HitResult, GetMuzzleLocation(), TraceEndLimited))
             {
-                DealDamage(HitResult.GetActor());
+                DealDamage(HitResult);
             }
         }
 
         FXComponent->MakeImactFX(HitResult);
     }
+    else
+    {
+        // DrawDebugLine(GetWorld(), GetMuzzleLocation(), TraceEnd, FColor::Blue, false, 2.0f, 0, 2.0f);
+    }
 
     FXComponent->MakeTraceFX(GetMuzzleLocation(), TraceFXEnd);
 }
 
-void AShooterBaseWeaponActor::MakeMuzzleFX()
+void AShooterBaseWeaponActor::MakeFX()
 {
-    const auto MuzzleFX = FXComponent->GetMuzzleFX();
-    if (!MuzzleFX)
-        return;
+    if (FXComponent->GetMuzzleFX())
+    {
+        UGameplayStatics::SpawnEmitterAttached(FXComponent->GetMuzzleFX(), WeaponMesh, MuzzleSocketName);
+    }
 
-    UGameplayStatics::SpawnEmitterAttached(FXComponent->GetMuzzleFX(), WeaponMesh, MuzzleSocketName);
+    if (FXComponent->GetFireSound())
+    {
+        UGameplayStatics::SpawnSoundAttached(FXComponent->GetFireSound(), WeaponMesh, MuzzleSocketName);
+    }
+
+    FXComponent->MakeCameraShake();
 }
 
 APawn* AShooterBaseWeaponActor::GetOwnerPawn() const
@@ -163,7 +179,7 @@ bool AShooterBaseWeaponActor::MakeTrace(FHitResult& HitResult, const FVector& Tr
     CollisionParams.AddIgnoredActor(GetOwner());
     CollisionParams.bReturnPhysicalMaterial = true;
 
-    return GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_EngineTraceChannel2, CollisionParams);
+    return GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_BulletTrace, CollisionParams);
 }
 
 FVector AShooterBaseWeaponActor::GetMuzzleLocation() const
@@ -210,13 +226,16 @@ bool AShooterBaseWeaponActor::CheckShotDirection(const FHitResult& HitResult) co
     return Degries < MaxShotDirectionDegrees;
 }
 
-void AShooterBaseWeaponActor::DealDamage(AActor* Actor)
+void AShooterBaseWeaponActor::DealDamage(const FHitResult& HitResult)
 {
-    if (!Actor)
+    if (!HitResult.GetActor())
         return;
 
     float DamageAmount = FMath::FRandRange(MinDamage, MaxDamage);
-    UGameplayStatics::ApplyDamage(Actor, DamageAmount, GetController(), this, nullptr);
+
+    FPointDamageEvent DamageEvent;
+    DamageEvent.HitInfo = HitResult;
+    HitResult.GetActor()->TakeDamage(DamageAmount, DamageEvent, GetController(), this);
 }
 
 bool AShooterBaseWeaponActor::IsClipEmpty() const

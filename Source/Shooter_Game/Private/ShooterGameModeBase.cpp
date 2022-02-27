@@ -8,6 +8,7 @@
 #include "Player/ShooterPlayerState.h"
 #include "Components/ShooterRespawnComponent.h"
 #include "EngineUtils.h"
+#include "Components/ShooterAIWeaponComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(GameModeLog, All, All)
 
@@ -74,6 +75,7 @@ bool AShooterGameModeBase::SetPause(APlayerController* PC, FCanUnpause CanUnpaus
     const bool PauseSeted = Super::SetPause(PC, CanUnpauseDelegate);
     if (PauseSeted)
     {
+        StopAllFire();
         SetGameState(EGameState::Pause);
     }
 
@@ -177,10 +179,10 @@ void AShooterGameModeBase::ResetOnePlayer(AController* Controller)
     if (!Controller)
         return;
 
-    const auto Pawn = Controller->GetPawn();
-    if (Pawn)
+    const auto ControllerPawn = Controller->GetPawn();
+    if (ControllerPawn)
     {
-        Pawn->Reset();
+        ControllerPawn->Reset();
     }
 
     RestartPlayer(Controller);
@@ -241,4 +243,17 @@ void AShooterGameModeBase::SetGameState(EGameState NewGameState)
     CurrentGameState = NewGameState;
 
     OnGameStateChanged.Broadcast(NewGameState);
+}
+
+void AShooterGameModeBase::StopAllFire()
+{
+    for (const auto Pawn : TActorRange<APawn>(GetWorld()))
+    {
+        const auto WeaponComponent = Pawn->FindComponentByClass<UShooterWeaponComponent>();
+        if (!WeaponComponent)
+            continue;
+
+        WeaponComponent->StopFire();
+        WeaponComponent->Zoom(false);
+    }
 }

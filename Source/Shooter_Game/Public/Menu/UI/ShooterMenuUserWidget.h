@@ -8,6 +8,7 @@
 
 class UShooterButtonUserWidget;
 class UWidgetAnimation;
+class USoundCue;
 
 UCLASS()
 class SHOOTER_GAME_API UShooterMenuUserWidget : public UShooterBaseAnimatedUserWidget
@@ -23,6 +24,9 @@ protected:
 
     UPROPERTY(Meta = (BindWidget))
     UShooterButtonUserWidget* QuitButton = nullptr;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* StartGameSound;
 
     virtual void NativeOnInitialized() override;
 

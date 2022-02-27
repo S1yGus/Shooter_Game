@@ -2,6 +2,8 @@
 
 #include "Weapons/ShooterShotgunWeaponActor.h"
 #include "Weapons/Components/ShooterWeaponFXComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 AShooterShotgunWeaponActor::AShooterShotgunWeaponActor() : AShooterBaseWeaponActor()
 {
@@ -24,6 +26,11 @@ void AShooterShotgunWeaponActor::MakeShot()
         {
             OnClipEmpty.Broadcast();
         }
+        else
+        {
+            UGameplayStatics::PlaySoundAtLocation(GetWorld(), FXComponent->GetNoAmmoSound(), GetActorLocation());
+        }
+
         return;
     }
 
@@ -35,5 +42,5 @@ void AShooterShotgunWeaponActor::MakeShot()
     DecreaseAmmo();
 
     FXComponent->MakeCameraShake();
-    MakeMuzzleFX();
+    MakeFX();
 }

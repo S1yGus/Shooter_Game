@@ -16,7 +16,8 @@ public class Shooter_Game : ModuleRules
             "Niagara",
             "PhysicsCore",
             "GameplayTasks",
-            "NavigationSystem"});
+            "NavigationSystem",
+            "GameplayCameras"});
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
 

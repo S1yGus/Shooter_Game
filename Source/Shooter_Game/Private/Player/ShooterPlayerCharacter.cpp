@@ -4,11 +4,12 @@
 #include "Camera/CameraComponent.h"
 #include "Components/ShooterWeaponComponent.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Components/ShooterVFXComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/ShooterPlayerVFXComponent.h"
 
-AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& ObjectInitializer) : AShooterBaseCharacter(ObjectInitializer)
+AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterPlayerVFXComponent>("VFXComponent"))
 {
     SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
     SpringArmComponent->SetupAttachment(GetRootComponent());
@@ -24,8 +25,6 @@ AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& Objec
     CameraCollisionComponent->SetupAttachment(CameraComponent);
     CameraCollisionComponent->SetSphereRadius(10.0f);
     CameraCollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
-
-    VFXComponent = CreateDefaultSubobject<UShooterVFXComponent>("VFXComponent");
 }
 
 void AShooterPlayerCharacter::BeginPlay()
@@ -69,9 +68,25 @@ void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
     PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Released, WeaponComponent, &UShooterWeaponComponent::Zoom, false);
 }
 
+void AShooterPlayerCharacter::TurnOff()
+{
+    Super::TurnOff();
+
+    WeaponComponent->Zoom(false);
+}
+
+void AShooterPlayerCharacter::Reset()
+{
+    Super::Reset();
+
+    WeaponComponent->Zoom(false);
+}
+
 void AShooterPlayerCharacter::OnDeath()
 {
     Super::OnDeath();
+
+    WeaponComponent->Zoom(false);
 
     if (!Controller)
         return;

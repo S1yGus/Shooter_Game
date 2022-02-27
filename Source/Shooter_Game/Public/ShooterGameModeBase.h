@@ -67,4 +67,6 @@ private:
     void LogGameInfo();
 
     void SetGameState(EGameState NewGameState);
+
+    void StopAllFire();
 };

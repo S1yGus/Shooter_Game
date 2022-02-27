@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Camera/CameraShake.h"
+#include "MatineeCameraShake.h"
 #include "ShooterLocomotionCameraShake.generated.h"
 
 UCLASS()

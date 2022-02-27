@@ -5,6 +5,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "ShooterGameInstance.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Sound/SoundCue.h"
 
 void UShooterMenuUserWidget::NativeOnInitialized()
 {
@@ -23,7 +24,16 @@ void UShooterMenuUserWidget::NativeOnInitialized()
 
 void UShooterMenuUserWidget::OnStartNewGame()
 {
+    const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
+    if (!GameInstance)
+        return;
+
+    if (GameInstance->GetNewGameLevelData().LevelName.IsNone())
+        return;
+
     PlayAnimation(LoadingAnimation);
+
+    UGameplayStatics::PlaySound2D(GetWorld(), StartGameSound);
 }
 
 void UShooterMenuUserWidget::OnQuit()
@@ -39,9 +49,6 @@ void UShooterMenuUserWidget::OnAnimationFinished_Implementation(const UWidgetAni
     {
         const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
         if (!GameInstance)
-            return;
-
-        if (GameInstance->GetNewGameLevelData().LevelName.IsNone())
             return;
 
         UGameplayStatics::OpenLevel(GetWorld(), GameInstance->GetNewGameLevelData().LevelName);

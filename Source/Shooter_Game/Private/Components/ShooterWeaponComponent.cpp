@@ -7,6 +7,8 @@
 #include "Animations/ShooterReloadFinishedAnimNotify.h"
 #include "Player/ShooterBaseCharacter.h"
 #include "Animations/AnimUtils.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 constexpr static float ZoomTimerRate = 0.01f;
 constexpr static float ZoomChangeSpeed = 10.0f;
@@ -43,6 +45,9 @@ void UShooterWeaponComponent::StartFire()
 
 void UShooterWeaponComponent::StopFire()
 {
+    if (!CurrentWeapon)
+        return;
+
     CurrentWeapon->StopFire();
 }
 
@@ -90,7 +95,7 @@ void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
     if (!WeaponsMap.Contains(WeapontType) || !CanEquip())
         return;
 
-    ACharacter* Character = Cast<ACharacter>(GetOwner());
+    ACharacter* Character = GetOwner<ACharacter>();
     if (!Character)
         return;
 

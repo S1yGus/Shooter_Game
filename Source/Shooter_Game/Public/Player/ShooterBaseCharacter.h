@@ -8,6 +8,7 @@
 
 class UShooterHealthComponent;
 class UShooterWeaponComponent;
+class UShooterBaseVFXComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
@@ -18,8 +19,9 @@ public:
     AShooterBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
     virtual void BeginPlay() override;
-
     virtual void Tick(float DeltaTime) override;
+    virtual void TurnOff() override;
+    virtual void Reset() override;
 
     void SetColor(const FLinearColor& Color);
 
@@ -41,6 +43,9 @@ protected:
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterWeaponComponent* WeaponComponent;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UShooterBaseVFXComponent* VFXComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     float LifeSpanOnDeath = 5.0f;

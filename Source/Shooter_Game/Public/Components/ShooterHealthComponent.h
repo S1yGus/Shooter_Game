@@ -7,6 +7,8 @@
 #include "ShooterCoreTypes.h"
 #include "ShooterHealthComponent.generated.h"
 
+class UPhysicalMaterial;
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTER_GAME_API UShooterHealthComponent : public UActorComponent
 {
@@ -48,15 +50,27 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "100", EditCondition = "AutoHeal"))
     float HealModifier = 1.0f;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
+    TMap<UPhysicalMaterial*, float> DamageModifiers;
+
     virtual void BeginPlay() override;
 
 private:
     float Health = 0.0f;
+    float CurrentDamageModifier = 1.0f;
 
     FTimerHandle AutoHealTimerHandle;
 
     UFUNCTION()
-    void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+    void OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser);
+
+    UFUNCTION()
+    void OnTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent,
+                           FName BoneName, FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser);
+
+    UFUNCTION()
+    void OnTakeRadialDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, FVector Origin, FHitResult HitInfo, AController* InstigatedBy,
+                            AActor* DamageCauser);
 
     void AutoHealTick();
     void SetHealth(float NewHealth);

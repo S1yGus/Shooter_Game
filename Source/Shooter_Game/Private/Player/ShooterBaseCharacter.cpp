@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/ShooterHealthComponent.h"
 #include "Components/ShooterWeaponComponent.h"
+#include "Components/ShooterBaseVFXComponent.h"
 #include "Components/CapsuleComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(ShooterBaseCharacterLog, All, All)
@@ -15,8 +16,8 @@ AShooterBaseCharacter::AShooterBaseCharacter(const FObjectInitializer& ObjectIni
     GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
 
     HealthComponent = CreateDefaultSubobject<UShooterHealthComponent>("HealthComponent");
-
     WeaponComponent = CreateDefaultSubobject<UShooterWeaponComponent>("WeaponComponent");
+    VFXComponent = CreateDefaultSubobject<UShooterBaseVFXComponent>("VFXComponent");
 }
 
 void AShooterBaseCharacter::BeginPlay()
@@ -25,18 +26,32 @@ void AShooterBaseCharacter::BeginPlay()
 
     check(HealthComponent);
     check(WeaponComponent);
+    check(VFXComponent);
     check(GetCharacterMovement());
     check(GetMesh());
 
     HealthComponent->OnDeath.AddUObject(this, &AShooterBaseCharacter::OnDeath);
     HealthComponent->OnHealthChanged.AddDynamic(this, &AShooterBaseCharacter::OnHealthChanged);
-
     LandedDelegate.AddDynamic(this, &AShooterBaseCharacter::OnGroundLanded);
 }
 
 void AShooterBaseCharacter::Tick(float DeltaTime)
 {
     Super::Tick(DeltaTime);
+}
+
+void AShooterBaseCharacter::TurnOff()
+{
+    Super::TurnOff();
+
+    WeaponComponent->StopFire();
+}
+
+void AShooterBaseCharacter::Reset()
+{
+    Super::Reset();
+
+    WeaponComponent->StopFire();
 }
 
 void AShooterBaseCharacter::SetColor(const FLinearColor& Color)
@@ -72,8 +87,9 @@ float AShooterBaseCharacter::GetMovementDirection() const
 
 void AShooterBaseCharacter::OnDeath()
 {
+    VFXComponent->PlayDeathSound();
+
     WeaponComponent->StopFire();
-    WeaponComponent->Zoom(false);
 
     GetCharacterMovement()->DisableMovement();
 

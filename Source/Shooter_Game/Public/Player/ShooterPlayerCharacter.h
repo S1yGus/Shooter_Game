@@ -8,7 +8,6 @@
 
 class UCameraComponent;
 class USpringArmComponent;
-class UShooterVFXComponent;
 class USphereComponent;
 
 UCLASS()
@@ -23,15 +22,15 @@ public:
 
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+    virtual void TurnOff() override;
+    virtual void Reset() override;
+
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     USpringArmComponent* SpringArmComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UCameraComponent* CameraComponent;
-
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UShooterVFXComponent* VFXComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     USphereComponent* CameraCollisionComponent;

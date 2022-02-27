@@ -7,6 +7,7 @@
 #include "ShooterBaseAnimatedUserWidget.generated.h"
 
 class UWidgetAnimation;
+class USoundCue;
 
 UCLASS()
 class SHOOTER_GAME_API UShooterBaseAnimatedUserWidget : public UUserWidget
@@ -19,4 +20,7 @@ public:
 protected:
     UPROPERTY(Meta = (BindWidgetAnim), Transient)
     UWidgetAnimation* StartupAnimation = nullptr;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* OpenSound;
 };

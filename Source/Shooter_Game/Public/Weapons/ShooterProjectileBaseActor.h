@@ -9,6 +9,7 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 class UShooterWeaponFXComponent;
+class UCameraShakeBase;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterProjectileBaseActor : public AActor
@@ -43,7 +44,7 @@ protected:
     bool DoFullDamage = false;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
-    TSubclassOf<UMatineeCameraShake> CameraShakeClass;
+    TSubclassOf<UCameraShakeBase> CameraShakeClass;
 
     virtual void BeginPlay() override;
 

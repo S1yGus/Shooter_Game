@@ -7,6 +7,7 @@
 #include "ShooterRifleWeaponActor.generated.h"
 
 class UParticleSystemComponent;
+class UAudioComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterRifleWeaponActor : public AShooterBaseWeaponActor
@@ -23,11 +24,17 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.01", ClampMax = "100.0"))
     float TimeBetweenShots = 0.15f;
 
-    virtual void MakeMuzzleFX() override;
-    void StopMuzzleFX();
+    virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason);
+
+    virtual void MakeFX() override;
 
 private:
     FTimerHandle ShotTimerHandle;
 
     UParticleSystemComponent* MuzzleFXComponent;
+    UAudioComponent* FireAudioComponent;
+
+    void InitFX();
+    void SetFXActive(bool IsActive);
 };

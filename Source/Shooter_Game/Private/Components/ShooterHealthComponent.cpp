@@ -3,6 +3,8 @@
 #include "Components/ShooterHealthComponent.h"
 #include "TimerManager.h"
 #include "ShooterGameModeBase.h"
+#include "GameFramework/Character.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentLog, All, All)
 
@@ -33,6 +35,8 @@ void UShooterHealthComponent::BeginPlay()
     if (ComponentOwner)
     {
         ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &UShooterHealthComponent::OnTakeAnyDamage);
+        ComponentOwner->OnTakePointDamage.AddDynamic(this, &UShooterHealthComponent::OnTakePointDamage);
+        ComponentOwner->OnTakeRadialDamage.AddDynamic(this, &UShooterHealthComponent::OnTakeRadialDamage);
     }
 }
 
@@ -45,9 +49,11 @@ void UShooterHealthComponent::OnTakeAnyDamage(AActor* DamagedActor,             
     if (Damage <= 0.0f || IsDead())
         return;
 
-    SetHealth(Health - Damage);
+    const auto DamageAmount = Damage * CurrentDamageModifier;
+    SetHealth(Health - DamageAmount);
+    CurrentDamageModifier = 1.0f;
 
-    if (AutoHealTimerHandle.IsValid())
+    if (GetWorld()->GetTimerManager().IsTimerActive(AutoHealTimerHandle))
     {
         GetWorld()->GetTimerManager().ClearTimer(AutoHealTimerHandle);
     }
@@ -62,6 +68,37 @@ void UShooterHealthComponent::OnTakeAnyDamage(AActor* DamagedActor,             
     {
         GetWorld()->GetTimerManager().SetTimer(AutoHealTimerHandle, this, &UShooterHealthComponent::AutoHealTick, HealUpdateTime, true, HealDelay);
     }
+}
+
+void UShooterHealthComponent::OnTakePointDamage(AActor* DamagedActor,                  //
+                                                float Damage,                          //
+                                                AController* InstigatedBy,             //
+                                                FVector HitLocation,                   //
+                                                UPrimitiveComponent* FHitComponent,    //
+                                                FName BoneName,                        //
+                                                FVector ShotFromDirection,             //
+                                                const UDamageType* DamageType,         //
+                                                AActor* DamageCauser)
+{
+    const auto DamagedCharacter = Cast<ACharacter>(DamagedActor);
+    if (!DamagedCharacter)
+        return;
+
+    const auto PhysicalMaterial = DamagedCharacter->GetMesh()->GetBodyInstance(BoneName)->GetSimplePhysicalMaterial();
+    if (!DamageModifiers.Contains(PhysicalMaterial))
+        return;
+
+    CurrentDamageModifier = DamageModifiers[PhysicalMaterial];
+}
+
+void UShooterHealthComponent::OnTakeRadialDamage(AActor* DamagedActor,             //
+                                                 float Damage,                     //
+                                                 const UDamageType* DamageType,    //
+                                                 FVector Origin,                   //
+                                                 FHitResult HitInfo,               //
+                                                 AController* InstigatedBy,        //
+                                                 AActor* DamageCauser)
+{
 }
 
 void UShooterHealthComponent::AutoHealTick()

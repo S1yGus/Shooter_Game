@@ -7,6 +7,7 @@
 #include "ShooterPickupBaseActor.generated.h"
 
 class USphereComponent;
+class USoundCue;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterPickupBaseActor : public AActor
@@ -30,6 +31,9 @@ protected:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "0.0", ClampMax = "10.0"))
     float RotationYaw = 1.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
+    USoundCue* TakenPickupSound;
 
     virtual void BeginPlay() override;
 

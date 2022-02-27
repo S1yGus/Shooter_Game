@@ -86,10 +86,11 @@ protected:
     FWeaponUIData UIData;
 
     virtual void BeginPlay() override;
+
     virtual void MakeShot();
     virtual void CalculateOneShot();
 
-    virtual void MakeMuzzleFX();
+    virtual void MakeFX();
 
     AController* GetController() const;
     bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
@@ -98,7 +99,7 @@ protected:
     FQuat GetMuzzleQuaternion() const;
     FVector GetShotDirection(const FVector& Direction) const;
     bool CheckShotDirection(const FHitResult& HitResult) const;
-    void DealDamage(AActor* Actor);
+    void DealDamage(const FHitResult& HitResult);
     bool IsClipEmpty() const;
     void DecreaseAmmo();
     void AmmoInfo();

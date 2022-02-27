@@ -2,6 +2,8 @@
 
 #include "Pickups/ShooterPickupBaseActor.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 constexpr static float RotationTimerRate = 0.01f;
 
@@ -97,6 +99,7 @@ void AShooterPickupBaseActor::PickupWasTaken()
 {
     SphereComponent->SetVisibility(false, true);
     SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), TakenPickupSound, GetActorLocation());
 
     GetWorldTimerManager().SetTimer(RespawnTimerHandle, this, &AShooterPickupBaseActor::Respawn, RespawnTime);
 }
