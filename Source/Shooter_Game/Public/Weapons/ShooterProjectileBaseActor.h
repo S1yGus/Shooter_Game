@@ -8,7 +8,6 @@
 
 class USphereComponent;
 class UProjectileMovementComponent;
-class UShooterWeaponFXComponent;
 class UCameraShakeBase;
 
 UCLASS()
@@ -21,6 +20,8 @@ public:
 
     void SetShotDirection(const FVector& Direction) { ShotDirection = Direction; }
 
+    void SetDamage(float NewDamageAmount) { DamageAmount = NewDamageAmount; }
+
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     USphereComponent* SphereComponent;
@@ -28,32 +29,20 @@ protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UProjectileMovementComponent* ProjectileMovement;
 
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UShooterWeaponFXComponent* FXComponent;
-
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
-    float LifeSpan = 5.0f;
+    float LifeSpan = 3.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile", Meta = (ClampMin = "0"))
-    float DamageAmount = 100.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile", Meta = (ClampMin = "0"))
-    float DamageRadius = 100.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
-    bool DoFullDamage = false;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
-    TSubclassOf<UCameraShakeBase> CameraShakeClass;
+    float DamageAmount = 0.0f;
 
     virtual void BeginPlay() override;
+
+    void MakeImpactFX(const FHitResult& HitResult);
+    AController* GetPawnController() const;
 
 private:
     FVector ShotDirection;
 
     UFUNCTION()
-    void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
-
-    AController* GetController() const;
-    void MakeCameraShake();
+    virtual void OnProjectileHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse,
+                                 const FHitResult& Hit);
 };

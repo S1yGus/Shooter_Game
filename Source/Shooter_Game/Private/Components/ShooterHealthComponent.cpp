@@ -5,6 +5,7 @@
 #include "ShooterGameModeBase.h"
 #include "GameFramework/Character.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Components/ShooterBaseVFXComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentLog, All, All)
 
@@ -85,10 +86,12 @@ void UShooterHealthComponent::OnTakePointDamage(AActor* DamagedActor,           
         return;
 
     const auto PhysicalMaterial = DamagedCharacter->GetMesh()->GetBodyInstance(BoneName)->GetSimplePhysicalMaterial();
-    if (!DamageModifiers.Contains(PhysicalMaterial))
-        return;
+    if (DamageModifiersMap.Contains(PhysicalMaterial))
+    {
+        CurrentDamageModifier = DamageModifiersMap[PhysicalMaterial];
+    }
 
-    CurrentDamageModifier = DamageModifiers[PhysicalMaterial];
+    SpawnImpactIndicator(DamagedActor, Damage * CurrentDamageModifier, HitLocation, PhysicalMaterial);
 }
 
 void UShooterHealthComponent::OnTakeRadialDamage(AActor* DamagedActor,             //
@@ -99,6 +102,7 @@ void UShooterHealthComponent::OnTakeRadialDamage(AActor* DamagedActor,          
                                                  AController* InstigatedBy,        //
                                                  AActor* DamageCauser)
 {
+    SpawnImpactIndicator(DamagedActor, Damage, GetOwner()->GetActorLocation());
 }
 
 void UShooterHealthComponent::AutoHealTick()
@@ -129,4 +133,13 @@ void UShooterHealthComponent::Killed(AController* KillerController, AController*
         return;
 
     GameMode->Killed(KillerController, VictimController);
+}
+
+void UShooterHealthComponent::SpawnImpactIndicator(AActor* DamagedActor, float DamageAmount, const FVector& HitLocation, UPhysicalMaterial* PhysicalMaterial)
+{
+    const auto VFXComponent = DamagedActor->FindComponentByClass<UShooterBaseVFXComponent>();
+    if (!VFXComponent)
+        return;
+
+    VFXComponent->SpawnImpactIndicator(DamageAmount, HitLocation, PhysicalMaterial);
 }

@@ -51,7 +51,9 @@ void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
     PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::StartFire);
     PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &UShooterWeaponComponent::StopFire);
     PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::NextWeapon);
+    PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::PreviousWeapon);
     PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::ReloadWeapon);
+    PlayerInputComponent->BindAction("SwitchFireMode", IE_Released, WeaponComponent, &UShooterWeaponComponent::SwitchFireMode);
 
     DECLARE_DELEGATE_OneParam(FEquipWeaponSignature, EWeaponType);
     PlayerInputComponent->BindAction<FEquipWeaponSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,

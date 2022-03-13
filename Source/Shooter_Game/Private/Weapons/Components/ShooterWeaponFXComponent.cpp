@@ -1,6 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "Weapons/Components/ShooterWeaponFXComponent.h"
+#include "Weapons/ShooterBaseWeaponActor.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
@@ -15,9 +16,12 @@ UShooterWeaponFXComponent::UShooterWeaponFXComponent()
     PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UShooterWeaponFXComponent::MakeImactFX(const FHitResult& HitResult)
+void UShooterWeaponFXComponent::MakeImpactFX(const FHitResult& HitResult)
 {
-    FImpactFXData ImpactFXData = DefaultImpactFXData;
+    const auto AlternativeFireMode = GetOwner<AShooterBaseWeaponActor>()->IsFireModeAlternative();
+    auto ImpactFXData = AlternativeFireMode ? AlternativeWeaponFXData.DefaultImpactFXData : MainWeaponFXData.DefaultImpactFXData;
+    const auto ImpactFXDataMap = AlternativeFireMode ? AlternativeWeaponFXData.ImpactFXDataMap : MainWeaponFXData.ImpactFXDataMap;
+
     if (HitResult.PhysMaterial.IsValid())
     {
         if (ImpactFXDataMap.Contains(HitResult.PhysMaterial.Get()))
@@ -35,21 +39,26 @@ void UShooterWeaponFXComponent::MakeImactFX(const FHitResult& HitResult)
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactFXData.ImpactSound, HitResult.ImpactPoint);
 
     // Decal
-    const int32 RandomDecalArrayIndex = FMath::RandHelper(ImpactFXData.ImpactDecalData.Material.Num());
+    if (ImpactFXData.ImpactDecalData.Material.Num() == 0)
+        return;
+
+    const auto RandomDecalArrayIndex = FMath::RandHelper(ImpactFXData.ImpactDecalData.Material.Num());
     auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(),                                                      //
                                                                  ImpactFXData.ImpactDecalData.Material[RandomDecalArrayIndex],    //
                                                                  ImpactFXData.ImpactDecalData.Size,                               //
                                                                  HitResult.ImpactPoint,                                           //
                                                                  (HitResult.ImpactNormal * -1.0f).Rotation());
 
-    if (DecalComponent)
-    {
-        DecalComponent->SetFadeOut(ImpactFXData.ImpactDecalData.LifeTime, ImpactFXData.ImpactDecalData.FadeOutTime);
-    }
+    if (!DecalComponent)
+        return;
+
+    DecalComponent->SetFadeOut(ImpactFXData.ImpactDecalData.LifeTime, ImpactFXData.ImpactDecalData.FadeOutTime);
 }
 
 void UShooterWeaponFXComponent::MakeTraceFX(const FVector& TraceStart, const FVector& TraceEnd)
 {
+    const auto AlternativeFireMode = GetOwner<AShooterBaseWeaponActor>()->IsFireModeAlternative();
+    const auto TraceFX = AlternativeFireMode ? AlternativeWeaponFXData.TraceFX : MainWeaponFXData.TraceFX;
     if (!TraceFX)
         return;
 
@@ -67,23 +76,18 @@ void UShooterWeaponFXComponent::MakeCameraShake()
     if (!PlayerController || !PlayerController->PlayerCameraManager)
         return;
 
+    const auto AlternativeFireMode = GetOwner<AShooterBaseWeaponActor>()->IsFireModeAlternative();
+    const auto CameraShakeClass = AlternativeFireMode ? AlternativeWeaponFXData.CameraShakeClass : MainWeaponFXData.CameraShakeClass;
     if (!CameraShakeClass)
         return;
 
     float Scale = 1.0f;
-    const auto HealthComponent = ShooterUtils::GetShooterPlayerComponent<UShooterHealthComponent>(OwnerPawn);
+    const auto HealthComponent = OwnerPawn->FindComponentByClass<UShooterHealthComponent>();
     if (HealthComponent)
     {
-        const float CurrentHealth = HealthComponent->GetHealth();
+        const auto CurrentHealth = HealthComponent->GetHealth();
         Scale = FMath::GetMappedRangeValueClamped(FVector2D(100.0f, 1.0f), FVector2D(0.5, 1.0), CurrentHealth);
     }
 
     PlayerController->PlayerCameraManager->StartCameraShake(CameraShakeClass, Scale);
-}
-
-void UShooterWeaponFXComponent::BeginPlay()
-{
-    Super::BeginPlay();
-
-    checkf(DefaultImpactFXData.ImpactDecalData.Material.Num() != 0, TEXT("DefaultImpactFXData must contains elements!"))
 }

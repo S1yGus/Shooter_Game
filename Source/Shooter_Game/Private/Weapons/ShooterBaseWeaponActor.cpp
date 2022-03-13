@@ -1,18 +1,22 @@
 // Shooter_Game, All rights reserved.
 
 #include "Weapons/ShooterBaseWeaponActor.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "DrawDebugHelpers.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/Controller.h"
-#include "Kismet/GameplayStatics.h"
-#include "Player/ShooterBaseCharacter.h"
-#include "Components/ShooterHealthComponent.h"
 #include "Weapons/Components/ShooterWeaponFXComponent.h"
+#include "Weapons/ShooterProjectileBaseActor.h"
+#include "Weapons/ShooterShellBaseActor.h"
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/ShooterHealthComponent.h"
+#include "Components/ShooterWeaponComponent.h"
+#include "DrawDebugHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Player/ShooterBaseCharacter.h"
 #include "ShooterUtils.h"
 #include "Sound/SoundCue.h"
 
 constexpr static float MaxShotDirectionDegrees = 80.0f;
+constexpr static float ShellDropDirectionHalfAngle = 30.0f;
+constexpr static float ShellDropRandomRotationRange = 360.0f;
 
 #define ECC_BulletTrace ECollisionChannel::ECC_GameTraceChannel2
 
@@ -28,239 +32,22 @@ AShooterBaseWeaponActor::AShooterBaseWeaponActor()
 
 void AShooterBaseWeaponActor::StartFire()
 {
+    AlternativeFireMode ? MakeAlternativeShot() : MakeMainShot();
 }
 
 void AShooterBaseWeaponActor::StopFire()
 {
 }
 
-bool AShooterBaseWeaponActor::GetZoomFOV(float& ZoomFOV) const
+void AShooterBaseWeaponActor::SwitchFireMode()
 {
-    if (CanZoom)
-    {
-        ZoomFOV = ZoomFOVAngle;
-        return true;
-    }
-
-    return false;
-}
-
-void AShooterBaseWeaponActor::BeginPlay()
-{
-    Super::BeginPlay();
-
-    check(WeaponMesh);
-    check(FXComponent);
-
-    CurrentAmmo = DefaultAmmo;
-}
-
-void AShooterBaseWeaponActor::MakeShot()
-{
-    if (IsClipEmpty())
-    {
-        StopFire();
-
-        if (!IsAmmoEmpty())
-        {
-            OnClipEmpty.Broadcast();
-        }
-        else
-        {
-            UGameplayStatics::PlaySoundAtLocation(GetWorld(), FXComponent->GetNoAmmoSound(), GetActorLocation());
-        }
-
-        return;
-    }
-
-    CalculateOneShot();
-
-    DecreaseAmmo();
-
-    MakeFX();
-}
-
-void AShooterBaseWeaponActor::CalculateOneShot()
-{
-    FVector TraceStart, TraceEnd;
-    if (!GetTraceData(TraceStart, TraceEnd))
-    {
-        StopFire();
-        return;
-    }
-
-    FVector TraceFXEnd = TraceEnd;
-    FHitResult HitResult;
-    if (MakeTrace(HitResult, TraceStart, TraceEnd))
-    {
-        if (CheckShotDirection(HitResult))
-        {
-            TraceFXEnd = HitResult.ImpactPoint;
-            // DrawDebugLine(GetWorld(), GetMuzzleLocation(), HitResult.ImpactPoint, FColor::Red, false, 2.0f, 0, 2.0f);
-            // DrawDebugSphere(GetWorld(), HitResult.ImpactPoint, 10, 12, FColor::Purple, false, 2.0f, 0, 2.0f);
-            DealDamage(HitResult);
-        }
-        else
-        {
-            FVector TraceEndLimited = GetMuzzleLocation() + GetShotDirection(GetMuzzleQuaternion().GetForwardVector()) * TraceMaxDistance;
-            TraceFXEnd = TraceEndLimited;
-            // DrawDebugLine(GetWorld(), GetMuzzleLocation(), TraceEndLimited, FColor::Red, false, 2.0f, 0, 2.0f);
-
-            if (MakeTrace(HitResult, GetMuzzleLocation(), TraceEndLimited))
-            {
-                DealDamage(HitResult);
-            }
-        }
-
-        FXComponent->MakeImactFX(HitResult);
-    }
-    else
-    {
-        // DrawDebugLine(GetWorld(), GetMuzzleLocation(), TraceEnd, FColor::Blue, false, 2.0f, 0, 2.0f);
-    }
-
-    FXComponent->MakeTraceFX(GetMuzzleLocation(), TraceFXEnd);
-}
-
-void AShooterBaseWeaponActor::MakeFX()
-{
-    if (FXComponent->GetMuzzleFX())
-    {
-        UGameplayStatics::SpawnEmitterAttached(FXComponent->GetMuzzleFX(), WeaponMesh, MuzzleSocketName);
-    }
-
-    if (FXComponent->GetFireSound())
-    {
-        UGameplayStatics::SpawnSoundAttached(FXComponent->GetFireSound(), WeaponMesh, MuzzleSocketName);
-    }
-
-    FXComponent->MakeCameraShake();
-}
-
-APawn* AShooterBaseWeaponActor::GetOwnerPawn() const
-{
-    return Cast<APawn>(GetOwner());
-}
-
-AController* AShooterBaseWeaponActor::GetController() const
-{
-    APawn* OwnerPawn = GetOwnerPawn();
-    if (!OwnerPawn)
-        return nullptr;
-
-    return OwnerPawn->GetController();
-}
-
-bool AShooterBaseWeaponActor::GetViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
-{
-    AController* Controller = GetController();
-    if (!Controller)
-        return false;
-
-    Controller->GetPlayerViewPoint(ViewLocation, ViewRotation);
-    return true;
-}
-
-bool AShooterBaseWeaponActor::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
-{
-    FVector ViewLocation;
-    FRotator ViewRotation;
-    if (!GetViewPoint(ViewLocation, ViewRotation))
-        return false;
-
-    TraceStart = ViewLocation;
-    TraceEnd = TraceStart + GetShotDirection(ViewRotation.Vector()) * TraceMaxDistance;
-    return true;
-}
-
-bool AShooterBaseWeaponActor::MakeTrace(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd)
-{
-    FCollisionQueryParams CollisionParams;
-    CollisionParams.AddIgnoredActor(GetOwner());
-    CollisionParams.bReturnPhysicalMaterial = true;
-
-    return GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_BulletTrace, CollisionParams);
-}
-
-FVector AShooterBaseWeaponActor::GetMuzzleLocation() const
-{
-    return WeaponMesh->GetSocketLocation(MuzzleSocketName);
-}
-
-FQuat AShooterBaseWeaponActor::GetMuzzleQuaternion() const
-{
-    return WeaponMesh->GetSocketQuaternion(MuzzleSocketName);
-}
-
-FVector AShooterBaseWeaponActor::GetShotDirection(const FVector& Direction) const
-{
-    const auto CurrentShotSpreadRange = GetController()->IsPlayerController() ? ShotSpread : AIShotSpread;
-
-    float ConeHalfAngleRad;
-    const auto OwnerPawn = GetOwnerPawn();
-    const auto HealthComponent = OwnerPawn->FindComponentByClass<UShooterHealthComponent>();
-    if (HealthComponent)
-    {
-        const float CurrentHealth = HealthComponent->GetHealth();
-        const float CurrentShotSpread = FMath::GetMappedRangeValueClamped(FVector2D(100.0f, 1.0f), CurrentShotSpreadRange, CurrentHealth);
-        ConeHalfAngleRad = FMath::DegreesToRadians(CurrentShotSpread / 2);
-    }
-    else
-    {
-        ConeHalfAngleRad = FMath::DegreesToRadians(CurrentShotSpreadRange.X / 2);
-    }
-
-    return FMath::VRandCone(Direction, ConeHalfAngleRad);
-}
-
-FVector AShooterBaseWeaponActor::GetShotDirectionNormal(const FHitResult& HitResult) const
-{
-    return (HitResult.ImpactPoint - GetMuzzleLocation()).GetSafeNormal();
-}
-
-bool AShooterBaseWeaponActor::CheckShotDirection(const FHitResult& HitResult) const
-{
-    const float DotProduct = FVector::DotProduct(GetMuzzleQuaternion().GetForwardVector(), GetShotDirectionNormal(HitResult));
-    const float Radians = FMath::Acos(DotProduct);
-    const float Degries = FMath::RadiansToDegrees(Radians);
-    return Degries < MaxShotDirectionDegrees;
-}
-
-void AShooterBaseWeaponActor::DealDamage(const FHitResult& HitResult)
-{
-    if (!HitResult.GetActor())
+    if (!HasAlternativeFireMode)
         return;
 
-    float DamageAmount = FMath::FRandRange(MinDamage, MaxDamage);
+    StopFire();
 
-    FPointDamageEvent DamageEvent;
-    DamageEvent.HitInfo = HitResult;
-    HitResult.GetActor()->TakeDamage(DamageAmount, DamageEvent, GetController(), this);
-}
-
-bool AShooterBaseWeaponActor::IsClipEmpty() const
-{
-    return CurrentAmmo.BulletsInClip == 0;
-}
-
-bool AShooterBaseWeaponActor::IsAmmoEmpty() const
-{
-    return !CurrentAmmo.InfiniteClips && CurrentAmmo.Clips == 0 && IsClipEmpty();
-}
-
-float AShooterBaseWeaponActor::GetOptimalAttackDistance() const
-{
-    return OptimalDistance;
-}
-
-float AShooterBaseWeaponActor::GetMaxAttackDistance() const
-{
-    return TraceMaxDistance;
-}
-
-void AShooterBaseWeaponActor::DecreaseAmmo()
-{
-    --CurrentAmmo.BulletsInClip;
+    AlternativeFireMode = !AlternativeFireMode;
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), FXComponent->GetSwitchModeSound(), GetActorLocation());
 }
 
 bool AShooterBaseWeaponActor::ReloadClip()
@@ -275,9 +62,14 @@ bool AShooterBaseWeaponActor::ReloadClip()
     return true;
 }
 
+bool AShooterBaseWeaponActor::IsAmmoEmpty() const
+{
+    return !CurrentAmmo.InfiniteClips && CurrentAmmo.Clips == 0 && IsClipEmpty();
+}
+
 bool AShooterBaseWeaponActor::IsNumberOfClipsMax() const
 {
-    return !IsClipEmpty() && CurrentAmmo.Clips == DefaultAmmo.Clips;
+    return CurrentAmmo.InfiniteClips || (!IsClipEmpty() && CurrentAmmo.Clips == DefaultAmmo.Clips);
 }
 
 bool AShooterBaseWeaponActor::TryToAddAmmo(int32 ClipsAmount)
@@ -285,23 +77,272 @@ bool AShooterBaseWeaponActor::TryToAddAmmo(int32 ClipsAmount)
     if (DefaultAmmo.InfiniteClips || IsNumberOfClipsMax() || ClipsAmount <= 0)
         return false;
 
+    CurrentAmmo.Clips = FMath::Clamp(CurrentAmmo.Clips + ClipsAmount, 0, IsClipEmpty() ? DefaultAmmo.Clips + 1 : DefaultAmmo.Clips);
+    return true;
+}
+
+void AShooterBaseWeaponActor::BeginPlay()
+{
+    Super::BeginPlay();
+
+    check(WeaponMesh);
+    check(FXComponent);
+
+    CurrentAmmo = DefaultAmmo;
+}
+
+void AShooterBaseWeaponActor::MakeMainShot()
+{
     if (IsClipEmpty())
     {
-        CurrentAmmo.Clips = FMath::Clamp(CurrentAmmo.Clips + ClipsAmount, 0, DefaultAmmo.Clips + 1);
+        StopFire();
+
+        if (IsAmmoEmpty())
+        {
+            UGameplayStatics::PlaySoundAtLocation(GetWorld(), FXComponent->GetNoAmmoSound(), GetActorLocation());
+        }
+        else
+        {
+            OnClipEmpty.Broadcast();
+        }
+        return;
     }
-    else
+
+    CalculateOneShot();
+    DecreaseAmmo();
+
+    SpawnBulletShell();
+    MakeFX();
+    if (GetController()->IsPlayerController())
     {
-        CurrentAmmo.Clips = FMath::Clamp(CurrentAmmo.Clips + ClipsAmount, 0, DefaultAmmo.Clips);
+        StopRecoilRecoverTimer();
+        MakeRecoil();
     }
+}
+
+void AShooterBaseWeaponActor::MakeAlternativeShot()
+{
+}
+
+void AShooterBaseWeaponActor::CalculateOneShot()
+{
+    if (!ProjectileClass)
+        return;
+
+    FVector TraceStart, TraceEnd;
+    if (!GetTraceData(TraceStart, TraceEnd))
+        return;
+
+    FVector EndPoint = TraceEnd;
+    FHitResult HitResult;
+    if (MakeTrace(HitResult, TraceStart, TraceEnd))
+    {
+        if (CheckShotDirection(HitResult))
+        {
+            EndPoint = HitResult.ImpactPoint;
+        }
+    }
+
+    FTransform Transform(FRotator::ZeroRotator, GetMuzzleLocation());
+    const auto Projectile = GetWorld()->SpawnActorDeferred<AShooterProjectileBaseActor>(ProjectileClass, Transform);
+    if (!Projectile)
+        return;
+
+    auto Direction = (EndPoint - GetMuzzleLocation()).GetSafeNormal();
+    Projectile->SetShotDirection(Direction);
+    Projectile->SetOwner(this);
+    const auto WeaponStatsData = AlternativeFireMode ? AlternativeWeaponStatsData : MainWeaponStatsData;
+    const auto DamageAmount = FMath::RandRange(WeaponStatsData.MinDamage, WeaponStatsData.MaxDamage);
+    Projectile->SetDamage(DamageAmount);
+
+    Projectile->FinishSpawning(Transform);
+}
+
+void AShooterBaseWeaponActor::MakeFX()
+{
+    const auto MuzzleFX = AlternativeFireMode ? FXComponent->GetAlternativeMuzzleFX() : FXComponent->GetMainMuzzleFX();
+    if (MuzzleFX)
+    {
+        UGameplayStatics::SpawnEmitterAttached(MuzzleFX, WeaponMesh, MuzzleSocketName);
+    }
+
+    const auto FireSound = AlternativeFireMode ? FXComponent->GetAlternativeFireSound() : FXComponent->GetMainFireSound();
+    if (FireSound)
+    {
+        UGameplayStatics::SpawnSoundAttached(FireSound, WeaponMesh, MuzzleSocketName);
+    }
+
+    FXComponent->MakeCameraShake();
+}
+
+AController* AShooterBaseWeaponActor::GetController() const
+{
+    const auto OwnerPawn = GetOwner<APawn>();
+    if (!OwnerPawn)
+        return nullptr;
+
+    return OwnerPawn->GetController();
+}
+
+FVector AShooterBaseWeaponActor::GetMuzzleLocation() const
+{
+    return WeaponMesh->GetSocketLocation(MuzzleSocketName);
+}
+
+FQuat AShooterBaseWeaponActor::GetMuzzleQuaternion() const
+{
+    return WeaponMesh->GetSocketQuaternion(MuzzleSocketName);
+}
+
+bool AShooterBaseWeaponActor::GetTraceData(FVector& TraceStart, FVector& TraceEnd) const
+{
+    FRotator ViewRotation;
+    if (!GetViewPoint(TraceStart, ViewRotation))
+        return false;
+
+    TraceEnd = TraceStart + GetShotDirection(ViewRotation.Vector()) * TraceMaxDistance;
+    return true;
+}
+
+bool AShooterBaseWeaponActor::MakeTrace(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd)
+{
+    FCollisionQueryParams CollisionParams;
+    CollisionParams.AddIgnoredActor(GetOwner());
+    CollisionParams.bReturnPhysicalMaterial = true;
+
+    return GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_BulletTrace, CollisionParams);
+}
+
+FVector AShooterBaseWeaponActor::GetShotDirection(const FVector& Direction) const
+{
+    const auto WeaponStatsData = AlternativeFireMode ? AlternativeWeaponStatsData : MainWeaponStatsData;
+    auto CurrentShotSpreadRange = WeaponStatsData.AIShotSpread;
+    if (GetController()->IsPlayerController() && GetOwner()->FindComponentByClass<UShooterWeaponComponent>())
+    {
+        const auto ZoomingNow = GetOwner()->FindComponentByClass<UShooterWeaponComponent>()->IsZoomingNow();
+        CurrentShotSpreadRange = ZoomingNow ? WeaponStatsData.AimedShotSpread : WeaponStatsData.ShotSpread;
+    }
+
+    float ConeHalfAngleRad = FMath::DegreesToRadians(CurrentShotSpreadRange.X / 2);
+    const auto HealthComponent = GetOwner()->FindComponentByClass<UShooterHealthComponent>();
+    if (HealthComponent)
+    {
+        const auto CurrentHealth = HealthComponent->GetHealth();
+        const auto CurrentShotSpread = FMath::GetMappedRangeValueClamped(FVector2D(100.0f, 1.0f), CurrentShotSpreadRange, CurrentHealth);
+        ConeHalfAngleRad = FMath::DegreesToRadians(CurrentShotSpread / 2);
+    }
+
+    return FMath::VRandCone(Direction, ConeHalfAngleRad);
+}
+
+bool AShooterBaseWeaponActor::CheckShotDirection(const FHitResult& HitResult) const
+{
+    const auto Radians = FMath::Acos(FVector::DotProduct(GetMuzzleQuaternion().GetForwardVector(), GetShotDirectionNormal(HitResult)));
+    const float Degries = FMath::RadiansToDegrees(Radians);
+    return Degries < MaxShotDirectionDegrees;
+}
+
+void AShooterBaseWeaponActor::SpawnBulletShell()
+{
+    const auto Transform = FTransform(FRotator(0, FMath::RandRange(0.0f, ShellDropRandomRotationRange), 0), GetShellWindowLocation());
+    const auto Shell = GetWorld()->SpawnActorDeferred<AShooterShellBaseActor>(BulletShellClass, Transform);
+    if (!Shell)
+        return;
+
+    const auto Direction = FMath::VRandCone(GetShellWindowQuaternion().GetForwardVector(), FMath::DegreesToRadians(ShellDropDirectionHalfAngle));
+    Shell->SetDropDirection(Direction);
+
+    Shell->FinishSpawning(Transform);
+}
+
+void AShooterBaseWeaponActor::MakeRecoil()
+{
+    if (!CalculateRecoil())
+        return;
+
+    GetWorldTimerManager().SetTimer(RecoilTimerHandle, this, &AShooterBaseWeaponActor::RecoilTimerTick, RecoilTimerRate, true);
+}
+
+void AShooterBaseWeaponActor::StopRecoilRecoverTimer()
+{
+    if (!GetWorldTimerManager().IsTimerActive(RecoilRecoverTimerHandle))
+        return;
+
+    GetWorldTimerManager().ClearTimer(RecoilRecoverTimerHandle);
+}
+
+FVector AShooterBaseWeaponActor::GetShellWindowLocation() const
+{
+    return WeaponMesh->GetSocketLocation(ShellWindowSocketName);
+}
+
+FQuat AShooterBaseWeaponActor::GetShellWindowQuaternion() const
+{
+    return WeaponMesh->GetSocketQuaternion(ShellWindowSocketName);
+}
+
+bool AShooterBaseWeaponActor::GetViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const
+{
+    if (!GetController())
+        return false;
+
+    GetController()->GetPlayerViewPoint(ViewLocation, ViewRotation);
+    return true;
+}
+
+FVector AShooterBaseWeaponActor::GetShotDirectionNormal(const FHitResult& HitResult) const
+{
+    return (HitResult.ImpactPoint - GetMuzzleLocation()).GetSafeNormal();
+}
+
+bool AShooterBaseWeaponActor::CalculateRecoil()
+{
+    const auto OwnerPawn = GetOwner<APawn>();
+    if (!OwnerPawn)
+        return false;
+
+    InitialControllerInputRotation = OwnerPawn->GetViewRotation();
+
+    const auto NumberOfTicks = RecoilTime / RecoilTimerRate;
+    CurrentPitchRecoil = FMath::RandRange(MinPitchRecoilMagnitude, MaxPitchRecoilMagnitude) / NumberOfTicks;
+    CurrentYawRecoil = FMath::RandRange(MinYawRecoilMagnitude, MaxYawRecoilMagnitude) / NumberOfTicks;
+
+    CurrentPitchRecoil /= OwnerPawn->GetController<APlayerController>()->InputPitchScale;
+    CurrentYawRecoil /= OwnerPawn->GetController<APlayerController>()->InputYawScale;
+
+    CurrentRecoverPitchRecoil = CurrentPitchRecoil / -RecoilRecoverScale;
+    CurrentRecoverYawRecoil = CurrentYawRecoil / -RecoilRecoverScale;
 
     return true;
 }
 
-// Debug
-void AShooterBaseWeaponActor::AmmoInfo()
+void AShooterBaseWeaponActor::RecoilTimerTick()
 {
-    FString AmmoInfo = "Ammo: " + FString::FromInt(CurrentAmmo.BulletsInClip) + " / ";
-    AmmoInfo += CurrentAmmo.InfiniteClips ? "Infinite" : FString::FromInt(CurrentAmmo.Clips);
+    GetOwner<APawn>()->AddControllerPitchInput(CurrentPitchRecoil);
+    GetOwner<APawn>()->AddControllerYawInput(CurrentYawRecoil);
 
-    UE_LOG(BaseWeaponLog, Display, TEXT("%s"), *AmmoInfo)
+    CurrentRecoilTime += RecoilTimerRate;
+    if (CurrentRecoilTime >= RecoilTime)
+    {
+        GetWorldTimerManager().ClearTimer(RecoilTimerHandle);
+        CurrentRecoilTime = 0.0f;
+
+        GetWorldTimerManager().SetTimer(RecoilRecoverTimerHandle, this, &AShooterBaseWeaponActor::RecoilRecoverTimerTick, RecoilTimerRate, true);
+    }
+}
+
+void AShooterBaseWeaponActor::RecoilRecoverTimerTick()
+{
+    const auto CurrentControllerInputRotation = GetOwner<APawn>()->GetViewRotation();
+    const auto Delta = UKismetMathLibrary::NormalizedDeltaRotator(CurrentControllerInputRotation, InitialControllerInputRotation);
+    if (Delta.Pitch >= MaxPitchRecoilMagnitude + RecoilRecoverPitchAdditionalOffset             //
+        || FMath::Abs(Delta.Yaw) >= MaxYawRecoilMagnitude + RecoilRecoverYawAdditionalOffset    //
+        || Delta.Pitch <= 0)
+    {
+        GetWorldTimerManager().ClearTimer(RecoilRecoverTimerHandle);
+        return;
+    }
+
+    GetOwner<APawn>()->AddControllerPitchInput(CurrentRecoverPitchRecoil);
+    GetOwner<APawn>()->AddControllerYawInput(CurrentRecoverYawRecoil);
 }

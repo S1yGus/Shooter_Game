@@ -17,7 +17,8 @@ public class Shooter_Game : ModuleRules
             "PhysicsCore",
             "GameplayTasks",
             "NavigationSystem",
-            "GameplayCameras"});
+            "GameplayCameras",
+            "SlateCore"});
 
         PrivateDependencyModuleNames.AddRange(new string[] { });
 

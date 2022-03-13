@@ -23,5 +23,5 @@ bool UShooterLocomotionCameraShake::IsZooming() const
     if (!WeaponComponent)
         return false;
 
-    return WeaponComponent->IsZooing();
+    return WeaponComponent->IsZoomingNow();
 }

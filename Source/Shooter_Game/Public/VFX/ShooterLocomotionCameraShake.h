@@ -12,6 +12,9 @@ class SHOOTER_GAME_API UShooterLocomotionCameraShake : public UMatineeCameraShak
     GENERATED_BODY()
 
 protected:
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+    float ZommedCameraShakeScale = 0.0f;
+
     UFUNCTION(BlueprintCallable)
     float GetPlayerVelocityNormalized() const;
 

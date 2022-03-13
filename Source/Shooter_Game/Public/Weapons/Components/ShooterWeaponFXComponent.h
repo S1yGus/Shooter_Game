@@ -7,10 +7,7 @@
 #include "ShooterCoreTypes.h"
 #include "ShooterWeaponFXComponent.generated.h"
 
-class UNiagaraSystem;
-class UParticleSystem;
 class UPhysicalMaterial;
-class UCameraShakeBase;
 class USoundCue;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -21,38 +18,32 @@ class SHOOTER_GAME_API UShooterWeaponFXComponent : public UActorComponent
 public:
     UShooterWeaponFXComponent();
 
-    void MakeImactFX(const FHitResult& HitResult);
+    void MakeImpactFX(const FHitResult& HitResult);
     void MakeTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
     void MakeCameraShake();
 
-    UParticleSystem* GetMuzzleFX() { return MuzzleFX; }
-    USoundCue* GetFireSound() { return FireSound; }
-    USoundCue* GetNoAmmoSound() { return NoAmmoSound; }
+    UParticleSystem* GetMainMuzzleFX() const { return MainWeaponFXData.MuzzleFX; }
+    USoundCue* GetMainFireSound() const { return MainWeaponFXData.FireSound; }
+
+    UParticleSystem* GetAlternativeMuzzleFX() const { return AlternativeWeaponFXData.MuzzleFX; }
+    USoundCue* GetAlternativeFireSound() const { return AlternativeWeaponFXData.FireSound; }
+
+    USoundCue* GetNoAmmoSound() const { return NoAmmoSound; }
+    USoundCue* GetSwitchModeSound() const { return SwitchModeSound; }
 
 protected:
-    virtual void BeginPlay() override;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    FWeaponFXData MainWeaponFXData;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    FImpactFXData DefaultImpactFXData;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    FWeaponFXData AlternativeWeaponFXData;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    TMap<UPhysicalMaterial*, FImpactFXData> ImpactFXDataMap;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    UNiagaraSystem* TraceFX;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     FName TraceEndVariableName = "TraceEnd";
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    UParticleSystem* MuzzleFX;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
-    TSubclassOf<UCameraShakeBase> CameraShakeClass;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
-    USoundCue* FireSound;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
     USoundCue* NoAmmoSound;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* SwitchModeSound;
 };

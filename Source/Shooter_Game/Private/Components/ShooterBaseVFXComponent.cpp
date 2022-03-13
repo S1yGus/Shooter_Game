@@ -6,6 +6,8 @@
 #include "Components/DecalComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "GameFramework/Character.h"
+#include "UI/ShooterImpactIndicatorActor.h"
+#include "Components/ShooterHealthComponent.h"
 
 UShooterBaseVFXComponent::UShooterBaseVFXComponent()
 {
@@ -55,6 +57,9 @@ void UShooterBaseVFXComponent::MakeFootstepVFX(const FFootstepNotifyData& Footst
 
     // Decal
     const auto FootstepDecalData = FootstepNotifyData.IsLeft ? FootstepFXData.FootstepDecalDataPair.Left : FootstepFXData.FootstepDecalDataPair.Right;
+    if (FootstepDecalData.Material.Num() == 0)
+        return;
+
     const int32 RandomDecalArrayIndex = FMath::RandHelper(FootstepDecalData.Material.Num());
     const auto SpawnDecalRotator = FRotator(-90, OwnerCharacter->GetMesh()->GetBoneQuaternion(CurrentBoneName).Rotator().Yaw, 0);
     auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(),                                           //
@@ -63,10 +68,32 @@ void UShooterBaseVFXComponent::MakeFootstepVFX(const FFootstepNotifyData& Footst
                                                                  HitResult.ImpactPoint,                                //
                                                                  SpawnDecalRotator);
 
-    if (DecalComponent)
+    if (!DecalComponent)
+        return;
+
+    DecalComponent->SetFadeOut(FootstepDecalData.LifeTime, FootstepDecalData.FadeOutTime);
+}
+
+void UShooterBaseVFXComponent::SpawnImpactIndicator(float DamageAmount, const FVector& HitLocation, UPhysicalMaterial* PhysicalMaterial)
+{
+    if (!ShowImpactIndicators || !ImpactIndicatorClass)
+        return;
+
+    if (!GetOwner()->FindComponentByClass<UShooterHealthComponent>() || GetOwner()->FindComponentByClass<UShooterHealthComponent>()->IsDead())
+        return;
+
+    FTransform SpawnTransform = FTransform(HitLocation);
+    const auto ImpactIndicator = GetWorld()->SpawnActorDeferred<AShooterImpactIndicatorActor>(ImpactIndicatorClass, SpawnTransform);
+    if (!ImpactIndicator)
+        return;
+
+    ImpactIndicator->SetDamageAmount(DamageAmount);
+    if (PhysicalMaterial)
     {
-        DecalComponent->SetFadeOut(FootstepDecalData.LifeTime, FootstepDecalData.FadeOutTime);
+        ImpactIndicator->SetImpactColor(PhysicalMaterial);
     }
+
+    ImpactIndicator->FinishSpawning(SpawnTransform);
 }
 
 void UShooterBaseVFXComponent::PlayDeathSound()
@@ -80,9 +107,6 @@ void UShooterBaseVFXComponent::PlayDeathSound()
 void UShooterBaseVFXComponent::BeginPlay()
 {
     Super::BeginPlay();
-
-    checkf(DefaultFootstepFXData.FootstepDecalDataPair.Left.Material.Num() != 0 && DefaultFootstepFXData.FootstepDecalDataPair.Right.Material.Num(),
-           TEXT("DefaultFootstepFXData must contains elements!"))
 }
 
 bool UShooterBaseVFXComponent::MakeFootstepTrace(const FVector& TraceStart, const FVector& TraceEnd, FHitResult& HitResult)

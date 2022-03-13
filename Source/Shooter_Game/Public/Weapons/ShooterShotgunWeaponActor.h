@@ -14,8 +14,8 @@ class SHOOTER_GAME_API AShooterShotgunWeaponActor : public AShooterBaseWeaponAct
 public:
     AShooterShotgunWeaponActor();
 
-    virtual void StartFire() override;
-    virtual void MakeShot() override;
+    virtual void MakeMainShot() override;
+    virtual void MakeAlternativeShot() override;
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))

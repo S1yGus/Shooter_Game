@@ -21,22 +21,25 @@ public:
     UShooterWeaponComponent();
 
     virtual void BeginPlay() override;
-
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     virtual void StartFire();
     void StopFire();
+
     void Zoom(bool Condition);
-    bool IsZooing() const { return ZoomingNow; };
+    bool IsZoomingNow() const { return ZoomingNow; }
+
+    void SwitchFireMode();
 
     virtual void NextWeapon();
+    void PreviousWeapon();
     void EquipWeapon(EWeaponType WeapontType);
     void ReloadWeapon();
     bool TryToAddAmmo(TSubclassOf<AShooterBaseWeaponActor> WeaponClass, int32 ClipsAmount);
     bool TryToAddWeapon(const FWeaponData& NewWeaponData);
 
-    bool GetCurrentWeaponUIData(FWeaponUIData& Data);
-    bool GetCurrentWeaponAmmoData(FAmmoData& Data);
+    bool GetCurrentWeaponUIData(FWeaponUIData& Data) const;
+    bool GetCurrentWeaponAmmoData(FAmmoData& Data) const;
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
@@ -65,14 +68,17 @@ private:
 
     bool EquipMontageInProgress = false;
     bool ReloadMontageInProgress = false;
-    bool ZoomingNow = false;
 
-    float DefaultFOVAngle = 90.0f;
-    float ZoomFOVAngle = DefaultFOVAngle;
-    float TargetFOVAngle;
     FTimerHandle ZoomTimerHandle;
+    bool ZoomingNow = false;
+    float DefaultFOVAngle = 0.0f;
+    float TargetFOVAngle = 90.0f;
+
+    bool GetCurrentFOV(float& CurrentFOV);
+    void ZoomTick();
 
     APlayerController* GetPlayerController() const;
+    TArray<AShooterBaseWeaponActor*> GetWeaponsMapValueArray() const;
     void SpawnWeapons();
     bool SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> WeaponClass);
     void AttachToSocket(AShooterBaseWeaponActor* Weapon, USceneComponent* ScenComponent, FName SocketName);
@@ -83,5 +89,4 @@ private:
     bool CanReload() const;
     void OnClipEmpty();
     void ChangeClip();
-    void ZoomTick();
 };

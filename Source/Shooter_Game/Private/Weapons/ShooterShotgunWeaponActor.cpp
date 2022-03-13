@@ -11,24 +11,19 @@ AShooterShotgunWeaponActor::AShooterShotgunWeaponActor() : AShooterBaseWeaponAct
     WeaponType = EWeaponType::Shotgun;
 }
 
-void AShooterShotgunWeaponActor::StartFire()
-{
-    MakeShot();
-}
-
-void AShooterShotgunWeaponActor::MakeShot()
+void AShooterShotgunWeaponActor::MakeMainShot()
 {
     if (IsClipEmpty())
     {
         StopFire();
 
-        if (!IsAmmoEmpty())
+        if (IsAmmoEmpty())
         {
-            OnClipEmpty.Broadcast();
+            UGameplayStatics::PlaySoundAtLocation(GetWorld(), FXComponent->GetNoAmmoSound(), GetActorLocation());
         }
         else
         {
-            UGameplayStatics::PlaySoundAtLocation(GetWorld(), FXComponent->GetNoAmmoSound(), GetActorLocation());
+            OnClipEmpty.Broadcast();
         }
 
         return;
@@ -41,6 +36,16 @@ void AShooterShotgunWeaponActor::MakeShot()
 
     DecreaseAmmo();
 
-    FXComponent->MakeCameraShake();
+    SpawnBulletShell();
     MakeFX();
+    if (GetController()->IsPlayerController())
+    {
+        StopRecoilRecoverTimer();
+        MakeRecoil();
+    }
+}
+
+void AShooterShotgunWeaponActor::MakeAlternativeShot()
+{
+    MakeMainShot();
 }

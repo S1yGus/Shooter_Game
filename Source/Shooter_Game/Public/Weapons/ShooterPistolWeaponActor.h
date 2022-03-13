@@ -14,5 +14,8 @@ class SHOOTER_GAME_API AShooterPistolWeaponActor : public AShooterBaseWeaponActo
 public:
     AShooterPistolWeaponActor();
 
-    virtual void StartFire() override;
+protected:
+    virtual void CalculateOneShot() override;
+
+    void DealDamage(const FHitResult& HitResult);
 };

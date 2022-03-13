@@ -51,7 +51,7 @@ protected:
     float HealModifier = 1.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
-    TMap<UPhysicalMaterial*, float> DamageModifiers;
+    TMap<UPhysicalMaterial*, float> DamageModifiersMap;
 
     virtual void BeginPlay() override;
 
@@ -76,4 +76,5 @@ private:
     void SetHealth(float NewHealth);
     bool IsCompletelyHealthy();
     void Killed(AController* KillerController, AController* VictimController);
+    void SpawnImpactIndicator(AActor* DamagedActor, float DamageAmount, const FVector& HitLocation, UPhysicalMaterial* PhysicalMaterial = nullptr);
 };

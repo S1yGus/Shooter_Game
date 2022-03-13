@@ -8,6 +8,8 @@
 #include "ShooterBaseVFXComponent.generated.h"
 
 class USoundCue;
+class AShooterImpactIndicatorActor;
+class UPhysicalMaterial;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTER_GAME_API UShooterBaseVFXComponent : public UActorComponent
@@ -18,9 +20,16 @@ public:
     UShooterBaseVFXComponent();
 
     void MakeFootstepVFX(const FFootstepNotifyData& FootstepNotifyData);
+    void SpawnImpactIndicator(float DamageAmount, const FVector& HitLocation, UPhysicalMaterial* PhysicalMaterial);
     void PlayDeathSound();
 
 protected:
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    bool ShowImpactIndicators = true;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX", Meta = (EditCondition = "ShowImpactIndicators"))
+    TSubclassOf<AShooterImpactIndicatorActor> ImpactIndicatorClass;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX|Footsteps")
     FName RightFootBoneName = "b_RightToeBase";
 

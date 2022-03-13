@@ -2,7 +2,6 @@
 
 #include "Components/ShooterWeaponComponent.h"
 #include "Weapons/ShooterBaseWeaponActor.h"
-#include "GameFramework/Character.h"
 #include "Animations/ShooterEquipFinishedAnimNotify.h"
 #include "Animations/ShooterReloadFinishedAnimNotify.h"
 #include "Player/ShooterBaseCharacter.h"
@@ -10,8 +9,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
-constexpr static float ZoomTimerRate = 0.01f;
-constexpr static float ZoomChangeSpeed = 10.0f;
+constexpr static float ZoomTimerRate = 0.007f;
+constexpr static float ZoomChangeSpeed = 12.0f;
 
 UShooterWeaponComponent::UShooterWeaponComponent()
 {
@@ -24,9 +23,7 @@ void UShooterWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
     CurrentWeapon = nullptr;
 
-    TArray<AShooterBaseWeaponActor*> WeaponsArray;
-    WeaponsMap.GenerateValueArray(WeaponsArray);
-    for (auto Weapon : WeaponsArray)
+    for (auto Weapon : GetWeaponsMapValueArray())
     {
         Weapon->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
         Weapon->Destroy();
@@ -53,26 +50,34 @@ void UShooterWeaponComponent::StopFire()
 
 void UShooterWeaponComponent::Zoom(bool Condition)
 {
+    if (!CurrentWeapon || !CurrentWeapon->IsCanZoom())
+        return;
+
+    if (!GetPlayerController() || !GetPlayerController()->PlayerCameraManager)
+        return;
+
+    if (!GetOwner<AShooterBaseCharacter>() || GetOwner<AShooterBaseCharacter>()->IsSprinting())
+        return;
+
+    if (!DefaultFOVAngle)
+        if (!GetCurrentFOV(DefaultFOVAngle))
+            return;
+
+    TargetFOVAngle = Condition ? CurrentWeapon->GetZoomFOVAngle() : DefaultFOVAngle;
+    ZoomingNow = Condition;
+
+    if (GetWorld()->GetTimerManager().IsTimerActive(ZoomTimerHandle))
+        return;
+
+    GetWorld()->GetTimerManager().SetTimer(ZoomTimerHandle, this, &UShooterWeaponComponent::ZoomTick, ZoomTimerRate, true);
+}
+
+void UShooterWeaponComponent::SwitchFireMode()
+{
     if (!CurrentWeapon)
         return;
 
-    const auto PlayerController = GetPlayerController();
-    if (!PlayerController || !PlayerController->PlayerCameraManager)
-        return;
-
-    if (!CurrentWeapon->GetZoomFOV(ZoomFOVAngle))
-        return;
-
-    if (GetOwner<AShooterBaseCharacter>()->IsSprinting())
-        return;
-
-    ZoomingNow = Condition;
-    TargetFOVAngle = Condition ? ZoomFOVAngle : DefaultFOVAngle;
-
-    if (!ZoomTimerHandle.IsValid())
-    {
-        GetWorld()->GetTimerManager().SetTimer(ZoomTimerHandle, this, &UShooterWeaponComponent::ZoomTick, ZoomTimerRate, true);
-    }
+    CurrentWeapon->SwitchFireMode();
 }
 
 void UShooterWeaponComponent::NextWeapon()
@@ -80,7 +85,7 @@ void UShooterWeaponComponent::NextWeapon()
     if (!CanEquip() || WeaponsMap.Num() == 0)
         return;
 
-    CurrentWeaponIndex = (CurrentWeaponIndex + 1) % StaticCast<int32>(EWeaponType::Max);
+    CurrentWeaponIndex = ++CurrentWeaponIndex % StaticCast<int32>(EWeaponType::Max);
     if (WeaponsMap.Contains(StaticCast<EWeaponType>(CurrentWeaponIndex)))
     {
         EquipWeapon(StaticCast<EWeaponType>(CurrentWeaponIndex));
@@ -90,13 +95,29 @@ void UShooterWeaponComponent::NextWeapon()
     NextWeapon();
 }
 
-void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
+void UShooterWeaponComponent::PreviousWeapon()
 {
-    if (!WeaponsMap.Contains(WeapontType) || !CanEquip())
+    if (!CanEquip() || WeaponsMap.Num() == 0)
         return;
 
-    ACharacter* Character = GetOwner<ACharacter>();
-    if (!Character)
+    --CurrentWeaponIndex;
+    if (CurrentWeaponIndex == -1)
+    {
+        CurrentWeaponIndex = StaticCast<int32>(EWeaponType::Max) - 1;
+    }
+    CurrentWeaponIndex %= StaticCast<int32>(EWeaponType::Max);
+    if (WeaponsMap.Contains(StaticCast<EWeaponType>(CurrentWeaponIndex)))
+    {
+        EquipWeapon(StaticCast<EWeaponType>(CurrentWeaponIndex));
+        return;
+    }
+
+    PreviousWeapon();
+}
+
+void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
+{
+    if (!WeaponsMap.Contains(WeapontType) || !CanEquip() || !GetOwner<ACharacter>())
         return;
 
     if (CurrentWeapon)
@@ -107,14 +128,13 @@ void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
         StopFire();
         Zoom(false);
 
-        AttachToSocket(CurrentWeapon, Character->GetMesh(), CurrentWeapon->GetArmorySocketName());
+        AttachToSocket(CurrentWeapon, GetOwner<ACharacter>()->GetMesh(), CurrentWeapon->GetArmorySocketName());
     }
 
     CurrentWeapon = WeaponsMap[WeapontType];
-    AttachToSocket(CurrentWeapon, Character->GetMesh(), WeaponEquipSocketName);
+    AttachToSocket(CurrentWeapon, GetOwner<ACharacter>()->GetMesh(), WeaponEquipSocketName);
 
     const auto CurrentWeaponData = WeaponData.FindByPredicate([&](const FWeaponData& Data) { return Data.WeaponClass == CurrentWeapon->GetClass(); });
-
     CurrentReloadAnimMontage = CurrentWeaponData->ReloadAnimMontage;
 
     EquipMontageInProgress = true;
@@ -128,9 +148,7 @@ void UShooterWeaponComponent::ReloadWeapon()
 
 bool UShooterWeaponComponent::TryToAddAmmo(TSubclassOf<AShooterBaseWeaponActor> WeaponClass, int32 ClipsAmount)
 {
-    TArray<AShooterBaseWeaponActor*> WeaponsArray;
-    WeaponsMap.GenerateValueArray(WeaponsArray);
-    for (const auto Weapon : WeaponsArray)
+    for (const auto Weapon : GetWeaponsMapValueArray())
     {
         if (Weapon->IsA(WeaponClass))
         {
@@ -143,13 +161,19 @@ bool UShooterWeaponComponent::TryToAddAmmo(TSubclassOf<AShooterBaseWeaponActor> 
 
 bool UShooterWeaponComponent::TryToAddWeapon(const FWeaponData& NewWeaponData)
 {
-    TArray<AShooterBaseWeaponActor*> WeaponsArray;
-    WeaponsMap.GenerateValueArray(WeaponsArray);
-    for (const auto Weapon : WeaponsArray)
+    for (const auto Weapon : GetWeaponsMapValueArray())
     {
         if (Weapon->GetClass() == NewWeaponData.WeaponClass)
         {
-            return false;
+            if (Weapon->IsNumberOfClipsMax())
+            {
+                return false;
+            }
+            else
+            {
+                Weapon->RestoreMaxNumberOfClips();
+                return true;
+            }
         }
     }
 
@@ -170,7 +194,7 @@ bool UShooterWeaponComponent::TryToAddWeapon(const FWeaponData& NewWeaponData)
     return true;
 }
 
-bool UShooterWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& Data)
+bool UShooterWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& Data) const
 {
     if (!CurrentWeapon)
         return false;
@@ -179,7 +203,7 @@ bool UShooterWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& Data)
     return true;
 }
 
-bool UShooterWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& Data)
+bool UShooterWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& Data) const
 {
     if (!CurrentWeapon)
         return false;
@@ -197,22 +221,19 @@ void UShooterWeaponComponent::BeginPlay()
     BindNotifys();
 
     SpawnWeapons();
-    EquipWeapon(EWeaponType::Pistol);
-
-    const auto PlayerController = GetPlayerController();
-    if (PlayerController && PlayerController->PlayerCameraManager)
-    {
-        DefaultFOVAngle = PlayerController->PlayerCameraManager->GetFOVAngle();
-    }
+    NextWeapon();
 }
 
 APlayerController* UShooterWeaponComponent::GetPlayerController() const
 {
-    const auto PlayerPawn = Cast<APawn>(GetOwner());
-    if (!PlayerPawn)
-        return nullptr;
+    return GetOwner<APawn>() ? GetOwner<APawn>()->GetController<APlayerController>() : nullptr;
+}
 
-    return Cast<APlayerController>(PlayerPawn->GetController());
+TArray<AShooterBaseWeaponActor*> UShooterWeaponComponent::GetWeaponsMapValueArray() const
+{
+    TArray<AShooterBaseWeaponActor*> WeaponsArray;
+    WeaponsMap.GenerateValueArray(WeaponsArray);
+    return WeaponsArray;
 }
 
 void UShooterWeaponComponent::SpawnWeapons()
@@ -225,8 +246,7 @@ void UShooterWeaponComponent::SpawnWeapons()
 
 bool UShooterWeaponComponent::SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> WeaponClass)
 {
-    ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character)
+    if (!GetOwner<ACharacter>())
         return false;
 
     const auto Weapon = GetWorld()->SpawnActor<AShooterBaseWeaponActor>(WeaponClass);
@@ -234,10 +254,28 @@ bool UShooterWeaponComponent::SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> W
         return false;
 
     Weapon->OnClipEmpty.AddUObject(this, &UShooterWeaponComponent::OnClipEmpty);
-    Weapon->SetOwner(Character);
-    WeaponsMap.Add(Weapon->GetWeaponType(), Weapon);
+    Weapon->SetOwner(GetOwner());
 
-    AttachToSocket(Weapon, Character->GetMesh(), Weapon->GetArmorySocketName());
+    if (WeaponsMap.Contains(Weapon->GetWeaponType()))
+    {
+        if (CurrentWeapon->GetWeaponType() == Weapon->GetWeaponType())
+        {
+            CurrentWeapon = nullptr;
+            EquipMontageInProgress = false;
+            ReloadMontageInProgress = false;
+        }
+
+        WeaponsMap[Weapon->GetWeaponType()]->DetachFromActor(FDetachmentTransformRules::KeepWorldTransform);
+        WeaponsMap[Weapon->GetWeaponType()]->Destroy();
+    }
+
+    WeaponsMap.Add(Weapon->GetWeaponType(), Weapon);
+    AttachToSocket(Weapon, GetOwner<ACharacter>()->GetMesh(), Weapon->GetArmorySocketName());
+
+    if (!CurrentWeapon)
+    {
+        EquipWeapon(Weapon->GetWeaponType());
+    }
 
     return true;
 }
@@ -253,11 +291,10 @@ void UShooterWeaponComponent::AttachToSocket(AShooterBaseWeaponActor* Weapon, US
 
 void UShooterWeaponComponent::PlayAnimMontage(UAnimMontage* AnimMontage)
 {
-    ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character)
+    if (!GetOwner<ACharacter>())
         return;
 
-    Character->PlayAnimMontage(AnimMontage);
+    GetOwner<ACharacter>()->PlayAnimMontage(AnimMontage);
 }
 
 void UShooterWeaponComponent::BindNotifys()
@@ -280,8 +317,7 @@ void UShooterWeaponComponent::BindNotifys()
 
 void UShooterWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComp)
 {
-    ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character && Character->GetMesh() == MeshComp)
+    if (!GetOwner<ACharacter>() && GetOwner<ACharacter>()->GetMesh() == MeshComp)
         return;
 
     EquipMontageInProgress = false;
@@ -289,8 +325,7 @@ void UShooterWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComp)
 
 void UShooterWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComp)
 {
-    ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character || Character->GetMesh() != MeshComp)
+    if (!GetOwner<ACharacter>() || GetOwner<ACharacter>()->GetMesh() != MeshComp)
         return;
 
     ReloadMontageInProgress = false;
@@ -298,11 +333,10 @@ void UShooterWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComp)
 
 bool UShooterWeaponComponent::CanFire() const
 {
-    AShooterBaseCharacter* Character = Cast<AShooterBaseCharacter>(GetOwner());
-    if (!Character)
+    if (!GetOwner<AShooterBaseCharacter>())
         return false;
 
-    return CurrentWeapon && !EquipMontageInProgress && !ReloadMontageInProgress && !Character->IsSprinting();
+    return CurrentWeapon && !EquipMontageInProgress && !ReloadMontageInProgress && !GetOwner<AShooterBaseCharacter>()->IsSprinting();
 }
 
 bool UShooterWeaponComponent::CanEquip() const
@@ -331,14 +365,22 @@ void UShooterWeaponComponent::ChangeClip()
     PlayAnimMontage(CurrentReloadAnimMontage);
 }
 
+bool UShooterWeaponComponent::GetCurrentFOV(float& CurrentFOV)
+{
+    if (!GetPlayerController() || !GetPlayerController()->PlayerCameraManager)
+        return false;
+
+    CurrentFOV = GetPlayerController()->PlayerCameraManager->GetFOVAngle();
+    return true;
+}
+
 void UShooterWeaponComponent::ZoomTick()
 {
-    const auto PlayerController = GetPlayerController();
-    if (!PlayerController)
+    if (!GetPlayerController() || !GetPlayerController()->PlayerCameraManager)
         return;
 
-    const float NewFOVAngle = FMath::FInterpTo(PlayerController->PlayerCameraManager->GetFOVAngle(), TargetFOVAngle, ZoomTimerRate, ZoomChangeSpeed);
-    PlayerController->PlayerCameraManager->SetFOV(NewFOVAngle);
+    const auto NewFOVAngle = FMath::FInterpTo(GetPlayerController()->PlayerCameraManager->GetFOVAngle(), TargetFOVAngle, ZoomTimerRate, ZoomChangeSpeed);
+    GetPlayerController()->PlayerCameraManager->SetFOV(NewFOVAngle);
 
     if (FMath::IsNearlyEqual(NewFOVAngle, TargetFOVAngle))
     {

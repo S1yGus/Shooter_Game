@@ -12,6 +12,8 @@ DEFINE_LOG_CATEGORY_STATIC(BaseWeaponLog, All, All)
 class USkeletalMeshComponent;
 class AShooterBaseCharacter;
 class UShooterWeaponFXComponent;
+class AShooterProjectileBaseActor;
+class AShooterShellBaseActor;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterBaseWeaponActor : public AActor
@@ -19,25 +21,31 @@ class SHOOTER_GAME_API AShooterBaseWeaponActor : public AActor
     GENERATED_BODY()
 
 public:
+    FOnClipEmptySignature OnClipEmpty;
+
     AShooterBaseWeaponActor();
 
     virtual void StartFire();
     virtual void StopFire();
-    bool GetZoomFOV(float& ZoomFOV) const;
+
+    bool IsCanZoom() const { return CanZoom; };
+    float GetZoomFOVAngle() const { return ZoomFOVAngle; }
+
+    void SwitchFireMode();
+    bool IsFireModeAlternative() const { return AlternativeFireMode; }
 
     bool ReloadClip();
-    bool IsNumberOfClipsMax() const;
-    bool TryToAddAmmo(int32 ClipsAmount);
     bool IsAmmoEmpty() const;
+    bool IsNumberOfClipsMax() const;
+    void RestoreMaxNumberOfClips() { CurrentAmmo.Clips = DefaultAmmo.Clips; };
+    bool TryToAddAmmo(int32 ClipsAmount);
 
     FName GetArmorySocketName() const { return WeaponArmorySocketName; }
     FWeaponUIData GetUIData() const { return UIData; }
     FAmmoData GetAmmoData() const { return CurrentAmmo; }
     EWeaponType GetWeaponType() const { return WeaponType; }
-    float GetOptimalAttackDistance() const;
-    float GetMaxAttackDistance() const;
-
-    FOnClipEmptySignature OnClipEmpty;
+    float GetOptimalAttackDistance() const { return OptimalDistance; };
+    float GetMaxAttackDistance() const { return TraceMaxDistance; };
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
@@ -49,11 +57,20 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     EWeaponType WeaponType;
 
+    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Weapon", Meta = (EditCondition = "WeaponType != EWeaponType::Pistol"))
+    TSubclassOf<AShooterProjectileBaseActor> ProjectileClass;
+
+    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Weapon", Meta = (EditCondition = "WeaponType != EWeaponType::Pistol"))
+    TSubclassOf<AShooterShellBaseActor> BulletShellClass;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FAmmoData DefaultAmmo;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FName MuzzleSocketName = "MuzzleSocket";
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    FName ShellWindowSocketName = "ShellWindowSocket";
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FName WeaponArmorySocketName = "WeaponArmoryRifleSocket";
@@ -64,50 +81,96 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
     float OptimalDistance = 0.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
-    float MinDamage = 10.0f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    FWeaponStatsData MainWeaponStatsData;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
-    float MaxDamage = 15.0f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    FWeaponStatsData AlternativeWeaponStatsData;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
-    FVector2D ShotSpread = FVector2D(3.0f, 10.0f);
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    bool HasAlternativeFireMode = false;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
-    FVector2D AIShotSpread = FVector2D(3.0f, 10.0f);
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|Zoom")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
     bool CanZoom = true;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon|Zoom", Meta = (EditCondition = "CanZoom"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom", Meta = (EditCondition = "CanZoom"))
     float ZoomFOVAngle = 70.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    float MinPitchRecoilMagnitude = 2.5f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    float MaxPitchRecoilMagnitude = 2.5f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    float MinYawRecoilMagnitude = -0.5f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    float MaxYawRecoilMagnitude = 0.5f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    float RecoilTime = 0.1f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    float RecoilTimerRate = 0.007f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    float RecoilRecoverScale = 4.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    float RecoilRecoverPitchAdditionalOffset = 0.5f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    float RecoilRecoverYawAdditionalOffset = 2.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     FWeaponUIData UIData;
 
+    bool AlternativeFireMode = false;
+
     virtual void BeginPlay() override;
 
-    virtual void MakeShot();
+    virtual void MakeMainShot();
+    virtual void MakeAlternativeShot();
     virtual void CalculateOneShot();
 
     virtual void MakeFX();
 
     AController* GetController() const;
-    bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
-    bool MakeTrace(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
     FVector GetMuzzleLocation() const;
     FQuat GetMuzzleQuaternion() const;
+    bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
+    bool MakeTrace(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
     FVector GetShotDirection(const FVector& Direction) const;
     bool CheckShotDirection(const FHitResult& HitResult) const;
-    void DealDamage(const FHitResult& HitResult);
-    bool IsClipEmpty() const;
-    void DecreaseAmmo();
-    void AmmoInfo();
+
+    bool IsClipEmpty() const { return CurrentAmmo.BulletsInClip == 0; };
+    void DecreaseAmmo() { --CurrentAmmo.BulletsInClip; };
+
+    void SpawnBulletShell();
+
+    void MakeRecoil();
+    void StopRecoilRecoverTimer();
 
 private:
     FAmmoData CurrentAmmo;
 
-    APawn* GetOwnerPawn() const;
+    FTimerHandle RecoilTimerHandle;
+    FTimerHandle RecoilRecoverTimerHandle;
+    FRotator InitialControllerInputRotation;
+    float CurrentRecoilTime = 0.0f;
+    float CurrentPitchRecoil = 0.0f;
+    float CurrentYawRecoil = 0.0f;
+    float CurrentRecoverPitchRecoil = 0.0f;
+    float CurrentRecoverYawRecoil = 0.0f;
+
+    FVector GetShellWindowLocation() const;
+    FQuat GetShellWindowQuaternion() const;
+
     bool GetViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
     FVector GetShotDirectionNormal(const FHitResult& HitResult) const;
+
+    bool CalculateRecoil();
+    void RecoilTimerTick();
+    void RecoilRecoverTimerTick();
 };

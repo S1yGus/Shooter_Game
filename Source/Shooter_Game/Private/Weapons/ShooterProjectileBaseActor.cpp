@@ -3,9 +3,12 @@
 #include "Weapons/ShooterProjectileBaseActor.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "DrawDebugHelpers.h"
+#include "Weapons/ShooterBaseWeaponActor.h"
 #include "Weapons/Components/ShooterWeaponFXComponent.h"
+#include "Components/ShooterWeaponComponent.h"
+#include "Kismet/GameplayStatics.h"
+
+#define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel3
 
 AShooterProjectileBaseActor::AShooterProjectileBaseActor()
 {
@@ -14,24 +17,23 @@ AShooterProjectileBaseActor::AShooterProjectileBaseActor()
     SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
     SphereComponent->SetSphereRadius(5.0f);
     SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    SphereComponent->SetCollisionObjectType(ECC_Projectile);
     SphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+    SphereComponent->SetCollisionResponseToChannel(ECC_Projectile, ECollisionResponse::ECR_Ignore);
     SphereComponent->bReturnMaterialOnMove = true;
     SetRootComponent(SphereComponent);
 
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovment");
-    ProjectileMovement->InitialSpeed = 3000.0f;
+    ProjectileMovement->InitialSpeed = 10000.0f;
     ProjectileMovement->ProjectileGravityScale = 0.3f;
-
-    FXComponent = CreateDefaultSubobject<UShooterWeaponFXComponent>("FXComponent");
 }
 
 void AShooterProjectileBaseActor::BeginPlay()
 {
     Super::BeginPlay();
 
-    check(ProjectileMovement);
     check(SphereComponent);
-    check(CameraShakeClass);
+    check(ProjectileMovement);
 
     SphereComponent->OnComponentHit.AddDynamic(this, &AShooterProjectileBaseActor::OnProjectileHit);
     // SphereComponent->IgnoreActorWhenMoving(GetOwner(), true);
@@ -46,34 +48,31 @@ void AShooterProjectileBaseActor::OnProjectileHit(UPrimitiveComponent* HitCompon
                                                   FVector NormalImpulse,                //
                                                   const FHitResult& Hit)
 {
+    if (!Hit.GetActor())
+        return;
+
     ProjectileMovement->StopMovementImmediately();
-    UGameplayStatics::ApplyRadialDamage(GetWorld(),                    //
-                                        DamageAmount,                  //
-                                        GetActorLocation(),            //
-                                        DamageRadius,                  //
-                                        UDamageType::StaticClass(),    //
-                                        {},                            //
-                                        this,                          //
-                                        GetController(),               //
-                                        DoFullDamage);
-    //DrawDebugSphere(GetWorld(), GetActorLocation(), DamageRadius, 20, FColor::Purple, false, 2.0f);
-    FXComponent->MakeImactFX(Hit);
-    MakeCameraShake();
+
+    FPointDamageEvent DamageEvent;
+    DamageEvent.HitInfo = Hit;
+    Hit.GetActor()->TakeDamage(DamageAmount, DamageEvent, GetPawnController(), this);
+
+    MakeImpactFX(Hit);
 
     Destroy();
 }
 
-AController* AShooterProjectileBaseActor::GetController() const
+void AShooterProjectileBaseActor::MakeImpactFX(const FHitResult& HitResult)
 {
-    APawn* Pawn = Cast<APawn>(GetOwner());
-
-    return Pawn ? Pawn->GetController() : nullptr;
-}
-
-void AShooterProjectileBaseActor::MakeCameraShake()
-{
-    if (!CameraShakeClass)
+    const auto WeaponFXComponent = GetOwner()->FindComponentByClass<UShooterWeaponFXComponent>();
+    if (!WeaponFXComponent)
         return;
 
-    UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShakeClass, GetActorLocation(), 0, DamageRadius * 10);
+    WeaponFXComponent->MakeImpactFX(HitResult);
+}
+
+AController* AShooterProjectileBaseActor::GetPawnController() const
+{
+    const auto Pawn = GetOwner()->GetOwner<APawn>();
+    return Pawn ? Pawn->GetController() : nullptr;
 }

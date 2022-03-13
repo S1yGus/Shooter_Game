@@ -6,8 +6,6 @@
 #include "Weapons/ShooterBaseWeaponActor.h"
 #include "ShooterLauncherWeaponActor.generated.h"
 
-class AShooterProjectileBaseActor;
-
 UCLASS()
 class SHOOTER_GAME_API AShooterLauncherWeaponActor : public AShooterBaseWeaponActor
 {
@@ -15,12 +13,4 @@ class SHOOTER_GAME_API AShooterLauncherWeaponActor : public AShooterBaseWeaponAc
 
 public:
     AShooterLauncherWeaponActor();
-
-    virtual void StartFire() override;
-
-protected:
-    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Weapon")
-    TSubclassOf<AShooterProjectileBaseActor> ProjectileClass;
-
-    virtual void CalculateOneShot() override;
 };

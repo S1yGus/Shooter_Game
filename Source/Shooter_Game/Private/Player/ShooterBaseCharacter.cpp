@@ -35,11 +35,6 @@ void AShooterBaseCharacter::BeginPlay()
     LandedDelegate.AddDynamic(this, &AShooterBaseCharacter::OnGroundLanded);
 }
 
-void AShooterBaseCharacter::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
-}
-
 void AShooterBaseCharacter::TurnOff()
 {
     Super::TurnOff();
