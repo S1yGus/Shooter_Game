@@ -156,13 +156,13 @@ private:
     FAmmoData CurrentAmmo;
 
     FTimerHandle RecoilTimerHandle;
-    FTimerHandle RecoilRecoverTimerHandle;
+    FTimerHandle RecoilRecoveryTimerHandle;
     FRotator InitialControllerInputRotation;
     float CurrentRecoilTime = 0.0f;
     float CurrentPitchRecoil = 0.0f;
     float CurrentYawRecoil = 0.0f;
-    float CurrentRecoverPitchRecoil = 0.0f;
-    float CurrentRecoverYawRecoil = 0.0f;
+    float CurrentRecoveryPitchRecoil = 0.0f;
+    float CurrentRecoveryYawRecoil = 0.0f;
 
     FVector GetShellWindowLocation() const;
     FQuat GetShellWindowQuaternion() const;
@@ -172,5 +172,5 @@ private:
 
     bool CalculateRecoil();
     void RecoilTimerTick();
-    void RecoilRecoverTimerTick();
+    void RecoilRecoveryTimerTick();
 };

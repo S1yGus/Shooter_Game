@@ -5,10 +5,10 @@
 
 void UShooterButtonUserWidget::NativeOnInitialized()
 {
-    if (Button)
-    {
-        Button->OnClicked.AddDynamic(this, &UShooterButtonUserWidget::OnClicked);
-    }
+    if (!Button)
+        return;
+
+    Button->OnClicked.AddDynamic(this, &UShooterButtonUserWidget::OnClicked);
 }
 
 void UShooterButtonUserWidget::OnClicked()

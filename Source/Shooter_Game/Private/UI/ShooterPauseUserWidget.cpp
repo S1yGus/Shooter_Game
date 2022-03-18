@@ -9,10 +9,10 @@ void UShooterPauseUserWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
 
-    if (ClearPauseButton)
-    {
-        ClearPauseButton->OnClickedButton.AddDynamic(this, &UShooterPauseUserWidget::OnClearPause);
-    }
+    if (!ClearPauseButton)
+        return;
+
+    ClearPauseButton->OnClickedButton.AddDynamic(this, &UShooterPauseUserWidget::OnClearPause);
 }
 
 void UShooterPauseUserWidget::OnClearPause()

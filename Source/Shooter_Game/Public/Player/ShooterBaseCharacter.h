@@ -7,9 +7,9 @@
 #include "ShooterBaseCharacter.generated.h"
 
 class UShooterHealthComponent;
+class UShooterStaminaComponent;
 class UShooterWeaponComponent;
 class UShooterBaseVFXComponent;
-class AShooterBaseWeaponActor;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
@@ -22,6 +22,7 @@ public:
     virtual void BeginPlay() override;
     virtual void TurnOff() override;
     virtual void Reset() override;
+    virtual void Jump() override;
 
     void SetColor(const FLinearColor& Color);
 
@@ -31,21 +32,33 @@ public:
     UFUNCTION(BlueprintCallable, Category = "Movement")
     float GetMovementDirection() const;
 
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    FRotator GetViewDeltaRotator() const;
+
 protected:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "500", ClampMax = "800"))
-    float NormalWalkSpeed = 800.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "800", ClampMax = "1400"))
-    float SprintWalkSpeed = 1400.0f;
-
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterHealthComponent* HealthComponent;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UShooterStaminaComponent* StaminaComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterWeaponComponent* WeaponComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterBaseVFXComponent* VFXComponent;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "500.0", ClampMax = "800.0"))
+    float NormalWalkSpeed = 800.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "800.0", ClampMax = "1400.0"))
+    float SprintWalkSpeed = 1400.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "0.1", ClampMax = "100.0"))
+    float JumpStaminaCost = 20.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "-0.1", ClampMax = "-100.0"))
+    float SprintStaminaFlow = -2.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     float LifeSpanOnDeath = 5.0f;
@@ -65,7 +78,11 @@ protected:
     UFUNCTION()
     virtual void OnHealthChanged(float Health);
 
+    void StartSprint();
+    void StopSprint();
+
     virtual void OnDeath();
+    virtual void OnOutOfStamina();
 
 private:
     UFUNCTION()

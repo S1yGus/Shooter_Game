@@ -38,10 +38,10 @@ void UShooterPlayerInfoRowUserWidget::SetTeamTextBlock(const FText& NewText)
 
 void UShooterPlayerInfoRowUserWidget::SetTeamColorImage(const FLinearColor& NewColor)
 {
-    if (TeamColorImage)
-    {
-        TeamColorImage->SetColorAndOpacity(NewColor);
-    }
+    if (!TeamColorImage)
+        return;
+
+    TeamColorImage->SetColorAndOpacity(NewColor);
 }
 
 void UShooterPlayerInfoRowUserWidget::SetPlayerHighlighting(bool IsHighlighting)

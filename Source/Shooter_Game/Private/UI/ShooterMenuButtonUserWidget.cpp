@@ -9,10 +9,10 @@ void UShooterMenuButtonUserWidget::NativeOnInitialized()
 {
     Super::NativeOnInitialized();
 
-    if (MainMenuButton)
-    {
-        MainMenuButton->OnClickedButton.AddDynamic(this, &UShooterMenuButtonUserWidget::OnMainMenu);
-    }
+    if (!MainMenuButton)
+        return;
+
+    MainMenuButton->OnClickedButton.AddDynamic(this, &UShooterMenuButtonUserWidget::OnMainMenu);
 }
 
 void UShooterMenuButtonUserWidget::OnMainMenu()

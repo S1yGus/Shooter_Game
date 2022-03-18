@@ -1,11 +1,10 @@
 // Shooter_Game, All rights reserved.
 
 #include "Components/ShooterHealthComponent.h"
-#include "TimerManager.h"
+#include "Components/ShooterBaseVFXComponent.h"
 #include "ShooterGameModeBase.h"
 #include "GameFramework/Character.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
-#include "Components/ShooterBaseVFXComponent.h"
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentLog, All, All)
 
@@ -20,7 +19,7 @@ bool UShooterHealthComponent::TryToHeal(float HealAmount)
         return false;
 
     SetHealth(Health + HealAmount);
-    if (Health >= MaxAutoHealHealth)
+    if (Health >= AutoHealThreshold)
         GetWorld()->GetTimerManager().ClearTimer(AutoHealTimerHandle);
 
     return true;
@@ -54,20 +53,17 @@ void UShooterHealthComponent::OnTakeAnyDamage(AActor* DamagedActor,             
     SetHealth(Health - DamageAmount);
     CurrentDamageModifier = 1.0f;
 
-    if (GetWorld()->GetTimerManager().IsTimerActive(AutoHealTimerHandle))
-    {
-        GetWorld()->GetTimerManager().ClearTimer(AutoHealTimerHandle);
-    }
-
     if (IsDead())
     {
+        GetWorld()->GetTimerManager().ClearTimer(AutoHealTimerHandle);
+
         const auto OwnerController = GetOwner<APawn>()->GetController();
         Killed(InstigatedBy, OwnerController);
         OnDeath.Broadcast();
     }
-    else if (AutoHeal && Health < MaxAutoHealHealth)
+    else if (AutoHeal && Health < AutoHealThreshold)
     {
-        GetWorld()->GetTimerManager().SetTimer(AutoHealTimerHandle, this, &UShooterHealthComponent::AutoHealTick, HealUpdateTime, true, HealDelay);
+        GetWorld()->GetTimerManager().SetTimer(AutoHealTimerHandle, this, &UShooterHealthComponent::AutoHealTick, AutoHealUpdateTime, true, AutoHealDelay);
     }
 }
 
@@ -107,9 +103,9 @@ void UShooterHealthComponent::OnTakeRadialDamage(AActor* DamagedActor,          
 
 void UShooterHealthComponent::AutoHealTick()
 {
-    SetHealth(FMath::Min(Health + HealModifier, MaxAutoHealHealth));
+    SetHealth(FMath::Min(Health + AutoHealUpdateValue, AutoHealThreshold));
 
-    if (FMath::IsNearlyEqual(Health, MaxAutoHealHealth))
+    if (FMath::IsNearlyEqual(Health, AutoHealThreshold))
     {
         GetWorld()->GetTimerManager().ClearTimer(AutoHealTimerHandle);
     }
@@ -119,11 +115,6 @@ void UShooterHealthComponent::SetHealth(float NewHealth)
 {
     Health = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
     OnHealthChanged.Broadcast(Health);
-}
-
-bool UShooterHealthComponent::IsCompletelyHealthy()
-{
-    return FMath::IsNearlyEqual(Health, MaxHealth);
 }
 
 void UShooterHealthComponent::Killed(AController* KillerController, AController* VictimController)

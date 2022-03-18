@@ -265,10 +265,10 @@ void AShooterBaseWeaponActor::MakeRecoil()
 
 void AShooterBaseWeaponActor::StopRecoilRecoverTimer()
 {
-    if (!GetWorldTimerManager().IsTimerActive(RecoilRecoverTimerHandle))
+    if (!GetWorldTimerManager().IsTimerActive(RecoilRecoveryTimerHandle))
         return;
 
-    GetWorldTimerManager().ClearTimer(RecoilRecoverTimerHandle);
+    GetWorldTimerManager().ClearTimer(RecoilRecoveryTimerHandle);
 }
 
 FVector AShooterBaseWeaponActor::GetShellWindowLocation() const
@@ -310,8 +310,8 @@ bool AShooterBaseWeaponActor::CalculateRecoil()
     CurrentPitchRecoil /= OwnerPawn->GetController<APlayerController>()->InputPitchScale;
     CurrentYawRecoil /= OwnerPawn->GetController<APlayerController>()->InputYawScale;
 
-    CurrentRecoverPitchRecoil = CurrentPitchRecoil / -RecoilRecoverScale;
-    CurrentRecoverYawRecoil = CurrentYawRecoil / -RecoilRecoverScale;
+    CurrentRecoveryPitchRecoil = CurrentPitchRecoil / -RecoilRecoverScale;
+    CurrentRecoveryYawRecoil = CurrentYawRecoil / -RecoilRecoverScale;
 
     return true;
 }
@@ -327,11 +327,11 @@ void AShooterBaseWeaponActor::RecoilTimerTick()
         GetWorldTimerManager().ClearTimer(RecoilTimerHandle);
         CurrentRecoilTime = 0.0f;
 
-        GetWorldTimerManager().SetTimer(RecoilRecoverTimerHandle, this, &AShooterBaseWeaponActor::RecoilRecoverTimerTick, RecoilTimerRate, true);
+        GetWorldTimerManager().SetTimer(RecoilRecoveryTimerHandle, this, &AShooterBaseWeaponActor::RecoilRecoveryTimerTick, RecoilTimerRate, true);
     }
 }
 
-void AShooterBaseWeaponActor::RecoilRecoverTimerTick()
+void AShooterBaseWeaponActor::RecoilRecoveryTimerTick()
 {
     const auto CurrentControllerInputRotation = GetOwner<APawn>()->GetViewRotation();
     const auto Delta = UKismetMathLibrary::NormalizedDeltaRotator(CurrentControllerInputRotation, InitialControllerInputRotation);
@@ -339,10 +339,10 @@ void AShooterBaseWeaponActor::RecoilRecoverTimerTick()
         || FMath::Abs(Delta.Yaw) >= MaxYawRecoilMagnitude + RecoilRecoverYawAdditionalOffset    //
         || Delta.Pitch <= 0)
     {
-        GetWorldTimerManager().ClearTimer(RecoilRecoverTimerHandle);
+        GetWorldTimerManager().ClearTimer(RecoilRecoveryTimerHandle);
         return;
     }
 
-    GetOwner<APawn>()->AddControllerPitchInput(CurrentRecoverPitchRecoil);
-    GetOwner<APawn>()->AddControllerYawInput(CurrentRecoverYawRecoil);
+    GetOwner<APawn>()->AddControllerPitchInput(CurrentRecoveryPitchRecoil);
+    GetOwner<APawn>()->AddControllerYawInput(CurrentRecoveryYawRecoil);
 }

@@ -7,6 +7,12 @@
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/ShooterPlayerVFXComponent.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/ShooterStaminaComponent.h"
+
+constexpr static float CharacterRotationSpeed = 1.5f;
+constexpr static float StartTurnAngle = 30.0f;
 
 AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterPlayerVFXComponent>("VFXComponent"))
@@ -14,8 +20,8 @@ AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& Objec
     SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
     SpringArmComponent->SetupAttachment(GetRootComponent());
     SpringArmComponent->bUsePawnControlRotation = true;
-    SpringArmComponent->TargetArmLength = 170.0f;
-    SpringArmComponent->SocketOffset = FVector(0.0f, 40.0f, 80.0f);
+    SpringArmComponent->TargetArmLength = 140.0f;
+    SpringArmComponent->SocketOffset = FVector(0.0f, 55.0f, 80.0f);
 
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
     CameraComponent->SetupAttachment(SpringArmComponent);
@@ -35,6 +41,18 @@ void AShooterPlayerCharacter::BeginPlay()
 
     CameraCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AShooterPlayerCharacter::OnCameraComponentBeginOverlap);
     CameraCollisionComponent->OnComponentEndOverlap.AddDynamic(this, &AShooterPlayerCharacter::OnCameraComponentEndOverlap);
+}
+
+void AShooterPlayerCharacter::Tick(float DeltaSeconds)
+{
+    Super::Tick(DeltaSeconds);
+
+    if (FMath::Abs(GetViewDeltaRotator().Yaw) > StartTurnAngle)
+    {
+        const auto CurrentRotation = GetActorRotation();
+        const auto NewRotation = FMath::RInterpTo(CurrentRotation, GetBaseAimRotation(), DeltaSeconds, CharacterRotationSpeed);
+        SetActorRotation(FRotator(CurrentRotation.Pitch, NewRotation.Yaw, CurrentRotation.Roll));
+    }
 }
 
 void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -100,28 +118,19 @@ void AShooterPlayerCharacter::MoveForward(float Amount)
 {
     MovingForward = Amount > 0;
 
-    if (Amount == 0.0f)
+    if (FMath::IsNearlyZero(Amount))
         return;
-
-    AddMovementInput(GetActorForwardVector(), Amount);
+    const auto ControllerForvardVector = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+    AddMovementInput(ControllerForvardVector, Amount);
 }
 
 void AShooterPlayerCharacter::MoveRight(float Amount)
 {
-    if (Amount == 0.0f || IsSprinting())
+    if (FMath::IsNearlyZero(Amount) || IsSprinting())
         return;
 
-    AddMovementInput(GetActorRightVector(), Amount);
-}
-
-void AShooterPlayerCharacter::StartSprint()
-{
-    WantsToSprint = true;
-}
-
-void AShooterPlayerCharacter::StopSprint()
-{
-    WantsToSprint = false;
+    const auto ControllerRightVector = UKismetMathLibrary::GetRightVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+    AddMovementInput(ControllerRightVector, Amount);
 }
 
 void AShooterPlayerCharacter::OnCameraComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,    //

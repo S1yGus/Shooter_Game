@@ -4,6 +4,5 @@
 
 bool UShooterHUDUserWidget::IsPlayerSpectating() const
 {
-    const auto Controller = GetOwningPlayer();
-    return Controller && Controller->GetStateName() == NAME_Spectating;
+    return GetOwningPlayer() && GetOwningPlayer()->GetStateName() == NAME_Spectating;
 }

@@ -35,20 +35,20 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "1000.0"))
     float MaxHealth = 100.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "100", EditCondition = "AutoHeal"))
-    float MaxAutoHealHealth = 50.0f;
-
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
     bool AutoHeal = true;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "100", EditCondition = "AutoHeal"))
-    float HealUpdateTime = 0.3f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "100.0", EditCondition = "AutoHeal"))
+    float AutoHealThreshold = 50.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "100", EditCondition = "AutoHeal"))
-    float HealDelay = 3.0f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "100.0", EditCondition = "AutoHeal"))
+    float AutoHealUpdateTime = 0.3f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "100", EditCondition = "AutoHeal"))
-    float HealModifier = 1.0f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "100.0", EditCondition = "AutoHeal"))
+    float AutoHealDelay = 3.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health", Meta = (ClampMin = "0.0", ClampMax = "100.0", EditCondition = "AutoHeal"))
+    float AutoHealUpdateValue = 1.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Health")
     TMap<UPhysicalMaterial*, float> DamageModifiersMap;
@@ -74,7 +74,7 @@ private:
 
     void AutoHealTick();
     void SetHealth(float NewHealth);
-    bool IsCompletelyHealthy();
+    bool IsCompletelyHealthy() { return FMath::IsNearlyEqual(Health, MaxHealth); }
     void Killed(AController* KillerController, AController* VictimController);
     void SpawnImpactIndicator(AActor* DamagedActor, float DamageAmount, const FVector& HitLocation, UPhysicalMaterial* PhysicalMaterial = nullptr);
 };

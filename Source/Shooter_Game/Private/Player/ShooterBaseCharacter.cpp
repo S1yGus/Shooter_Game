@@ -3,9 +3,11 @@
 #include "Player/ShooterBaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/ShooterHealthComponent.h"
+#include "Components/ShooterStaminaComponent.h"
 #include "Components/ShooterWeaponComponent.h"
 #include "Components/ShooterBaseVFXComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 DEFINE_LOG_CATEGORY_STATIC(ShooterBaseCharacterLog, All, All)
 
@@ -16,6 +18,7 @@ AShooterBaseCharacter::AShooterBaseCharacter(const FObjectInitializer& ObjectIni
     GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
 
     HealthComponent = CreateDefaultSubobject<UShooterHealthComponent>("HealthComponent");
+    StaminaComponent = CreateDefaultSubobject<UShooterStaminaComponent>("StaminaComponent");
     WeaponComponent = CreateDefaultSubobject<UShooterWeaponComponent>("WeaponComponent");
     VFXComponent = CreateDefaultSubobject<UShooterBaseVFXComponent>("VFXComponent");
 }
@@ -32,6 +35,7 @@ void AShooterBaseCharacter::BeginPlay()
 
     HealthComponent->OnDeath.AddUObject(this, &AShooterBaseCharacter::OnDeath);
     HealthComponent->OnHealthChanged.AddDynamic(this, &AShooterBaseCharacter::OnHealthChanged);
+    StaminaComponent->OnOutOfStamina.AddUObject(this, &AShooterBaseCharacter::OnOutOfStamina);
     LandedDelegate.AddDynamic(this, &AShooterBaseCharacter::OnGroundLanded);
 }
 
@@ -47,6 +51,14 @@ void AShooterBaseCharacter::Reset()
     Super::Reset();
 
     WeaponComponent->StopFire();
+}
+
+void AShooterBaseCharacter::Jump()
+{
+    if (GetCharacterMovement()->IsFalling() || !StaminaComponent->UsingStaminaValidCheck(JumpStaminaCost))
+        return;
+
+    Super::Jump();
 }
 
 void AShooterBaseCharacter::SetColor(const FLinearColor& Color)
@@ -80,6 +92,26 @@ float AShooterBaseCharacter::GetMovementDirection() const
     return CrossProduct.IsZero() ? Degrees : Degrees * FMath::Sign(CrossProduct.Z);
 }
 
+FRotator AShooterBaseCharacter::GetViewDeltaRotator() const
+{
+    return UKismetMathLibrary::NormalizedDeltaRotator(GetBaseAimRotation(), GetActorRotation());
+}
+
+void AShooterBaseCharacter::StartSprint()
+{
+    StaminaComponent->UsingStamina(true, SprintStaminaFlow);
+    WantsToSprint = true;
+}
+
+void AShooterBaseCharacter::StopSprint()
+{
+    if (!StaminaComponent->IsStaminaInUse())
+        return;
+
+    StaminaComponent->UsingStamina(false);
+    WantsToSprint = false;
+}
+
 void AShooterBaseCharacter::OnDeath()
 {
     VFXComponent->PlayDeathSound();
@@ -94,6 +126,11 @@ void AShooterBaseCharacter::OnDeath()
 
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     GetMesh()->SetSimulatePhysics(true);
+}
+
+void AShooterBaseCharacter::OnOutOfStamina()
+{
+    StopSprint();
 }
 
 void AShooterBaseCharacter::OnHealthChanged(float Health)

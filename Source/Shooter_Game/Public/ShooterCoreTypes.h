@@ -56,9 +56,36 @@ struct FWeaponUIData
     UTexture2D* CrossHairIcon;
 };
 
+USTRUCT(BlueprintType)
+struct FWeaponStatsData
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
+    float MinDamage = 10.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
+    float MaxDamage = 15.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
+    FVector2D ShotSpread = FVector2D(3.0f, 10.0f);
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
+    FVector2D AimedShotSpread = FVector2D(1.0f, 1.0f);
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
+    FVector2D AIShotSpread = FVector2D(3.0f, 10.0f);
+};
+
 // Health
 DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, Health);
+
+
+// Stamina
+DECLARE_MULTICAST_DELEGATE(FOnOutOfStaminaSignature);
+DECLARE_MULTICAST_DELEGATE(FOnNotEnoughStaminaSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChangedSignature, float, Stamina);
 
 // VFX
 UENUM(BlueprintType)
@@ -179,27 +206,6 @@ struct FWeaponFXData
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
     USoundCue* FireSound;
-};
-
-USTRUCT(BlueprintType)
-struct FWeaponStatsData
-{
-    GENERATED_USTRUCT_BODY()
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
-    float MinDamage = 10.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
-    float MaxDamage = 15.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
-    FVector2D ShotSpread = FVector2D(3.0f, 10.0f);
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
-    FVector2D AimedShotSpread = FVector2D(1.0f, 1.0f);
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
-    FVector2D AIShotSpread = FVector2D(3.0f, 10.0f);
 };
 
 // Game

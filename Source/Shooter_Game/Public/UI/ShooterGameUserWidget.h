@@ -7,9 +7,8 @@
 #include "ShooterCoreTypes.h"
 #include "ShooterGameUserWidget.generated.h"
 
-class UShooterWeaponComponent;
-class UShooterHealthComponent;
 class UProgressBar;
+class UWidgetAnimation;
 
 UCLASS()
 class SHOOTER_GAME_API UShooterGameUserWidget : public UUserWidget
@@ -19,6 +18,9 @@ class SHOOTER_GAME_API UShooterGameUserWidget : public UUserWidget
 public:
     UFUNCTION(BlueprintCallable)
     float GetHelthPercent() const;
+
+    UFUNCTION(BlueprintCallable)
+    float GetStaminaPercent() const;
 
     UFUNCTION(BlueprintCallable)
     bool GetCurrentWeaponUIData(FWeaponUIData& Data) const;
@@ -32,24 +34,39 @@ public:
     UFUNCTION(BlueprintCallable)
     bool GetPlayerStateInfo(float& Kills, float& Deaths) const;
 
-    UFUNCTION(BlueprintImplementableEvent)
-    void OnTakeDamage();
-
 protected:
     UPROPERTY(Meta = (BindWidgetAnim), Transient)
     UWidgetAnimation* GetDamageAnimation;
 
+    UPROPERTY(Meta = (BindWidgetAnim), Transient)
+    UWidgetAnimation* OutOfStaminaAnimation;
+
+    UPROPERTY(Meta = (BindWidgetAnim), Transient)
+    UWidgetAnimation* NotEnoughStaminaAnimation;
+
     UPROPERTY(Meta = (BindWidget))
     UProgressBar* HealthProgressBar;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    UPROPERTY(Meta = (BindWidget))
+    UProgressBar* StaminaProgressBar;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI|Health")
     float HealthColorThreshold = 0.4f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI|Health")
     FLinearColor NormalHealthColor = FLinearColor::White;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI|Health")
     FLinearColor LowHealthColor = FLinearColor::Red;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI|Stamina")
+    float StaminaColorThreshold = 0.4f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI|Stamina")
+    FLinearColor NormalStaminaColor = FLinearColor::White;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI|Stamina")
+    FLinearColor LowStaminaColor = FLinearColor::Red;
 
     virtual void NativeOnInitialized() override;
 
@@ -60,7 +77,14 @@ private:
     UFUNCTION()
     void OnHealthChanged(float Health);
 
+    UFUNCTION()
+    void OnStaminaChanged(float Stamina);
+
+    void OnOutOfStamina();
+    void OnNotEnoughStamina();
+
     void OnNewPawn(APawn* NewPawn);
-    void ShowGetDamageAnimation();
+    void ShowAnimation(UWidgetAnimation* Animation);
     void UpdateHealthProgressBar();
+    void UpdateStaminaProgressBar();
 };
