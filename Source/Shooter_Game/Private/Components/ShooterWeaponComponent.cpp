@@ -56,7 +56,7 @@ void UShooterWeaponComponent::Zoom(bool Condition)
     if (!GetPlayerController() || !GetPlayerController()->PlayerCameraManager)
         return;
 
-    if (!GetOwner<AShooterBaseCharacter>() || GetOwner<AShooterBaseCharacter>()->IsSprinting())
+    if (!GetOwner<AShooterBaseCharacter>() || GetOwner<AShooterBaseCharacter>()->IsSprinting() && Condition)
         return;
 
     if (!DefaultFOVAngle)

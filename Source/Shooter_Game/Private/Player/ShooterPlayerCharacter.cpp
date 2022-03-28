@@ -120,6 +120,7 @@ void AShooterPlayerCharacter::MoveForward(float Amount)
 
     if (FMath::IsNearlyZero(Amount))
         return;
+
     const auto ControllerForvardVector = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
     AddMovementInput(ControllerForvardVector, Amount);
 }

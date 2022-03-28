@@ -48,12 +48,6 @@ protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterBaseVFXComponent* VFXComponent;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "500.0", ClampMax = "800.0"))
-    float NormalWalkSpeed = 800.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "800.0", ClampMax = "1400.0"))
-    float SprintWalkSpeed = 1400.0f;
-
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", Meta = (ClampMin = "0.1", ClampMax = "100.0"))
     float JumpStaminaCost = 20.0f;
 

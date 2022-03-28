@@ -7,15 +7,15 @@
 #include "Components/ShooterWeaponComponent.h"
 #include "Components/ShooterBaseVFXComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/ShooterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 DEFINE_LOG_CATEGORY_STATIC(ShooterBaseCharacterLog, All, All)
 
 AShooterBaseCharacter::AShooterBaseCharacter(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterMovementComponent>(CharacterMovementComponentName))
 {
     PrimaryActorTick.bCanEverTick = true;
-
-    GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
 
     HealthComponent = CreateDefaultSubobject<UShooterHealthComponent>("HealthComponent");
     StaminaComponent = CreateDefaultSubobject<UShooterStaminaComponent>("StaminaComponent");
@@ -69,15 +69,7 @@ void AShooterBaseCharacter::SetColor(const FLinearColor& Color)
 
 bool AShooterBaseCharacter::IsSprinting() const
 {
-    if (WantsToSprint && MovingForward && !GetVelocity().IsZero())
-    {
-        WeaponComponent->StopFire();
-        GetCharacterMovement()->MaxWalkSpeed = SprintWalkSpeed;
-        return true;
-    }
-
-    GetCharacterMovement()->MaxWalkSpeed = NormalWalkSpeed;
-    return false;
+    return WantsToSprint && MovingForward && !GetVelocity().IsZero();
 }
 
 float AShooterBaseCharacter::GetMovementDirection() const
@@ -99,8 +91,15 @@ FRotator AShooterBaseCharacter::GetViewDeltaRotator() const
 
 void AShooterBaseCharacter::StartSprint()
 {
-    StaminaComponent->UsingStamina(true, SprintStaminaFlow);
     WantsToSprint = true;
+
+    if (IsSprinting())
+    {
+        StaminaComponent->UsingStamina(true, SprintStaminaFlow);
+
+        WeaponComponent->StopFire();
+        WeaponComponent->Zoom(false);
+    }
 }
 
 void AShooterBaseCharacter::StopSprint()
