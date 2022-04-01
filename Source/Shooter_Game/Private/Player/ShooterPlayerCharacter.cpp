@@ -46,13 +46,6 @@ void AShooterPlayerCharacter::BeginPlay()
 void AShooterPlayerCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
-
-    if (FMath::Abs(GetViewDeltaRotator().Yaw) > StartTurnAngle)
-    {
-        const auto CurrentRotation = GetActorRotation();
-        const auto NewRotation = FMath::RInterpTo(CurrentRotation, GetBaseAimRotation(), DeltaSeconds, CharacterRotationSpeed);
-        SetActorRotation(FRotator(CurrentRotation.Pitch, NewRotation.Yaw, CurrentRotation.Roll));
-    }
 }
 
 void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -71,7 +64,8 @@ void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
     PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::NextWeapon);
     PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::PreviousWeapon);
     PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::ReloadWeapon);
-    PlayerInputComponent->BindAction("SwitchFireMode", IE_Released, WeaponComponent, &UShooterWeaponComponent::SwitchFireMode);
+    PlayerInputComponent->BindAction("SwitchFireMode", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::SwitchFireMode);
+    PlayerInputComponent->BindAction("Flashlight", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::SwitchFlashlight);
 
     DECLARE_DELEGATE_OneParam(FEquipWeaponSignature, EWeaponType);
     PlayerInputComponent->BindAction<FEquipWeaponSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,

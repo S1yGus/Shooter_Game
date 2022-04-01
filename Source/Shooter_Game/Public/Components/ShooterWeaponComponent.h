@@ -30,6 +30,7 @@ public:
     bool IsZoomingNow() const { return ZoomingNow; }
 
     void SwitchFireMode();
+    void SwitchFlashlight();
 
     virtual void NextWeapon();
     void PreviousWeapon();
@@ -73,6 +74,8 @@ private:
     bool ZoomingNow = false;
     float DefaultFOVAngle = 0.0f;
     float TargetFOVAngle = 90.0f;
+
+    bool FlashlightOff = true;
 
     bool GetCurrentFOV(float& CurrentFOV);
     void ZoomTick();

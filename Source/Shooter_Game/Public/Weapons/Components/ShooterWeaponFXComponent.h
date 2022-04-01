@@ -30,6 +30,7 @@ public:
 
     USoundCue* GetNoAmmoSound() const { return NoAmmoSound; }
     USoundCue* GetSwitchModeSound() const { return SwitchModeSound; }
+    USoundCue* GetSwitchFlashlightSound() const { return SwitchFlashlight; }
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
@@ -46,4 +47,7 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
     USoundCue* SwitchModeSound;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* SwitchFlashlight;
 };

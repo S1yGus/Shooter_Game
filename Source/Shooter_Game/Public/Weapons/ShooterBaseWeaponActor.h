@@ -14,6 +14,7 @@ class AShooterBaseCharacter;
 class UShooterWeaponFXComponent;
 class AShooterProjectileBaseActor;
 class AShooterShellBaseActor;
+class USpotLightComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterBaseWeaponActor : public AActor
@@ -34,6 +35,8 @@ public:
     void SwitchFireMode();
     bool IsFireModeAlternative() const { return AlternativeFireMode; }
 
+    void TurnOffFlashlight(bool State);
+
     bool ReloadClip();
     bool IsAmmoEmpty() const;
     bool IsNumberOfClipsMax() const;
@@ -53,6 +56,12 @@ protected:
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterWeaponFXComponent* FXComponent;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    USpotLightComponent* SpotLight;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    FName FlashlightSocketName = "FlashlightSocket";
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     EWeaponType WeaponType;

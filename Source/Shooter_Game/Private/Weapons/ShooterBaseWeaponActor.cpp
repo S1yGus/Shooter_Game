@@ -7,6 +7,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/ShooterHealthComponent.h"
 #include "Components/ShooterWeaponComponent.h"
+#include "Components/SpotLightComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -28,6 +29,16 @@ AShooterBaseWeaponActor::AShooterBaseWeaponActor()
     SetRootComponent(WeaponMesh);
 
     FXComponent = CreateDefaultSubobject<UShooterWeaponFXComponent>("WeaonFXComponent");
+
+    SpotLight = CreateDefaultSubobject<USpotLightComponent>("SpotLightComponent");
+    SpotLight->SetHiddenInGame(true);
+    SpotLight->AttenuationRadius = 11000.0f;
+    SpotLight->OuterConeAngle = 26.0f;
+    SpotLight->SourceRadius = 1.0f;
+    SpotLight->bUseTemperature = true;
+    SpotLight->Temperature = 7500.0f;
+    SpotLight->VolumetricScatteringIntensity = 2.5f;
+    SpotLight->SetupAttachment(WeaponMesh);
 }
 
 void AShooterBaseWeaponActor::StartFire()
@@ -48,6 +59,13 @@ void AShooterBaseWeaponActor::SwitchFireMode()
 
     AlternativeFireMode = !AlternativeFireMode;
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), FXComponent->GetSwitchModeSound(), GetActorLocation());
+}
+
+void AShooterBaseWeaponActor::TurnOffFlashlight(bool State)
+{
+    SpotLight->SetHiddenInGame(State);
+
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), FXComponent->GetSwitchFlashlightSound(), GetActorLocation());
 }
 
 bool AShooterBaseWeaponActor::ReloadClip()
@@ -87,8 +105,11 @@ void AShooterBaseWeaponActor::BeginPlay()
 
     check(WeaponMesh);
     check(FXComponent);
+    check(SpotLight);
 
     CurrentAmmo = DefaultAmmo;
+
+    SpotLight->AttachTo(WeaponMesh, FlashlightSocketName, EAttachLocation::SnapToTarget);
 }
 
 void AShooterBaseWeaponActor::MakeMainShot()

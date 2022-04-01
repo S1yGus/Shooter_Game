@@ -80,6 +80,16 @@ void UShooterWeaponComponent::SwitchFireMode()
     CurrentWeapon->SwitchFireMode();
 }
 
+void UShooterWeaponComponent::SwitchFlashlight()
+{
+    FlashlightOff = !FlashlightOff;
+
+    if (!CurrentWeapon)
+        return;
+
+    CurrentWeapon->TurnOffFlashlight(FlashlightOff);
+}
+
 void UShooterWeaponComponent::NextWeapon()
 {
     if (!CanEquip() || WeaponsMap.Num() == 0)
@@ -127,12 +137,15 @@ void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
 
         StopFire();
         Zoom(false);
+        CurrentWeapon->TurnOffFlashlight(true);
 
         AttachToSocket(CurrentWeapon, GetOwner<ACharacter>()->GetMesh(), CurrentWeapon->GetArmorySocketName());
     }
 
     CurrentWeapon = WeaponsMap[WeapontType];
     AttachToSocket(CurrentWeapon, GetOwner<ACharacter>()->GetMesh(), WeaponEquipSocketName);
+
+    CurrentWeapon->TurnOffFlashlight(FlashlightOff);
 
     const auto CurrentWeaponData = WeaponData.FindByPredicate([&](const FWeaponData& Data) { return Data.WeaponClass == CurrentWeapon->GetClass(); });
     CurrentReloadAnimMontage = CurrentWeaponData->ReloadAnimMontage;
