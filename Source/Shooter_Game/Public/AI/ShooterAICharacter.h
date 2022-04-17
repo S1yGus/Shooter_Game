@@ -33,8 +33,8 @@ protected:
 
     FTimerHandle UpdateHealthWidgetVisibilityTimerHandle;
 
-    virtual void OnHealthChanged(float Health) override;
-    void UpdateHealthWidgetVisibility();
+    virtual void OnHealthChanged(float Health, float HealthPercent) override;
+    void UpdateHealthWidget();
 
     virtual void OnDeath() override;
 };

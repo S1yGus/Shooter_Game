@@ -30,6 +30,8 @@ void AShooterDayNightSystem::OnConstruction(const FTransform& Transform)
     Super::OnConstruction(Transform);
 
     Time = Day * SecondsInDay + Hour * SecondsInHour + Minute * SecondsInMinute + Second;
+    SunPositionYawOffset = Sun->GetActorRotation().Yaw;
+    MoonPositionYawOffset = Moon->GetActorRotation().Yaw;
 
     UpdateSunRotation();
     UpdateMoon();
@@ -70,9 +72,9 @@ void AShooterDayNightSystem::DayNightSystemTimerTick()
     UpdateMoon();
 
     // Debug
-    FString CurrentTime = FString::Printf(TEXT("Dsays: %i Time: %i:%i:%i"), GetCurrentTimespan().GetDays(), GetCurrentTimespan().GetHours(),
+    /*FString CurrentTime = FString::Printf(TEXT("Dsays: %i Time: %i:%i:%i"), GetCurrentTimespan().GetDays(), GetCurrentTimespan().GetHours(),
                                           GetCurrentTimespan().GetMinutes(), GetCurrentTimespan().GetSeconds());
-    GEngine->AddOnScreenDebugMessage(-1, GetTimerRate(), FColor::Red, CurrentTime);
+    GEngine->AddOnScreenDebugMessage(-1, GetTimerRate(), FColor::Red, CurrentTime);*/
 }
 
 void AShooterDayNightSystem::SetWindValue()
@@ -94,7 +96,7 @@ void AShooterDayNightSystem::UpdateSunRotation()
         return;
 
     const auto SunPitch = SunRotationCurve->GetFloatValue(GetCurrentHour());
-    Sun->SetActorRotation(FRotator(SunPitch, 0.0f, 0.0f));
+    Sun->SetActorRotation(FRotator(SunPitch, SunPositionYawOffset, 0.0f));
 }
 
 void AShooterDayNightSystem::UpdateMoon()

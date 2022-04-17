@@ -41,7 +41,7 @@ void AShooterPlayerController::OnSetPause()
 
 void AShooterPlayerController::OnGameStateChanged(EGameState GameState)
 {
-    if (GameState == EGameState::InProgress)
+    if (GameState == EGameState::InGame || GameState == EGameState::InSpectating)
     {
         SetInputMode(FInputModeGameOnly());
         bShowMouseCursor = false;

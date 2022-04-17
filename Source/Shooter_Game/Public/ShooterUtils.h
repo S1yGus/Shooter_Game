@@ -27,4 +27,16 @@ public:
     }
 
     static FText TextFromInt(int32 Number) { return FText::FromString(FString::FromInt(Number)); }
+
+    static FString FormatStringFromInt(int32 InValue, int32 MinLen, TCHAR FillChar) 
+    { 
+        FString ResultStr = FString::FromInt(InValue);
+        const auto ToAdd = MinLen - ResultStr.Len();
+        if (ToAdd > 0)
+        {
+            ResultStr = FString::ChrN(ToAdd, FillChar).Append(ResultStr);
+        }
+
+        return ResultStr;
+    }
 };

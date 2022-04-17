@@ -2,7 +2,7 @@
 
 #include "Components/ShooterHealthComponent.h"
 #include "Components/ShooterBaseVFXComponent.h"
-#include "ShooterGameModeBase.h"
+#include "ShooterArenaGameMode.h"
 #include "GameFramework/Character.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
@@ -29,6 +29,7 @@ void UShooterHealthComponent::BeginPlay()
 {
     Super::BeginPlay();
 
+    check(MaxHealth > 0.0f);
     SetHealth(MaxHealth);
 
     const auto ComponentOwner = GetOwner();
@@ -114,12 +115,12 @@ void UShooterHealthComponent::AutoHealTick()
 void UShooterHealthComponent::SetHealth(float NewHealth)
 {
     Health = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
-    OnHealthChanged.Broadcast(Health);
+    OnHealthChanged.Broadcast(Health, GetHealthPercent());
 }
 
 void UShooterHealthComponent::Killed(AController* KillerController, AController* VictimController)
 {
-    const auto GameMode = GetWorld()->GetAuthGameMode<AShooterGameModeBase>();
+    const auto GameMode = GetWorld()->GetAuthGameMode<AShooterArenaGameMode>();
     if (!GameMode)
         return;
 

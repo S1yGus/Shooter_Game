@@ -15,12 +15,19 @@ class SHOOTER_GAME_API UShooterBaseAnimatedUserWidget : public UUserWidget
     GENERATED_BODY()
 
 public:
-    void ShowStartupAnimation();
+    virtual void ShowStartupAnimation();
+    void ShowFadeoutAnimation();
 
 protected:
     UPROPERTY(Meta = (BindWidgetAnim), Transient)
     UWidgetAnimation* StartupAnimation = nullptr;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
-    USoundCue* OpenSound;
+    USoundCue* StartupSound = nullptr;
+
+    UPROPERTY(Meta = (BindWidgetAnim), Transient)
+    UWidgetAnimation* FadeoutAnimation = nullptr;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    USoundCue* FadeoutSound = nullptr;
 };

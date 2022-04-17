@@ -18,10 +18,10 @@ public:
 
 protected:
     UPROPERTY(Meta = (BindWidget))
-    UProgressBar* HealthProgressBar;
+    UProgressBar* HealthProgressBar = nullptr;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    float HealthPercentVisibilityThreshold = 1.0f;
+    float HealthPercentVisibilityThreshold = 0.99f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     float HealthColorThreshold = 0.4f;

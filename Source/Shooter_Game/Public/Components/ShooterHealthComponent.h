@@ -18,8 +18,6 @@ public:
     UShooterHealthComponent();
 
     FOnDeathSignature OnDeath;
-
-    UPROPERTY(BlueprintAssignable)
     FOnHealthChangedSignature OnHealthChanged;
 
     UFUNCTION(BlueprintCallable)

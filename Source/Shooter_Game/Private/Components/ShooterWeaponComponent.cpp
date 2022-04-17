@@ -152,6 +152,8 @@ void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
 
     EquipMontageInProgress = true;
     PlayAnimMontage(EquipAnimMontage);
+
+    OnWeaponChanged.Broadcast(CurrentWeapon->GetUIData(), CurrentWeapon->GetAmmoData());
 }
 
 void UShooterWeaponComponent::ReloadWeapon()
@@ -267,6 +269,7 @@ bool UShooterWeaponComponent::SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> W
         return false;
 
     Weapon->OnClipEmpty.AddUObject(this, &UShooterWeaponComponent::OnClipEmpty);
+    Weapon->OnFired.AddUObject(this, &UShooterWeaponComponent::OnFired);
     Weapon->SetOwner(GetOwner());
 
     if (WeaponsMap.Contains(Weapon->GetWeaponType()))
@@ -367,6 +370,11 @@ void UShooterWeaponComponent::OnClipEmpty()
     ChangeClip();
 }
 
+void UShooterWeaponComponent::OnFired()
+{
+    OnAmmoInfoChanged.Broadcast(CurrentWeapon->GetAmmoData());
+}
+
 void UShooterWeaponComponent::ChangeClip()
 {
     if (!CanReload() || !CurrentWeapon->ReloadClip())
@@ -376,6 +384,8 @@ void UShooterWeaponComponent::ChangeClip()
 
     ReloadMontageInProgress = true;
     PlayAnimMontage(CurrentReloadAnimMontage);
+
+    OnAmmoInfoChanged.Broadcast(CurrentWeapon->GetAmmoData());
 }
 
 bool UShooterWeaponComponent::GetCurrentFOV(float& CurrentFOV)

@@ -4,6 +4,9 @@
 
 // Weapon
 DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature)
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponChangedSignature, const FWeaponUIData&, const FAmmoData&);
+DECLARE_MULTICAST_DELEGATE(FOnFiredSignature)
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnAmmoInfoChangedSignature, const FAmmoData&);
 
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
@@ -79,13 +82,12 @@ struct FWeaponStatsData
 
 // Health
 DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChangedSignature, float, Health);
-
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, float);
 
 // Stamina
 DECLARE_MULTICAST_DELEGATE(FOnOutOfStaminaSignature);
 DECLARE_MULTICAST_DELEGATE(FOnNotEnoughStaminaSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStaminaChangedSignature, float, Stamina);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnStaminaChangedSignature, float, float);
 
 // VFX
 UENUM(BlueprintType)
@@ -209,6 +211,10 @@ struct FWeaponFXData
 };
 
 // Game
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameStateChangedSignature, EGameState);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerStateChangedSignature, int32, int32);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnNewRaundSignature, int32, int32);
+
 USTRUCT(BlueprintType)
 struct FGameData
 {
@@ -240,28 +246,62 @@ UENUM(BlueprintType)
 enum class EGameState : uint8
 {
     WaitingToStart,
-    InProgress,
+    MainMenu,
+    Options,
+    InGame,
+    InSpectating,
     Pause,
     GameOver
 };
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameStateChangedSignature, EGameState);
-
 // UI
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClickedButtonSignature);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnClickedOptionsButtonSignature, const FOptionsButtonData&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnSelectedLevelSignature, const FLevelData&);
+DECLARE_MULTICAST_DELEGATE(FOnCancelResolutionSettingsSignature);
+
 USTRUCT(BlueprintType)
 struct FLevelData
 {
     GENERATED_USTRUCT_BODY()
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     FName LevelName;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     FText LevelDisplayName;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     UTexture2D* LevelThumbnails;
 };
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClickedButtonSignature);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnSelectedLevelSignature, const FLevelData&);
+USTRUCT(BlueprintType)
+struct FOptionsButtonData
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    FText ButtonText;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    int32 WidgetID;
+};
+
+// Save
+USTRUCT(BlueprintType)
+struct FSoundSettings
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+    float MasterVolume = 0.5;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+    float CharacterVolume = 0.5;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+    float EffectsVolume = 0.5;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+    float AmbientVolume = 0.5;
+};

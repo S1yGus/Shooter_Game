@@ -3,14 +3,19 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "ShooterGameModeBase.h"
+#include "ShooterCoreTypes.h"
 #include "ShooterMenuGameMode.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API AShooterMenuGameMode : public AGameModeBase
+class SHOOTER_GAME_API AShooterMenuGameMode : public AShooterGameModeBase
 {
     GENERATED_BODY()
 
 public:
     AShooterMenuGameMode();
+
+    virtual void StartPlay() override;
+
+    void InMainMenu();
 };

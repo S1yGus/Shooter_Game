@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "Components/ShooterRespawnComponent.h"
-#include "ShooterGameModeBase.h"
+#include "ShooterArenaGameMode.h"
 
 UShooterRespawnComponent::UShooterRespawnComponent()
 {
@@ -24,7 +24,7 @@ bool UShooterRespawnComponent::GetCurrentRespawnTime(float& CurrentRespawnTime) 
 
 void UShooterRespawnComponent::EndRespawn()
 {
-    const auto GameMode = Cast<AShooterGameModeBase>(GetWorld()->GetAuthGameMode());
+    const auto GameMode = Cast<AShooterArenaGameMode>(GetWorld()->GetAuthGameMode());
     if (!GameMode)
         return;
 

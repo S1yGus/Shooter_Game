@@ -263,6 +263,13 @@ bool AShooterBaseWeaponActor::CheckShotDirection(const FHitResult& HitResult) co
     return Degries < MaxShotDirectionDegrees;
 }
 
+void AShooterBaseWeaponActor::DecreaseAmmo()
+{
+    --CurrentAmmo.BulletsInClip;
+
+    OnFired.Broadcast();
+}
+
 void AShooterBaseWeaponActor::SpawnBulletShell()
 {
     const auto Transform = FTransform(FRotator(0, FMath::RandRange(0.0f, ShellDropRandomRotationRange), 0), GetShellWindowLocation());

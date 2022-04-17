@@ -42,13 +42,14 @@ void UShooterStaminaComponent::BeginPlay()
 {
     Super::BeginPlay();
 
+    check(MaxStamina > 0.0f);
     SetStamina(MaxStamina);
 }
 
 void UShooterStaminaComponent::SetStamina(float NewStamina)
 {
     Stamina = FMath::Clamp(NewStamina, 0.0f, MaxStamina);
-    OnStaminaChanged.Broadcast(Stamina);
+    OnStaminaChanged.Broadcast(Stamina, GetStaminaPercent());
 
     if (IsOutOfStamina())
     {

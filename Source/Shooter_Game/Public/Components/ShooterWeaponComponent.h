@@ -20,6 +20,9 @@ class SHOOTER_GAME_API UShooterWeaponComponent : public UActorComponent
 public:
     UShooterWeaponComponent();
 
+    FOnWeaponChangedSignature OnWeaponChanged;
+    FOnAmmoInfoChangedSignature OnAmmoInfoChanged;
+
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
@@ -91,5 +94,6 @@ private:
     void OnReloadFinished(USkeletalMeshComponent* MeshComp);
     bool CanReload() const;
     void OnClipEmpty();
+    void OnFired();
     void ChangeClip();
 };

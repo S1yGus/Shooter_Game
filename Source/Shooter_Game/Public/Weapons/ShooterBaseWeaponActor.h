@@ -22,9 +22,10 @@ class SHOOTER_GAME_API AShooterBaseWeaponActor : public AActor
     GENERATED_BODY()
 
 public:
-    FOnClipEmptySignature OnClipEmpty;
-
     AShooterBaseWeaponActor();
+
+    FOnClipEmptySignature OnClipEmpty;
+    FOnFiredSignature OnFired;
 
     virtual void StartFire();
     virtual void StopFire();
@@ -154,7 +155,7 @@ protected:
     bool CheckShotDirection(const FHitResult& HitResult) const;
 
     bool IsClipEmpty() const { return CurrentAmmo.BulletsInClip == 0; };
-    void DecreaseAmmo() { --CurrentAmmo.BulletsInClip; };
+    void DecreaseAmmo();
 
     void SpawnBulletShell();
 

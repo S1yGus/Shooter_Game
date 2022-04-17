@@ -69,12 +69,10 @@ protected:
     bool WantsToSprint = false;
     bool MovingForward = false;
 
-    UFUNCTION()
-    virtual void OnHealthChanged(float Health);
-
     void StartSprint();
     void StopSprint();
 
+    virtual void OnHealthChanged(float Health, float HealthPercent);
     virtual void OnDeath();
     virtual void OnOutOfStamina();
 

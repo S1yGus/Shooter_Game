@@ -10,7 +10,7 @@
 #include "UI/ShooterHealthBarUserWidget.h"
 #include "Components/ShooterHealthComponent.h"
 
-constexpr static float UpdateHealthWidgetVisibilityTimerRate = 0.2f;
+constexpr static float UpdateHealthWidgetVisibilityTimerRate = 0.02f;
 
 AShooterAICharacter::AShooterAICharacter(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterAIWeaponComponent>("WeaponComponent"))
@@ -27,7 +27,7 @@ AShooterAICharacter::AShooterAICharacter(const FObjectInitializer& ObjectInitial
 
     HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("HealthWidgetComponent");
     HealthWidgetComponent->SetupAttachment(GetRootComponent());
-    HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+    HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
     HealthWidgetComponent->SetDrawAtDesiredSize(true);
 }
 
@@ -37,44 +37,41 @@ void AShooterAICharacter::BeginPlay()
 
     check(HealthWidgetComponent);
 
-    OnHealthChanged(HealthComponent->GetHealth());
+    OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->GetHealthPercent());
 
-    GetWorldTimerManager().SetTimer(UpdateHealthWidgetVisibilityTimerHandle,               //
-                                    this,                                                  //
-                                    &AShooterAICharacter::UpdateHealthWidgetVisibility,    //
-                                    UpdateHealthWidgetVisibilityTimerRate,                 //
+    GetWorldTimerManager().SetTimer(UpdateHealthWidgetVisibilityTimerHandle,     //
+                                    this,                                        //
+                                    &AShooterAICharacter::UpdateHealthWidget,    //
+                                    UpdateHealthWidgetVisibilityTimerRate,       //
                                     true);
 }
 
-void AShooterAICharacter::OnHealthChanged(float Health)
+void AShooterAICharacter::OnHealthChanged(float Health, float HealthPercent)
 {
-    Super::OnHealthChanged(Health);
+    Super::OnHealthChanged(Health, HealthPercent);
 
     const auto HealthWidget = Cast<UShooterHealthBarUserWidget>(HealthWidgetComponent->GetUserWidgetObject());
     if (!HealthWidget)
         return;
 
-    HealthWidget->SetHealthPercent(HealthComponent->GetHealthPercent());
+    HealthWidget->SetHealthPercent(HealthPercent);
 }
 
-void AShooterAICharacter::UpdateHealthWidgetVisibility()
+void AShooterAICharacter::UpdateHealthWidget()
 {
-    if (!GetWorld()->GetFirstPlayerController() || !GetWorld()->GetFirstPlayerController()->GetPawn())
+    if (!GetWorld()->GetFirstPlayerController()                             //
+        || !GetWorld()->GetFirstPlayerController()->GetPawn()               //
+        || !GetWorld()->GetFirstPlayerController()->PlayerCameraManager)    //
         return;
 
-    const auto DistanceBetween = FVector::Distance(GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation(), GetActorLocation());
+    const auto PlayerLocation = GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation();
+    const auto DistanceBetween = FVector::Distance(PlayerLocation, GetActorLocation());
+    HealthWidgetComponent->SetVisibility(DistanceBetween < DistanceBetweenThreshold);
 
-    FHitResult HitResult;
-    FCollisionQueryParams CollisionObjectQueryParams;
-    CollisionObjectQueryParams.AddIgnoredActor(GetWorld()->GetFirstPlayerController()->GetPawn());
-    CollisionObjectQueryParams.AddIgnoredActor(this);
-    GetWorld()->LineTraceSingleByChannel(HitResult,                                                                //
-                                         GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation(),    //
-                                         GetActorLocation(),                                                       //
-                                         ECollisionChannel::ECC_Visibility,                                        //
-                                         CollisionObjectQueryParams);
-
-    HealthWidgetComponent->SetVisibility(DistanceBetween < DistanceBetweenThreshold && !HitResult.bBlockingHit, true);
+    auto NewRotation = GetWorld()->GetFirstPlayerController()->PlayerCameraManager->GetCameraRotation();
+    NewRotation.Yaw += 180.0f;
+    NewRotation.Pitch *= -1.0f;
+    HealthWidgetComponent->SetWorldRotation(NewRotation);
 }
 
 void AShooterAICharacter::OnDeath()

@@ -6,6 +6,14 @@
 
 void UShooterBaseAnimatedUserWidget::ShowStartupAnimation()
 {
+
     PlayAnimation(StartupAnimation);
-    UGameplayStatics::PlaySound2D(GetWorld(), OpenSound);
+    UGameplayStatics::PlaySound2D(GetWorld(), StartupSound);
+}
+
+void UShooterBaseAnimatedUserWidget::ShowFadeoutAnimation()
+{
+
+    PlayAnimation(FadeoutAnimation);
+    UGameplayStatics::PlaySound2D(GetWorld(), FadeoutSound);
 }

@@ -6,7 +6,7 @@
 #include "Components/DecalComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "GameFramework/Character.h"
-#include "UI/ShooterImpactIndicatorActor.h"
+#include "UI/Impact/ShooterImpactIndicatorActor.h"
 #include "Components/ShooterHealthComponent.h"
 
 UShooterBaseVFXComponent::UShooterBaseVFXComponent()

@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/ShooterStaminaComponent.h"
+#include "ShooterArenaGameMode.h"
 
 constexpr static float CharacterRotationSpeed = 1.5f;
 constexpr static float StartTurnAngle = 30.0f;
@@ -102,9 +103,10 @@ void AShooterPlayerCharacter::OnDeath()
 
     WeaponComponent->Zoom(false);
 
-    if (!Controller)
+    if (!Controller || !GetWorld()->GetAuthGameMode<AShooterArenaGameMode>())
         return;
 
+    GetWorld()->GetAuthGameMode<AShooterArenaGameMode>()->InSpectating();
     Controller->ChangeState(NAME_Spectating);
 }
 

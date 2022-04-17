@@ -34,7 +34,7 @@ void AShooterBaseCharacter::BeginPlay()
     check(GetMesh());
 
     HealthComponent->OnDeath.AddUObject(this, &AShooterBaseCharacter::OnDeath);
-    HealthComponent->OnHealthChanged.AddDynamic(this, &AShooterBaseCharacter::OnHealthChanged);
+    HealthComponent->OnHealthChanged.AddUObject(this, &AShooterBaseCharacter::OnHealthChanged);
     StaminaComponent->OnOutOfStamina.AddUObject(this, &AShooterBaseCharacter::OnOutOfStamina);
     LandedDelegate.AddDynamic(this, &AShooterBaseCharacter::OnGroundLanded);
 }
@@ -111,6 +111,10 @@ void AShooterBaseCharacter::StopSprint()
     WantsToSprint = false;
 }
 
+void AShooterBaseCharacter::OnHealthChanged(float Health, float HealthPercent)
+{
+}
+
 void AShooterBaseCharacter::OnDeath()
 {
     VFXComponent->PlayDeathSound();
@@ -130,10 +134,6 @@ void AShooterBaseCharacter::OnDeath()
 void AShooterBaseCharacter::OnOutOfStamina()
 {
     StopSprint();
-}
-
-void AShooterBaseCharacter::OnHealthChanged(float Health)
-{
 }
 
 void AShooterBaseCharacter::OnGroundLanded(const FHitResult& Hit)

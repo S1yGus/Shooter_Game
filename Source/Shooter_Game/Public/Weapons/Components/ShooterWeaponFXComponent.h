@@ -43,11 +43,11 @@ protected:
     FName TraceEndVariableName = "TraceEnd";
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
-    USoundCue* NoAmmoSound;
+    USoundCue* NoAmmoSound = nullptr;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
-    USoundCue* SwitchModeSound;
+    USoundCue* SwitchModeSound = nullptr;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
-    USoundCue* SwitchFlashlight;
+    USoundCue* SwitchFlashlight = nullptr;
 };
