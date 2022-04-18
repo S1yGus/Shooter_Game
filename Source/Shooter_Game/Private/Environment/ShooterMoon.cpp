@@ -29,7 +29,7 @@ AShooterMoon::AShooterMoon()
     DirectionalLightComponent->bEnableLightShaftOcclusion = true;
     DirectionalLightComponent->bEnableLightShaftBloom = true;
     DirectionalLightComponent->SetDynamicShadowCascades(4);
-    DirectionalLightComponent->bUsedAsAtmosphereSunLight = true;
+    DirectionalLightComponent->bAtmosphereSunLight = true;
     DirectionalLightComponent->AtmosphereSunLightIndex = 1;
     DirectionalLightComponent->bCastCloudShadows = true;
     DirectionalLightComponent->SetupAttachment(GetRootComponent());

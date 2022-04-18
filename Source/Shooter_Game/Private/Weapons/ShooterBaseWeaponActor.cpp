@@ -109,7 +109,7 @@ void AShooterBaseWeaponActor::BeginPlay()
 
     CurrentAmmo = DefaultAmmo;
 
-    SpotLight->AttachTo(WeaponMesh, FlashlightSocketName, EAttachLocation::SnapToTarget);
+    SpotLight->AttachToComponent(WeaponMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, FlashlightSocketName);
 }
 
 void AShooterBaseWeaponActor::MakeMainShot()
@@ -335,8 +335,8 @@ bool AShooterBaseWeaponActor::CalculateRecoil()
     CurrentPitchRecoil = FMath::RandRange(MinPitchRecoilMagnitude, MaxPitchRecoilMagnitude) / NumberOfTicks;
     CurrentYawRecoil = FMath::RandRange(MinYawRecoilMagnitude, MaxYawRecoilMagnitude) / NumberOfTicks;
 
-    CurrentPitchRecoil /= OwnerPawn->GetController<APlayerController>()->InputPitchScale;
-    CurrentYawRecoil /= OwnerPawn->GetController<APlayerController>()->InputYawScale;
+    CurrentPitchRecoil /= OwnerPawn->GetController<APlayerController>()->InputPitchScale_DEPRECATED;
+    CurrentYawRecoil /= OwnerPawn->GetController<APlayerController>()->InputYawScale_DEPRECATED;
 
     CurrentRecoveryPitchRecoil = CurrentPitchRecoil / -RecoilRecoverScale;
     CurrentRecoveryYawRecoil = CurrentYawRecoil / -RecoilRecoverScale;
