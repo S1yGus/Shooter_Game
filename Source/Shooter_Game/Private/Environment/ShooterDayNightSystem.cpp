@@ -30,8 +30,6 @@ void AShooterDayNightSystem::OnConstruction(const FTransform& Transform)
     Super::OnConstruction(Transform);
 
     Time = Day * SecondsInDay + Hour * SecondsInHour + Minute * SecondsInMinute + Second;
-    SunPositionYawOffset = Sun->GetActorRotation().Yaw;
-    MoonPositionYawOffset = Moon->GetActorRotation().Yaw;
 
     UpdateSunRotation();
     UpdateMoon();

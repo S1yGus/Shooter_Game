@@ -65,6 +65,12 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Moon");
     FName PhaseParameterName = "Phase";
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Sun");
+    float SunPositionYawOffset = 0.0f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Moon");
+    float MoonPositionYawOffset = 0.0f;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings");
     UMaterialParameterCollection* WeatherParameterCollection;
 
@@ -78,12 +84,6 @@ private:
 
     UPROPERTY();
     float Time = 0.0f;
-
-    UPROPERTY();
-    float SunPositionYawOffset = 0.0f;
-
-    UPROPERTY();
-    float MoonPositionYawOffset = 0.0f;
 
     float GetTimerRate() const;
     void DayNightSystemTimerTick();

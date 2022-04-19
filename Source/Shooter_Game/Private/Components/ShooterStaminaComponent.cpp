@@ -1,27 +1,16 @@
 // Shooter_Game, All rights reserved.
 
 #include "Components/ShooterStaminaComponent.h"
+#include "Player/ShooterBaseCharacter.h"
 
 UShooterStaminaComponent::UShooterStaminaComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UShooterStaminaComponent::UsingStamina(bool InUse, float StaminaInUseValue)
-{
-    if (InUse && StaminaInUseValue >= 0)
-        return;
-
-    StaminaInUse = InUse;
-    StaminaUpdatValue = InUse ? StaminaInUseValue : StaminaRecoveryUpdateValue;
-    const auto Delay = InUse ? 0.0f : StaminaRecoveryDelay;
-
-    GetWorld()->GetTimerManager().SetTimer(StaminaUpdateTimerHandle, this, &UShooterStaminaComponent::OnStaminaUpdateTick, StaminaUpdateTime, true, Delay);
-}
-
 bool UShooterStaminaComponent::UsingStaminaValidCheck(float StaminaToUse)
 {
-    if (Stamina - StaminaToUse < 0)
+    if (Stamina - StaminaToUse < 0.0f)
     {
         OnNotEnoughStamina.Broadcast();
         return false;
@@ -29,11 +18,7 @@ bool UShooterStaminaComponent::UsingStaminaValidCheck(float StaminaToUse)
     else
     {
         SetStamina(Stamina - StaminaToUse);
-        if (!StaminaInUse)
-        {
-            UsingStamina(false);
-        }
-
+        CurrentStaminaRecoveryDelay = 0.0f;
         return true;
     }
 }
@@ -44,6 +29,8 @@ void UShooterStaminaComponent::BeginPlay()
 
     check(MaxStamina > 0.0f);
     SetStamina(MaxStamina);
+
+    GetWorld()->GetTimerManager().SetTimer(StaminaUpdateTimerHandle, this, &UShooterStaminaComponent::OnStaminaUpdateTick, StaminaUpdateTime, true);
 }
 
 void UShooterStaminaComponent::SetStamina(float NewStamina)
@@ -54,16 +41,33 @@ void UShooterStaminaComponent::SetStamina(float NewStamina)
     if (IsOutOfStamina())
     {
         OnOutOfStamina.Broadcast();
-        UsingStamina(false);
     }
+}
+
+void UShooterStaminaComponent::UsingStamina(float StaminaToUse)
+{
+    SetStamina(Stamina - StaminaToUse);
 }
 
 void UShooterStaminaComponent::OnStaminaUpdateTick()
 {
-    SetStamina(Stamina + StaminaUpdatValue);
-
-    if (FMath::IsNearlyEqual(Stamina, MaxStamina))
+    if (GetOwner<AShooterBaseCharacter>()->IsSprinting())
     {
-        GetWorld()->GetTimerManager().ClearTimer(StaminaUpdateTimerHandle);
+        UsingStamina(SprintStaminaFlow);
+        CurrentStaminaRecoveryDelay = 0.0f;
+    }
+    else
+    {
+        if (CurrentStaminaRecoveryDelay >= StaminaRecoveryDelay)
+        {
+            if (FMath::IsNearlyEqual(Stamina, MaxStamina))
+                return;
+
+            UsingStamina(-StaminaRecoveryUpdateValue);
+        }
+        else
+        {
+            CurrentStaminaRecoveryDelay += StaminaUpdateTime;
+        }
     }
 }

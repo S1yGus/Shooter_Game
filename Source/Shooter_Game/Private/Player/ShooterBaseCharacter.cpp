@@ -55,7 +55,7 @@ void AShooterBaseCharacter::Reset()
 
 void AShooterBaseCharacter::Jump()
 {
-    if (GetCharacterMovement()->IsFalling() || !StaminaComponent->UsingStaminaValidCheck(JumpStaminaCost))
+    if (GetCharacterMovement()->IsFalling() || !StaminaComponent->UsingStaminaValidCheck(StaminaComponent->GetJumpStaminaCost()))
         return;
 
     Super::Jump();
@@ -69,7 +69,7 @@ void AShooterBaseCharacter::SetColor(const FLinearColor& Color)
 
 bool AShooterBaseCharacter::IsSprinting() const
 {
-    return WantsToSprint && MovingForward && !GetVelocity().IsZero();
+    return WantsToSprint && MovingForward && !GetMovementComponent()->IsFalling() && !GetVelocity().IsZero();
 }
 
 float AShooterBaseCharacter::GetMovementDirection() const
@@ -91,12 +91,13 @@ FRotator AShooterBaseCharacter::GetViewDeltaRotator() const
 
 void AShooterBaseCharacter::StartSprint()
 {
+    if (StaminaComponent->IsOutOfStamina())
+        return;
+
     WantsToSprint = true;
 
     if (IsSprinting())
     {
-        StaminaComponent->UsingStamina(true, SprintStaminaFlow);
-
         WeaponComponent->StopFire();
         WeaponComponent->Zoom(false);
     }
@@ -104,10 +105,6 @@ void AShooterBaseCharacter::StartSprint()
 
 void AShooterBaseCharacter::StopSprint()
 {
-    if (!StaminaComponent->IsStaminaInUse())
-        return;
-
-    StaminaComponent->UsingStamina(false);
     WantsToSprint = false;
 }
 

@@ -19,14 +19,20 @@ public:
     FOnNotEnoughStaminaSignature OnNotEnoughStamina;
     FOnStaminaChangedSignature OnStaminaChanged;
 
-    void UsingStamina(bool InUse, float StaminaInUseValue = 0.0f);
     bool UsingStaminaValidCheck(float StaminaToUse);
     float GetStaminaPercent() const { return Stamina / MaxStamina; }
-    bool IsStaminaInUse() { return StaminaInUse; }
+    bool IsOutOfStamina() const { return FMath::IsNearlyZero(Stamina); }
+    float GetJumpStaminaCost() const { return JumpStaminaCost; }
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina", Meta = (ClampMin = "0.0", ClampMax = "1000.0"))
     float MaxStamina = 100.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina", Meta = (ClampMin = "0.1", ClampMax = "100.0"))
+    float JumpStaminaCost = 20.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina", Meta = (ClampMin = "-0.1", ClampMax = "-100.0"))
+    float SprintStaminaFlow = 2.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina", Meta = (ClampMin = "0.0", ClampMax = "100.0"))
     float StaminaUpdateTime = 0.1f;
@@ -40,14 +46,13 @@ protected:
     virtual void BeginPlay() override;
 
 private:
-    float Stamina = 0.0f;
-    float StaminaUpdatValue = 0.0f;
-    bool StaminaInUse = false;
-
     FTimerHandle StaminaUpdateTimerHandle;
 
+    float Stamina = 0.0f;
+    float CurrentStaminaRecoveryDelay = 0.0f;
+
     void SetStamina(float NewStamina);
-    bool IsOutOfStamina() const { return FMath::IsNearlyZero(Stamina); }
+    void UsingStamina(float StaminaToUse);
 
     void OnStaminaUpdateTick();
 };
