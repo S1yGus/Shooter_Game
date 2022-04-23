@@ -48,7 +48,7 @@ void UShooterWeaponComponent::StopFire()
     CurrentWeapon->StopFire();
 }
 
-void UShooterWeaponComponent::Zoom(bool Condition)
+void UShooterWeaponComponent::Zoom(bool Condition, bool Force)
 {
     if (!CurrentWeapon || !CurrentWeapon->IsCanZoom())
         return;
@@ -65,6 +65,13 @@ void UShooterWeaponComponent::Zoom(bool Condition)
 
     TargetFOVAngle = Condition ? CurrentWeapon->GetZoomFOVAngle() : DefaultFOVAngle;
     ZoomingNow = Condition;
+
+    if (Force)
+    {
+        GetWorld()->GetTimerManager().ClearTimer(ZoomTimerHandle);
+        GetPlayerController()->PlayerCameraManager->SetFOV(TargetFOVAngle);
+        return;
+    }
 
     if (GetWorld()->GetTimerManager().IsTimerActive(ZoomTimerHandle))
         return;

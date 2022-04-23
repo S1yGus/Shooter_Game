@@ -12,9 +12,6 @@
 #include "Components/ShooterStaminaComponent.h"
 #include "ShooterArenaGameMode.h"
 
-constexpr static float CharacterRotationSpeed = 1.5f;
-constexpr static float StartTurnAngle = 30.0f;
-
 AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterPlayerVFXComponent>("VFXComponent"))
 {
@@ -78,9 +75,9 @@ void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
     PlayerInputComponent->BindAction<FEquipWeaponSignature>("FourthWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
                                                             EWeaponType::Launcher);
 
-    DECLARE_DELEGATE_OneParam(FZoomSignature, bool);
-    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::Zoom, true);
-    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Released, WeaponComponent, &UShooterWeaponComponent::Zoom, false);
+    DECLARE_DELEGATE_TwoParams(FZoomSignature, bool, bool);
+    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::Zoom, true, false);
+    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Released, WeaponComponent, &UShooterWeaponComponent::Zoom, false, false);
 }
 
 void AShooterPlayerCharacter::TurnOff()
@@ -101,7 +98,7 @@ void AShooterPlayerCharacter::OnDeath()
 {
     Super::OnDeath();
 
-    WeaponComponent->Zoom(false);
+    WeaponComponent->Zoom(false, true);
 
     if (!Controller || !GetWorld()->GetAuthGameMode<AShooterArenaGameMode>())
         return;

@@ -2,6 +2,7 @@
 
 #include "Weapons/ShooterShotgunWeaponActor.h"
 #include "Weapons/Components/ShooterWeaponFXComponent.h"
+#include "Weapons/Components/ShooterRecoilComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
@@ -40,8 +41,8 @@ void AShooterShotgunWeaponActor::MakeMainShot()
     MakeFX();
     if (GetController()->IsPlayerController())
     {
-        StopRecoilRecoverTimer();
-        MakeRecoil();
+        RecoilComponent->StopRecoilRecoverTimer();
+        RecoilComponent->MakeRecoil();
     }
 }
 

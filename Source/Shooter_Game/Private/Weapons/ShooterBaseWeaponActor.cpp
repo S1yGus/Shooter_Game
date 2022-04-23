@@ -2,15 +2,16 @@
 
 #include "Weapons/ShooterBaseWeaponActor.h"
 #include "Weapons/Components/ShooterWeaponFXComponent.h"
+#include "Weapons/Components/ShooterRecoilComponent.h"
 #include "Weapons/ShooterProjectileBaseActor.h"
 #include "Weapons/ShooterShellBaseActor.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/ShooterHealthComponent.h"
+#include "Components/ShooterStaminaComponent.h"
 #include "Components/ShooterWeaponComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/GameplayStatics.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Player/ShooterBaseCharacter.h"
 #include "ShooterUtils.h"
 #include "Sound/SoundCue.h"
@@ -29,6 +30,7 @@ AShooterBaseWeaponActor::AShooterBaseWeaponActor()
     SetRootComponent(WeaponMesh);
 
     FXComponent = CreateDefaultSubobject<UShooterWeaponFXComponent>("WeaonFXComponent");
+    RecoilComponent = CreateDefaultSubobject<UShooterRecoilComponent>("RecoilComponent");
 
     SpotLight = CreateDefaultSubobject<USpotLightComponent>("SpotLightComponent");
     SpotLight->SetHiddenInGame(true);
@@ -136,8 +138,8 @@ void AShooterBaseWeaponActor::MakeMainShot()
     MakeFX();
     if (GetController()->IsPlayerController())
     {
-        StopRecoilRecoverTimer();
-        MakeRecoil();
+        RecoilComponent->StopRecoilRecoverTimer();
+        RecoilComponent->MakeRecoil();
     }
 }
 
@@ -237,6 +239,7 @@ bool AShooterBaseWeaponActor::MakeTrace(FHitResult& HitResult, const FVector& Tr
 FVector AShooterBaseWeaponActor::GetShotDirection(const FVector& Direction) const
 {
     const auto WeaponStatsData = AlternativeFireMode ? AlternativeWeaponStatsData : MainWeaponStatsData;
+
     auto CurrentShotSpreadRange = WeaponStatsData.AIShotSpread;
     if (GetController()->IsPlayerController() && GetOwner()->FindComponentByClass<UShooterWeaponComponent>())
     {
@@ -244,14 +247,21 @@ FVector AShooterBaseWeaponActor::GetShotDirection(const FVector& Direction) cons
         CurrentShotSpreadRange = ZoomingNow ? WeaponStatsData.AimedShotSpread : WeaponStatsData.ShotSpread;
     }
 
-    float ConeHalfAngleRad = FMath::DegreesToRadians(CurrentShotSpreadRange.X / 2);
-    const auto HealthComponent = GetOwner()->FindComponentByClass<UShooterHealthComponent>();
-    if (HealthComponent)
+    float PercentAmount = 0.0f;
+    float MaxPercent = 0.0f;
+    if (const auto StaminaComponent = GetOwner()->FindComponentByClass<UShooterStaminaComponent>())
     {
-        const auto CurrentHealth = HealthComponent->GetHealth();
-        const auto CurrentShotSpread = FMath::GetMappedRangeValueClamped(FVector2D(100.0f, 1.0f), CurrentShotSpreadRange, CurrentHealth);
-        ConeHalfAngleRad = FMath::DegreesToRadians(CurrentShotSpread / 2);
+        PercentAmount += StaminaComponent->GetStaminaPercent();
+        MaxPercent += 1.0f;
     }
+    if (const auto HealthComponent = GetOwner()->FindComponentByClass<UShooterHealthComponent>())
+    {
+        PercentAmount += HealthComponent->GetHealthPercent();
+        MaxPercent += 1.0f;
+    }
+
+    const auto CurrentShotSpread = FMath::GetMappedRangeValueClamped(FVector2D(MaxPercent, 0.0f), CurrentShotSpreadRange, PercentAmount);
+    const auto ConeHalfAngleRad = FMath::DegreesToRadians(CurrentShotSpread / 2);
 
     return FMath::VRandCone(Direction, ConeHalfAngleRad);
 }
@@ -283,22 +293,6 @@ void AShooterBaseWeaponActor::SpawnBulletShell()
     Shell->FinishSpawning(Transform);
 }
 
-void AShooterBaseWeaponActor::MakeRecoil()
-{
-    if (!CalculateRecoil())
-        return;
-
-    GetWorldTimerManager().SetTimer(RecoilTimerHandle, this, &AShooterBaseWeaponActor::RecoilTimerTick, RecoilTimerRate, true);
-}
-
-void AShooterBaseWeaponActor::StopRecoilRecoverTimer()
-{
-    if (!GetWorldTimerManager().IsTimerActive(RecoilRecoveryTimerHandle))
-        return;
-
-    GetWorldTimerManager().ClearTimer(RecoilRecoveryTimerHandle);
-}
-
 FVector AShooterBaseWeaponActor::GetShellWindowLocation() const
 {
     return WeaponMesh->GetSocketLocation(ShellWindowSocketName);
@@ -321,56 +315,4 @@ bool AShooterBaseWeaponActor::GetViewPoint(FVector& ViewLocation, FRotator& View
 FVector AShooterBaseWeaponActor::GetShotDirectionNormal(const FHitResult& HitResult) const
 {
     return (HitResult.ImpactPoint - GetMuzzleLocation()).GetSafeNormal();
-}
-
-bool AShooterBaseWeaponActor::CalculateRecoil()
-{
-    const auto OwnerPawn = GetOwner<APawn>();
-    if (!OwnerPawn)
-        return false;
-
-    InitialControllerInputRotation = OwnerPawn->GetViewRotation();
-
-    const auto NumberOfTicks = RecoilTime / RecoilTimerRate;
-    CurrentPitchRecoil = FMath::RandRange(MinPitchRecoilMagnitude, MaxPitchRecoilMagnitude) / NumberOfTicks;
-    CurrentYawRecoil = FMath::RandRange(MinYawRecoilMagnitude, MaxYawRecoilMagnitude) / NumberOfTicks;
-
-    CurrentPitchRecoil /= OwnerPawn->GetController<APlayerController>()->InputPitchScale_DEPRECATED;
-    CurrentYawRecoil /= OwnerPawn->GetController<APlayerController>()->InputYawScale_DEPRECATED;
-
-    CurrentRecoveryPitchRecoil = CurrentPitchRecoil / -RecoilRecoverScale;
-    CurrentRecoveryYawRecoil = CurrentYawRecoil / -RecoilRecoverScale;
-
-    return true;
-}
-
-void AShooterBaseWeaponActor::RecoilTimerTick()
-{
-    GetOwner<APawn>()->AddControllerPitchInput(CurrentPitchRecoil);
-    GetOwner<APawn>()->AddControllerYawInput(CurrentYawRecoil);
-
-    CurrentRecoilTime += RecoilTimerRate;
-    if (CurrentRecoilTime >= RecoilTime)
-    {
-        GetWorldTimerManager().ClearTimer(RecoilTimerHandle);
-        CurrentRecoilTime = 0.0f;
-
-        GetWorldTimerManager().SetTimer(RecoilRecoveryTimerHandle, this, &AShooterBaseWeaponActor::RecoilRecoveryTimerTick, RecoilTimerRate, true);
-    }
-}
-
-void AShooterBaseWeaponActor::RecoilRecoveryTimerTick()
-{
-    const auto CurrentControllerInputRotation = GetOwner<APawn>()->GetViewRotation();
-    const auto Delta = UKismetMathLibrary::NormalizedDeltaRotator(CurrentControllerInputRotation, InitialControllerInputRotation);
-    if (Delta.Pitch >= MaxPitchRecoilMagnitude + RecoilRecoverPitchAdditionalOffset             //
-        || FMath::Abs(Delta.Yaw) >= MaxYawRecoilMagnitude + RecoilRecoverYawAdditionalOffset    //
-        || Delta.Pitch <= 0)
-    {
-        GetWorldTimerManager().ClearTimer(RecoilRecoveryTimerHandle);
-        return;
-    }
-
-    GetOwner<APawn>()->AddControllerPitchInput(CurrentRecoveryPitchRecoil);
-    GetOwner<APawn>()->AddControllerYawInput(CurrentRecoveryYawRecoil);
 }

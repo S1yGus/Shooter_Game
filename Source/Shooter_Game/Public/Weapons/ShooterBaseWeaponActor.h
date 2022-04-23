@@ -12,6 +12,7 @@ DEFINE_LOG_CATEGORY_STATIC(BaseWeaponLog, All, All)
 class USkeletalMeshComponent;
 class AShooterBaseCharacter;
 class UShooterWeaponFXComponent;
+class UShooterRecoilComponent;
 class AShooterProjectileBaseActor;
 class AShooterShellBaseActor;
 class USpotLightComponent;
@@ -57,6 +58,9 @@ protected:
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterWeaponFXComponent* FXComponent;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UShooterRecoilComponent* RecoilComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     USpotLightComponent* SpotLight;
@@ -106,33 +110,6 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom", Meta = (EditCondition = "CanZoom"))
     float ZoomFOVAngle = 70.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
-    float MinPitchRecoilMagnitude = 2.5f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
-    float MaxPitchRecoilMagnitude = 2.5f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
-    float MinYawRecoilMagnitude = -0.5f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
-    float MaxYawRecoilMagnitude = 0.5f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
-    float RecoilTime = 0.1f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
-    float RecoilTimerRate = 0.007f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
-    float RecoilRecoverScale = 4.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
-    float RecoilRecoverPitchAdditionalOffset = 0.5f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
-    float RecoilRecoverYawAdditionalOffset = 2.0f;
-
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     FWeaponUIData UIData;
 
@@ -159,28 +136,12 @@ protected:
 
     void SpawnBulletShell();
 
-    void MakeRecoil();
-    void StopRecoilRecoverTimer();
-
 private:
     FAmmoData CurrentAmmo;
-
-    FTimerHandle RecoilTimerHandle;
-    FTimerHandle RecoilRecoveryTimerHandle;
-    FRotator InitialControllerInputRotation;
-    float CurrentRecoilTime = 0.0f;
-    float CurrentPitchRecoil = 0.0f;
-    float CurrentYawRecoil = 0.0f;
-    float CurrentRecoveryPitchRecoil = 0.0f;
-    float CurrentRecoveryYawRecoil = 0.0f;
 
     FVector GetShellWindowLocation() const;
     FQuat GetShellWindowQuaternion() const;
 
     bool GetViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
     FVector GetShotDirectionNormal(const FHitResult& HitResult) const;
-
-    bool CalculateRecoil();
-    void RecoilTimerTick();
-    void RecoilRecoveryTimerTick();
 };

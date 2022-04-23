@@ -29,7 +29,7 @@ public:
     virtual void StartFire();
     void StopFire();
 
-    void Zoom(bool Condition);
+    void Zoom(bool Condition, bool Force = false);
     bool IsZoomingNow() const { return ZoomingNow; }
 
     void SwitchFireMode();
