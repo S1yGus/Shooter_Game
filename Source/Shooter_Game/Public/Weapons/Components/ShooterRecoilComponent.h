@@ -37,7 +37,7 @@ protected:
     float RecoilRecoverScale = 4.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
-    float RecoilRecoverPitchAdditionalOffset = 0.5f;
+    float RecoilRecoverPitchAdditionalOffset = 1.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
     float RecoilRecoverYawAdditionalOffset = 2.0f;

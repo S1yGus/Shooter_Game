@@ -19,7 +19,6 @@ public:
     AShooterPlayerCharacter(const FObjectInitializer& ObjectInitializer);
 
     virtual void BeginPlay() override;
-    virtual void Tick(float DeltaSeconds) override;
     virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     virtual void TurnOff() override;
@@ -40,6 +39,8 @@ protected:
 private:
     void MoveForward(float Amount);
     void MoveRight(float Amount);
+    void LookUp(float Amount);
+    void LookRight(float Amount);
 
     UFUNCTION()
     void OnCameraComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,    //

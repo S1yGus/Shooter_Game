@@ -7,7 +7,7 @@
 #include "ShooterCoreTypes.h"
 #include "ShooterGameInstance.generated.h"
 
-class UShooterSettingsSaveGame;
+class UShooterSettingsSave;
 class USoundMix;
 class USoundClass;
 
@@ -17,8 +17,9 @@ class SHOOTER_GAME_API UShooterGameInstance : public UGameInstance
     GENERATED_BODY()
 
 public:
-    UShooterSettingsSaveGame* GetSettingsSave() const { return SettingsSave; }
+    UShooterSettingsSave* GetSettingsSave() const { return SettingsSave; }
     void SaveSettingsSave();
+
     USoundMix* GetDefaultSoundMix() const { return DefaultSoundMix; }
     USoundClass* GetMasterSoundClass() const { return MasterSoundClass; }
     USoundClass* GetCharacterSoundClass() const { return CharacterSoundClass; }
@@ -59,7 +60,7 @@ protected:
 
 private:
     UPROPERTY()
-    UShooterSettingsSaveGame* SettingsSave = nullptr;
+    UShooterSettingsSave* SettingsSave = nullptr;
 
     FLevelData NewGameLevelData;
 

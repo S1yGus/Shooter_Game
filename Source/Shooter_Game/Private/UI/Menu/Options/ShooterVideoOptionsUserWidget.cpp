@@ -57,6 +57,16 @@ void UShooterVideoOptionsUserWidget::SetupSettingsComponents()
         ShadowComboBox->OnSelectionChanged.AddDynamic(this, &UShooterVideoOptionsUserWidget::OnSelectionChangedShadow);
     }
 
+    if (IlluminationComboBox)
+    {
+        IlluminationComboBox->OnSelectionChanged.AddDynamic(this, &UShooterVideoOptionsUserWidget::OnSelectionChangedIllumination);
+    }
+
+    if (ReflectionsComboBox)
+    {
+        ReflectionsComboBox->OnSelectionChanged.AddDynamic(this, &UShooterVideoOptionsUserWidget::OnSelectionChangedReflections);
+    }
+
     if (TextureComboBox)
     {
         TextureComboBox->OnSelectionChanged.AddDynamic(this, &UShooterVideoOptionsUserWidget::OnSelectionChangedTexture);
@@ -88,6 +98,8 @@ void UShooterVideoOptionsUserWidget::UpdateSettings()
     UpdateAntiAliasingComboBox();
     UpdatePostProcessingComboBox();
     UpdateShadowComboBox();
+    UpdateIlluminationComboBox();
+    UpdateReflectionsComboBox();
     UpdateTextureComboBox();
     UpdateEffectComboBox();
     UpdateFoliageComboBox();
@@ -188,6 +200,24 @@ void UShooterVideoOptionsUserWidget::UpdateShadowComboBox()
 
     const auto ShadowsQuality = GEngine->GetGameUserSettings()->GetShadowQuality();
     ShadowComboBox->SetSelectedIndex(ShadowsQuality);
+}
+
+void UShooterVideoOptionsUserWidget::UpdateIlluminationComboBox()
+{
+    if (!IlluminationComboBox)
+        return;
+
+    const auto IlluminationQuality = GEngine->GetGameUserSettings()->GetGlobalIlluminationQuality();
+    IlluminationComboBox->SetSelectedIndex(IlluminationQuality);
+}
+
+void UShooterVideoOptionsUserWidget::UpdateReflectionsComboBox()
+{
+    if (!ReflectionsComboBox)
+        return;
+
+    const auto ReflectionQuality = GEngine->GetGameUserSettings()->GetReflectionQuality();
+    ReflectionsComboBox->SetSelectedIndex(ReflectionQuality);
 }
 
 void UShooterVideoOptionsUserWidget::UpdateTextureComboBox()
@@ -312,6 +342,26 @@ void UShooterVideoOptionsUserWidget::OnSelectionChangedShadow(FString SelectedIt
 
     const auto ShadowQuality = ShadowComboBox->FindOptionIndex(SelectedItem);
     GEngine->GetGameUserSettings()->SetShadowQuality(ShadowQuality);
+    GEngine->GetGameUserSettings()->ApplyNonResolutionSettings();
+}
+
+void UShooterVideoOptionsUserWidget::OnSelectionChangedIllumination(FString SelectedItem, ESelectInfo::Type SelectionType)
+{
+    if (SelectionType == ESelectInfo::Direct)
+        return;
+
+    const auto IlluminationQuality = IlluminationComboBox->FindOptionIndex(SelectedItem);
+    GEngine->GetGameUserSettings()->SetGlobalIlluminationQuality(IlluminationQuality);
+    GEngine->GetGameUserSettings()->ApplyNonResolutionSettings();
+}
+
+void UShooterVideoOptionsUserWidget::OnSelectionChangedReflections(FString SelectedItem, ESelectInfo::Type SelectionType)
+{
+    if (SelectionType == ESelectInfo::Direct)
+        return;
+
+    const auto ReflectionsQuality = ReflectionsComboBox->FindOptionIndex(SelectedItem);
+    GEngine->GetGameUserSettings()->SetReflectionQuality(ReflectionsQuality);
     GEngine->GetGameUserSettings()->ApplyNonResolutionSettings();
 }
 

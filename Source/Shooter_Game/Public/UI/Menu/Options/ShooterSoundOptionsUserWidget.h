@@ -8,6 +8,7 @@
 
 class UComboBoxString;
 class USlider;
+class UShooterSettingsSave;
 
 UCLASS()
 class SHOOTER_GAME_API UShooterSoundOptionsUserWidget : public UUserWidget
@@ -34,6 +35,7 @@ protected:
 
 private:
     void SetupSettingsComponents();
+    UShooterSettingsSave* GetSettingsSave();
 
     void UpdateSettings();
     void UpdateSoundQualityComboBox();

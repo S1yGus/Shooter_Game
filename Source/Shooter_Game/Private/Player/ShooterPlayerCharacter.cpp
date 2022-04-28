@@ -11,6 +11,10 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/ShooterStaminaComponent.h"
 #include "ShooterArenaGameMode.h"
+#include "ShooterGameInstance.h"
+#include "ShooterSettingsSave.h"
+
+constexpr static float MouseDefaultSensValue = 100.0f;
 
 AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterPlayerVFXComponent>("VFXComponent"))
@@ -41,19 +45,14 @@ void AShooterPlayerCharacter::BeginPlay()
     CameraCollisionComponent->OnComponentEndOverlap.AddDynamic(this, &AShooterPlayerCharacter::OnCameraComponentEndOverlap);
 }
 
-void AShooterPlayerCharacter::Tick(float DeltaSeconds)
-{
-    Super::Tick(DeltaSeconds);
-}
-
 void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
     PlayerInputComponent->BindAxis("MoveForward", this, &AShooterPlayerCharacter::MoveForward);
     PlayerInputComponent->BindAxis("MoveRight", this, &AShooterPlayerCharacter::MoveRight);
-    PlayerInputComponent->BindAxis("LookUp", this, &AShooterPlayerCharacter::AddControllerPitchInput);
-    PlayerInputComponent->BindAxis("LookRight", this, &AShooterPlayerCharacter::AddControllerYawInput);
+    PlayerInputComponent->BindAxis("LookUp", this, &AShooterPlayerCharacter::LookUp);
+    PlayerInputComponent->BindAxis("LookRight", this, &AShooterPlayerCharacter::LookRight);
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AShooterPlayerCharacter::Jump);
     PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AShooterPlayerCharacter::StartSprint);
     PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AShooterPlayerCharacter::StopSprint);
@@ -125,6 +124,34 @@ void AShooterPlayerCharacter::MoveRight(float Amount)
 
     const auto ControllerRightVector = UKismetMathLibrary::GetRightVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
     AddMovementInput(ControllerRightVector, Amount);
+}
+
+void AShooterPlayerCharacter::LookUp(float Amount)
+{
+    float MouseYSens = MouseDefaultSensValue;
+    if (const auto GemeInstance = Cast<UShooterGameInstance>(GetGameInstance()))
+    {
+        if (const auto SettingsSave = GemeInstance->GetSettingsSave())
+        {
+            MouseYSens = WeaponComponent->IsZoomingNow() ? SettingsSave->GetControlSettings().MouseAimedYSens : SettingsSave->GetControlSettings().MouseYSens;
+        }
+    }
+
+    AddControllerPitchInput(Amount * MouseYSens * GetWorld()->GetDeltaSeconds());
+}
+
+void AShooterPlayerCharacter::LookRight(float Amount)
+{
+    float MouseXSens = MouseDefaultSensValue;
+    if (const auto GemeInstance = Cast<UShooterGameInstance>(GetGameInstance()))
+    {
+        if (const auto SettingsSave = GemeInstance->GetSettingsSave())
+        {
+            MouseXSens = WeaponComponent->IsZoomingNow() ? SettingsSave->GetControlSettings().MouseAimedXSens : SettingsSave->GetControlSettings().MouseXSens;
+        }
+    }
+
+    AddControllerYawInput(Amount * MouseXSens * GetWorld()->GetDeltaSeconds());
 }
 
 void AShooterPlayerCharacter::OnCameraComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,    //

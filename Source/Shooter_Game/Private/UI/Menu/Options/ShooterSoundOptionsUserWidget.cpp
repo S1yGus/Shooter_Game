@@ -4,7 +4,7 @@
 #include "Components/ComboBoxString.h"
 #include "Components/Slider.h"
 #include "ShooterGameInstance.h"
-#include "ShooterSettingsSaveGame.h"
+#include "ShooterSettingsSave.h"
 #include "GameFramework/GameUserSettings.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -48,6 +48,15 @@ void UShooterSoundOptionsUserWidget::SetupSettingsComponents()
     }
 }
 
+UShooterSettingsSave* UShooterSoundOptionsUserWidget::GetSettingsSave()
+{
+    const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
+    if (!GameInstance)
+        return nullptr;
+
+    return GameInstance->GetSettingsSave();
+}
+
 void UShooterSoundOptionsUserWidget::UpdateSettings()
 {
     UpdateSoundQualityComboBox();
@@ -68,42 +77,38 @@ void UShooterSoundOptionsUserWidget::UpdateSoundQualityComboBox()
 
 void UShooterSoundOptionsUserWidget::UpdateMasterVolumeSlider()
 {
-    const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
-    if (!MasterVolumeScaleSlider || !GameInstance)
+    const auto SettingsSave = GetSettingsSave();
+    if (!SettingsSave)
         return;
 
-    const auto MasterVolume = GameInstance->GetSettingsSave()->GetSoundSettings().MasterVolume;
-    MasterVolumeScaleSlider->SetValue(MasterVolume);
+    MasterVolumeScaleSlider->SetValue(SettingsSave->GetSoundSettings().MasterVolume);
 }
 
 void UShooterSoundOptionsUserWidget::UpdateCharacterVolumeSlider()
 {
-    const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
-    if (!CharacterVolumeScaleSlider || !GameInstance)
+    const auto SettingsSave = GetSettingsSave();
+    if (!SettingsSave)
         return;
 
-    const auto CharacterVolume = GameInstance->GetSettingsSave()->GetSoundSettings().CharacterVolume;
-    CharacterVolumeScaleSlider->SetValue(CharacterVolume);
+    CharacterVolumeScaleSlider->SetValue(SettingsSave->GetSoundSettings().CharacterVolume);
 }
 
 void UShooterSoundOptionsUserWidget::UpdateEffectsVolumeSlider()
 {
-    const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
-    if (!EffectsVolumeScaleSlider || !GameInstance)
+    const auto SettingsSave = GetSettingsSave();
+    if (!SettingsSave)
         return;
 
-    const auto EffectsVolume = GameInstance->GetSettingsSave()->GetSoundSettings().EffectsVolume;
-    EffectsVolumeScaleSlider->SetValue(EffectsVolume);
+    EffectsVolumeScaleSlider->SetValue(SettingsSave->GetSoundSettings().EffectsVolume);
 }
 
 void UShooterSoundOptionsUserWidget::UpdateAmbientVolumeSlider()
 {
-    const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
-    if (!AmbientVolumeScaleSlider || !GameInstance)
+    const auto SettingsSave = GetSettingsSave();
+    if (!SettingsSave)
         return;
 
-    const auto AmbientVolume = GameInstance->GetSettingsSave()->GetSoundSettings().AmbientVolume;
-    AmbientVolumeScaleSlider->SetValue(AmbientVolume);
+    AmbientVolumeScaleSlider->SetValue(SettingsSave->GetSoundSettings().AmbientVolume);
 }
 
 void UShooterSoundOptionsUserWidget::OnSelectionChangedSoundQuality(FString SelectedItem, ESelectInfo::Type SelectionType)
@@ -111,8 +116,7 @@ void UShooterSoundOptionsUserWidget::OnSelectionChangedSoundQuality(FString Sele
     if (SelectionType == ESelectInfo::Direct)
         return;
 
-    const auto SoundQuality = SoundQualityComboBox->FindOptionIndex(SelectedItem);
-    GEngine->GetGameUserSettings()->SetAudioQualityLevel(SoundQuality);
+    GEngine->GetGameUserSettings()->SetAudioQualityLevel(SoundQualityComboBox->FindOptionIndex(SelectedItem));
     GEngine->GetGameUserSettings()->ApplyNonResolutionSettings();
 }
 
@@ -132,11 +136,7 @@ void UShooterSoundOptionsUserWidget::OnValueChangedMasterVolume(float Value)
 
 void UShooterSoundOptionsUserWidget::OnMouseCaptureEndMasterVolume()
 {
-    const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
-    if (!GameInstance)
-        return;
-
-    const auto SettingsSave = GameInstance->GetSettingsSave();
+    const auto SettingsSave = GetSettingsSave();
     if (!SettingsSave)
         return;
 
@@ -161,11 +161,7 @@ void UShooterSoundOptionsUserWidget::OnValueChangedCharacterVolume(float Value)
 
 void UShooterSoundOptionsUserWidget::OnMouseCaptureEndCharacterVolume()
 {
-    const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
-    if (!GameInstance)
-        return;
-
-    const auto SettingsSave = GameInstance->GetSettingsSave();
+    const auto SettingsSave = GetSettingsSave();
     if (!SettingsSave)
         return;
 
@@ -190,11 +186,7 @@ void UShooterSoundOptionsUserWidget::OnValueChangedEffectsVolume(float Value)
 
 void UShooterSoundOptionsUserWidget::OnMouseCaptureEndEffectsVolume()
 {
-    const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
-    if (!GameInstance)
-        return;
-
-    const auto SettingsSave = GameInstance->GetSettingsSave();
+    const auto SettingsSave = GetSettingsSave();
     if (!SettingsSave)
         return;
 
@@ -219,11 +211,7 @@ void UShooterSoundOptionsUserWidget::OnValueChangedAmbientVolume(float Value)
 
 void UShooterSoundOptionsUserWidget::OnMouseCaptureEndAmbientVolume()
 {
-    const auto GameInstance = GetWorld()->GetGameInstance<UShooterGameInstance>();
-    if (!GameInstance)
-        return;
-
-    const auto SettingsSave = GameInstance->GetSettingsSave();
+    const auto SettingsSave = GetSettingsSave();
     if (!SettingsSave)
         return;
 

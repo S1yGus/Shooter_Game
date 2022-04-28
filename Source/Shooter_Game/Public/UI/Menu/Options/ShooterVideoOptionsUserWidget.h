@@ -37,6 +37,12 @@ protected:
     UComboBoxString* ShadowComboBox = nullptr;
 
     UPROPERTY(Meta = (BindWidget))
+    UComboBoxString* IlluminationComboBox = nullptr;
+
+    UPROPERTY(Meta = (BindWidget))
+    UComboBoxString* ReflectionsComboBox = nullptr;
+
+    UPROPERTY(Meta = (BindWidget))
     UComboBoxString* TextureComboBox = nullptr;
 
     UPROPERTY(Meta = (BindWidget))
@@ -68,6 +74,8 @@ private:
     void UpdateAntiAliasingComboBox();
     void UpdatePostProcessingComboBox();
     void UpdateShadowComboBox();
+    void UpdateIlluminationComboBox();
+    void UpdateReflectionsComboBox();
     void UpdateTextureComboBox();
     void UpdateEffectComboBox();
     void UpdateFoliageComboBox();
@@ -96,6 +104,12 @@ private:
 
     UFUNCTION()
     void OnSelectionChangedShadow(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+    UFUNCTION()
+    void OnSelectionChangedIllumination(FString SelectedItem, ESelectInfo::Type SelectionType);
+
+    UFUNCTION()
+    void OnSelectionChangedReflections(FString SelectedItem, ESelectInfo::Type SelectionType);
 
     UFUNCTION()
     void OnSelectionChangedTexture(FString SelectedItem, ESelectInfo::Type SelectionType);

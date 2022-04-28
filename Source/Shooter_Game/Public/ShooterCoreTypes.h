@@ -294,14 +294,32 @@ struct FSoundSettings
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float MasterVolume = 0.5;
+    float MasterVolume = 0.5f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float CharacterVolume = 0.5;
+    float CharacterVolume = 0.5f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float EffectsVolume = 0.5;
+    float EffectsVolume = 0.5f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float AmbientVolume = 0.5;
+    float AmbientVolume = 0.5f;
+};
+
+USTRUCT(BlueprintType)
+struct FControlSettings
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+    float MouseYSens = 150.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+    float MouseXSens = 150.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+    float MouseAimedYSens = 50.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
+    float MouseAimedXSens = 50.0f;
 };

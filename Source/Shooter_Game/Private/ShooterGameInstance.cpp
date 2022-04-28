@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "ShooterGameInstance.h"
-#include "ShooterSettingsSaveGame.h"
+#include "ShooterSettingsSave.h"
 #include "Kismet/GameplayStatics.h"
 
 void UShooterGameInstance::SaveSettingsSave()
@@ -23,11 +23,11 @@ void UShooterGameInstance::CheckSoundSettings()
 {
     if (UGameplayStatics::DoesSaveGameExist(SettingsSaveSlotName, 0))
     {
-        SettingsSave = Cast<UShooterSettingsSaveGame>(UGameplayStatics::LoadGameFromSlot(SettingsSaveSlotName, 0));
+        SettingsSave = Cast<UShooterSettingsSave>(UGameplayStatics::LoadGameFromSlot(SettingsSaveSlotName, 0));
     }
     else
     {
-        SettingsSave = Cast<UShooterSettingsSaveGame>(UGameplayStatics::CreateSaveGameObject(UShooterSettingsSaveGame::StaticClass()));
+        SettingsSave = Cast<UShooterSettingsSave>(UGameplayStatics::CreateSaveGameObject(UShooterSettingsSave::StaticClass()));
     }
 
     if (SettingsSave)

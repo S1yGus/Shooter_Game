@@ -40,9 +40,6 @@ bool UShooterRecoilComponent::CalculateRecoil()
     CurrentPitchRecoil = FMath::RandRange(MinPitchRecoilMagnitude, MaxPitchRecoilMagnitude) / NumberOfTicks;
     CurrentYawRecoil = FMath::RandRange(MinYawRecoilMagnitude, MaxYawRecoilMagnitude) / NumberOfTicks;
 
-    CurrentPitchRecoil /= OwnerPawn->GetController<APlayerController>()->InputPitchScale_DEPRECATED;
-    CurrentYawRecoil /= OwnerPawn->GetController<APlayerController>()->InputYawScale_DEPRECATED;
-
     CurrentRecoveryPitchRecoil = CurrentPitchRecoil / -RecoilRecoverScale;
     CurrentRecoveryYawRecoil = CurrentYawRecoil / -RecoilRecoverScale;
 

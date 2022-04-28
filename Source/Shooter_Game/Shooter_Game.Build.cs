@@ -17,10 +17,7 @@ public class Shooter_Game : ModuleRules
             "PhysicsCore",
             "GameplayTasks",
             "NavigationSystem",
-            "GameplayCameras",
-            "SlateCore"});
-
-        PrivateDependencyModuleNames.AddRange(new string[] { });
+            "GameplayCameras"});
 
         PublicIncludePaths.AddRange(new string[] {
             "Shoother_Game/Public/Player",
@@ -34,8 +31,7 @@ public class Shooter_Game : ModuleRules
             "Shoother_Game/Public/AI",
             "Shoother_Game/Public/AI/Tasks"});
 
-        // Uncomment if you are using Slate UI
-        // PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+        PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
         // Uncomment if you are using online features
         // PrivateDependencyModuleNames.Add("OnlineSubsystem");
