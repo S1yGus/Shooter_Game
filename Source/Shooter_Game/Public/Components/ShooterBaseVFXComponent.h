@@ -8,7 +8,7 @@
 #include "ShooterBaseVFXComponent.generated.h"
 
 class USoundCue;
-class AShooterImpactIndicatorActor;
+class ASHGImpactIndicatorActor;
 class UPhysicalMaterial;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -28,7 +28,7 @@ protected:
     bool ShowImpactIndicators = true;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX", Meta = (EditCondition = "ShowImpactIndicators"))
-    TSubclassOf<AShooterImpactIndicatorActor> ImpactIndicatorClass;
+    TSubclassOf<ASHGImpactIndicatorActor> ImpactIndicatorClass;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX|Footsteps")
     FName RightFootBoneName = "b_RightToeBase";

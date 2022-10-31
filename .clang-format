@@ -1,8 +1,7 @@
-Language: Cpp
 BasedOnStyle: Microsoft
 IndentWidth: '4'
 UseTab: Never
-ColumnLimit: '160'
+ColumnLimit: '170'
 AccessModifierOffset: '-4'
 SortIncludes: false
 AllowShortBlocksOnASingleLine: Never
@@ -14,3 +13,8 @@ AllowShortCaseLabelsOnASingleLine: false
 IndentCaseLabels: true
 PointerAlignment: Left
 AlwaysBreakTemplateDeclarations: Yes
+BreakBeforeBraces: Custom
+BraceWrapping:
+	BeforeLambdaBody: true
+AllowShortLambdasOnASingleLine: None
+AlignEscapedNewlines: Left

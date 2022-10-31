@@ -7,7 +7,7 @@
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "Components/WidgetComponent.h"
-#include "UI/ShooterHealthBarUserWidget.h"
+#include "UI/Gameplay/SHGAIHealthBarUserWidget.h"
 #include "Components/ShooterHealthComponent.h"
 
 constexpr static float UpdateHealthWidgetVisibilityTimerRate = 0.02f;
@@ -51,7 +51,7 @@ void AShooterAICharacter::OnHealthChanged(float Health, float HealthPercent)
 {
     Super::OnHealthChanged(Health, HealthPercent);
 
-    const auto HealthWidget = Cast<UShooterHealthBarUserWidget>(HealthWidgetComponent->GetUserWidgetObject());
+    const auto HealthWidget = Cast<USHGAIHealthBarUserWidget>(HealthWidgetComponent->GetUserWidgetObject());
     if (!HealthWidget)
         return;
 

@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "Components/ShooterRespawnComponent.h"
-#include "ShooterArenaGameMode.h"
+#include "SHGGameModeArena.h"
 
 UShooterRespawnComponent::UShooterRespawnComponent()
 {
@@ -10,7 +10,7 @@ UShooterRespawnComponent::UShooterRespawnComponent()
 
 void UShooterRespawnComponent::StartRespawn(int32 RespawnTime)
 {
-    GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, this, &UShooterRespawnComponent::EndRespawn, RespawnTime);
+    GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, this, &ThisClass::EndRespawn, RespawnTime);
 }
 
 bool UShooterRespawnComponent::GetCurrentRespawnTime(float& CurrentRespawnTime) const
@@ -24,7 +24,7 @@ bool UShooterRespawnComponent::GetCurrentRespawnTime(float& CurrentRespawnTime) 
 
 void UShooterRespawnComponent::EndRespawn()
 {
-    const auto GameMode = Cast<AShooterArenaGameMode>(GetWorld()->GetAuthGameMode());
+    const auto GameMode = Cast<ASHGGameModeArena>(GetWorld()->GetAuthGameMode());
     if (!GameMode)
         return;
 

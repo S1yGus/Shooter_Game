@@ -2,7 +2,7 @@
 
 #include "Player/ShooterPlayerController.h"
 #include "Components/ShooterRespawnComponent.h"
-#include "ShooterGameModeBase.h"
+#include "SHGGameModeBase.h"
 
 AShooterPlayerController::AShooterPlayerController()
 {
@@ -13,42 +13,43 @@ void AShooterPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
-    const auto GameMode = Cast<AShooterGameModeBase>(GetWorld()->GetAuthGameMode());
+    const auto GameMode = Cast<ASHGGameModeBase>(GetWorld()->GetAuthGameMode());
     if (!GameMode)
         return;
 
-    GameMode->OnGameStateChanged.AddUObject(this, &AShooterPlayerController::OnGameStateChanged);
+    GameMode->OnGameStateChanged.AddUObject(this, &ThisClass::OnGameStateChanged);
 }
 
 void AShooterPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
 
-    if (!InputComponent)
-        return;
+    check(InputComponent);
 
-    InputComponent->BindAction("Pause", IE_Pressed, this, &AShooterPlayerController::OnSetPause);
+    InputComponent->BindAction("Enter", EInputEvent::IE_Pressed, this, &ThisClass::OnPressedEnter).bExecuteWhenPaused = true;
+    InputComponent->BindAction("Esc", EInputEvent::IE_Pressed, this, &ThisClass::OnPressedEscape).bExecuteWhenPaused = true;
 }
 
-void AShooterPlayerController::OnSetPause()
+void AShooterPlayerController::OnPressedEnter()
 {
-    const auto GameMode = GetWorld()->GetAuthGameMode();
-    if (!GameMode)
-        return;
+    OnPressedEnt.Broadcast();
+}
 
-    GameMode->SetPause(this);
+void AShooterPlayerController::OnPressedEscape()
+{
+    OnPressedEsc.Broadcast();
 }
 
 void AShooterPlayerController::OnGameStateChanged(EGameState GameState)
 {
-    if (GameState == EGameState::InGame || GameState == EGameState::InSpectating)
+    if (GameState == EGameState::Game || GameState == EGameState::Spectating)
     {
         SetInputMode(FInputModeGameOnly());
         bShowMouseCursor = false;
     }
     else
     {
-        SetInputMode(FInputModeUIOnly());
+        SetInputMode(FInputModeGameAndUI().SetHideCursorDuringCapture(false));
         bShowMouseCursor = true;
     }
 }

@@ -6,7 +6,7 @@
 #include "Components/DecalComponent.h"
 #include "NiagaraFunctionLibrary.h"
 #include "GameFramework/Character.h"
-#include "UI/Impact/ShooterImpactIndicatorActor.h"
+#include "Gameplay/SHGImpactIndicatorActor.h"
 #include "Components/ShooterHealthComponent.h"
 
 UShooterBaseVFXComponent::UShooterBaseVFXComponent()
@@ -83,7 +83,7 @@ void UShooterBaseVFXComponent::SpawnImpactIndicator(float DamageAmount, const FV
         return;
 
     FTransform SpawnTransform = FTransform(HitLocation);
-    const auto ImpactIndicator = GetWorld()->SpawnActorDeferred<AShooterImpactIndicatorActor>(ImpactIndicatorClass, SpawnTransform);
+    const auto ImpactIndicator = GetWorld()->SpawnActorDeferred<ASHGImpactIndicatorActor>(ImpactIndicatorClass, SpawnTransform);
     if (!ImpactIndicator)
         return;
 

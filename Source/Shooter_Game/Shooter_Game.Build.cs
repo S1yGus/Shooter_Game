@@ -17,25 +17,8 @@ public class Shooter_Game : ModuleRules
             "PhysicsCore",
             "GameplayTasks",
             "NavigationSystem",
-            "GameplayCameras"});
-
-        PublicIncludePaths.AddRange(new string[] {
-            "Shoother_Game/Public/Player",
-            "Shoother_Game/Public/Components",
-            "Shoother_Game/Public/Dev",
-            "Shoother_Game/Public/Weapons",
-            "Shoother_Game/Public/UI",
-            "Shoother_Game/Public/Misc",
-            "Shoother_Game/Public/Animations",
-            "Shoother_Game/Public/Weapons/Components",
-            "Shoother_Game/Public/AI",
-            "Shoother_Game/Public/AI/Tasks"});
-
-        PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
-
-        // Uncomment if you are using online features
-        // PrivateDependencyModuleNames.Add("OnlineSubsystem");
-
-        // To include OnlineSubsystemSteam, add it to the plugins section in your uproject file with the Enabled attribute set to true
+            "GameplayCameras",
+            "Slate",
+            "SlateCore"});
     }
 }

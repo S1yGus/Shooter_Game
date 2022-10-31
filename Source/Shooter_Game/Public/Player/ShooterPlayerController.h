@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "SHGSettingsCoreTypes.h"
 #include "ShooterCoreTypes.h"
 #include "ShooterPlayerController.generated.h"
 
@@ -15,6 +16,9 @@ class SHOOTER_GAME_API AShooterPlayerController : public APlayerController
     GENERATED_BODY()
 
 public:
+    FOnPressedEntSignature OnPressedEnt;
+    FOnPressedEscSignature OnPressedEsc;
+
     AShooterPlayerController();
 
 protected:
@@ -22,10 +26,10 @@ protected:
     UShooterRespawnComponent* RespawnComponent;
 
     virtual void BeginPlay() override;
-
     virtual void SetupInputComponent() override;
 
 private:
-    void OnSetPause();
+    void OnPressedEnter();
+    void OnPressedEscape();
     void OnGameStateChanged(EGameState GameState);
 };

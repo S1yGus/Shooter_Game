@@ -10,11 +10,10 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/ShooterStaminaComponent.h"
-#include "ShooterArenaGameMode.h"
-#include "ShooterGameInstance.h"
-#include "ShooterSettingsSave.h"
+#include "SHGGameModeBase.h"
+#include "Settings/SHGGameUserSettings.h"
 
-constexpr static float MouseDefaultSensValue = 100.0f;
+constexpr static float MouseSensMultiplier = 200.0f;
 
 AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterPlayerVFXComponent>("VFXComponent"))
@@ -39,23 +38,31 @@ void AShooterPlayerCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
+    check(SpringArmComponent);
+    check(CameraComponent);
     check(CameraCollisionComponent);
 
-    CameraCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &AShooterPlayerCharacter::OnCameraComponentBeginOverlap);
-    CameraCollisionComponent->OnComponentEndOverlap.AddDynamic(this, &AShooterPlayerCharacter::OnCameraComponentEndOverlap);
+    CameraCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnCameraComponentBeginOverlap);
+    CameraCollisionComponent->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnCameraComponentEndOverlap);
+
+    if (const auto GameUserSettings = USHGGameUserSettings::Get())
+    {
+        GameUserSettings->OnSensitivityChanged.AddUObject(this, &ThisClass::OnSensitivityChanged);
+        SensitivitySettings = GameUserSettings->GetSensitivitySettings();
+    }
 }
 
 void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-    PlayerInputComponent->BindAxis("MoveForward", this, &AShooterPlayerCharacter::MoveForward);
-    PlayerInputComponent->BindAxis("MoveRight", this, &AShooterPlayerCharacter::MoveRight);
-    PlayerInputComponent->BindAxis("LookUp", this, &AShooterPlayerCharacter::LookUp);
-    PlayerInputComponent->BindAxis("LookRight", this, &AShooterPlayerCharacter::LookRight);
-    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AShooterPlayerCharacter::Jump);
-    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AShooterPlayerCharacter::StartSprint);
-    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AShooterPlayerCharacter::StopSprint);
+    PlayerInputComponent->BindAxis("MoveForward", this, &ThisClass::MoveForward);
+    PlayerInputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
+    PlayerInputComponent->BindAxis("LookUp", this, &ThisClass::LookUp);
+    PlayerInputComponent->BindAxis("LookRight", this, &ThisClass::LookRight);
+    PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ThisClass::Jump);
+    PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ThisClass::StartSprint);
+    PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ThisClass::StopSprint);
     PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::StartFire);
     PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &UShooterWeaponComponent::StopFire);
     PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::NextWeapon);
@@ -65,14 +72,10 @@ void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
     PlayerInputComponent->BindAction("Flashlight", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::SwitchFlashlight);
 
     DECLARE_DELEGATE_OneParam(FEquipWeaponSignature, EWeaponType);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
-                                                            EWeaponType::Pistol);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("SecondWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
-                                                            EWeaponType::Rifle);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("ThirdWeapom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
-                                                            EWeaponType::Shotgun);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FourthWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon,
-                                                            EWeaponType::Launcher);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Pistol);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("SecondWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Rifle);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("ThirdWeapom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Shotgun);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FourthWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Launcher);
 
     DECLARE_DELEGATE_TwoParams(FZoomSignature, bool, bool);
     PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::Zoom, true, false);
@@ -99,11 +102,15 @@ void AShooterPlayerCharacter::OnDeath()
 
     WeaponComponent->Zoom(false, true);
 
-    if (!Controller || !GetWorld()->GetAuthGameMode<AShooterArenaGameMode>())
-        return;
+    if (const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeBase>())
+    {
+        GameMode->SetGameState(EGameState::Spectating);
+    }
 
-    GetWorld()->GetAuthGameMode<AShooterArenaGameMode>()->InSpectating();
-    Controller->ChangeState(NAME_Spectating);
+    if (Controller)
+    {
+        Controller->ChangeState(NAME_Spectating);
+    }
 }
 
 void AShooterPlayerCharacter::MoveForward(float Amount)
@@ -113,7 +120,7 @@ void AShooterPlayerCharacter::MoveForward(float Amount)
     if (FMath::IsNearlyZero(Amount))
         return;
 
-    const auto ControllerForvardVector = UKismetMathLibrary::GetForwardVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+    const auto ControllerForvardVector = UKismetMathLibrary::GetForwardVector(FRotator{0.0f, GetControlRotation().Yaw, 0.0f});
     AddMovementInput(ControllerForvardVector, Amount);
 }
 
@@ -122,36 +129,25 @@ void AShooterPlayerCharacter::MoveRight(float Amount)
     if (FMath::IsNearlyZero(Amount) || IsSprinting())
         return;
 
-    const auto ControllerRightVector = UKismetMathLibrary::GetRightVector(FRotator(0.0f, GetControlRotation().Yaw, 0.0f));
+    const auto ControllerRightVector = UKismetMathLibrary::GetRightVector(FRotator{0.0f, GetControlRotation().Yaw, 0.0f});
     AddMovementInput(ControllerRightVector, Amount);
 }
 
 void AShooterPlayerCharacter::LookUp(float Amount)
 {
-    float MouseYSens = MouseDefaultSensValue;
-    if (const auto GemeInstance = Cast<UShooterGameInstance>(GetGameInstance()))
-    {
-        if (const auto SettingsSave = GemeInstance->GetSettingsSave())
-        {
-            MouseYSens = WeaponComponent->IsZoomingNow() ? SettingsSave->GetControlSettings().MouseAimedYSens : SettingsSave->GetControlSettings().MouseYSens;
-        }
-    }
-
-    AddControllerPitchInput(Amount * MouseYSens * GetWorld()->GetDeltaSeconds());
+    float MouseYSens = WeaponComponent->IsZoomingNow() ? SensitivitySettings.MouseAimedYSens : SensitivitySettings.MouseYSens;
+    AddControllerPitchInput(Amount * MouseYSens * MouseSensMultiplier * GetWorld()->GetDeltaSeconds());
 }
 
 void AShooterPlayerCharacter::LookRight(float Amount)
 {
-    float MouseXSens = MouseDefaultSensValue;
-    if (const auto GemeInstance = Cast<UShooterGameInstance>(GetGameInstance()))
-    {
-        if (const auto SettingsSave = GemeInstance->GetSettingsSave())
-        {
-            MouseXSens = WeaponComponent->IsZoomingNow() ? SettingsSave->GetControlSettings().MouseAimedXSens : SettingsSave->GetControlSettings().MouseXSens;
-        }
-    }
+    float MouseXSens = WeaponComponent->IsZoomingNow() ? SensitivitySettings.MouseAimedXSens : SensitivitySettings.MouseXSens;
+    AddControllerYawInput(Amount * MouseXSens * MouseSensMultiplier * GetWorld()->GetDeltaSeconds());
+}
 
-    AddControllerYawInput(Amount * MouseXSens * GetWorld()->GetDeltaSeconds());
+void AShooterPlayerCharacter::OnSensitivityChanged(const FSensitivitySettings& NewSensitivitySettings)
+{
+    SensitivitySettings = NewSensitivitySettings;
 }
 
 void AShooterPlayerCharacter::OnCameraComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,    //

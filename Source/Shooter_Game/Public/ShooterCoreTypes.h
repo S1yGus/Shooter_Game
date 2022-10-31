@@ -248,78 +248,12 @@ enum class EGameState : uint8
     WaitingToStart,
     MainMenu,
     Options,
-    InGame,
-    InSpectating,
+    OptionsWarning,
+    PopUpHint,
+    Game,
+    Spectating,
     Pause,
-    GameOver
-};
-
-// UI
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnClickedButtonSignature);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnClickedOptionsButtonSignature, const FOptionsButtonData&);
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnSelectedLevelSignature, const FLevelData&);
-DECLARE_MULTICAST_DELEGATE(FOnCancelResolutionSettingsSignature);
-
-USTRUCT(BlueprintType)
-struct FLevelData
-{
-    GENERATED_USTRUCT_BODY()
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    FName LevelName;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    FText LevelDisplayName;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    UTexture2D* LevelThumbnails;
-};
-
-USTRUCT(BlueprintType)
-struct FOptionsButtonData
-{
-    GENERATED_USTRUCT_BODY()
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    FText ButtonText;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    int32 WidgetID;
-};
-
-// Save
-USTRUCT(BlueprintType)
-struct FSoundSettings
-{
-    GENERATED_USTRUCT_BODY()
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float MasterVolume = 0.5f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float CharacterVolume = 0.5f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float EffectsVolume = 0.5f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float AmbientVolume = 0.5f;
-};
-
-USTRUCT(BlueprintType)
-struct FControlSettings
-{
-    GENERATED_USTRUCT_BODY()
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float MouseYSens = 150.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float MouseXSens = 150.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float MouseAimedYSens = 50.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
-    float MouseAimedXSens = 50.0f;
+    BackToRootMenu,
+    GameOver,
+    Quit
 };

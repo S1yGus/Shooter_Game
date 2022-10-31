@@ -7,6 +7,7 @@
 #include "ShooterMoon.generated.h"
 
 class UDirectionalLightComponent;
+class UBillboardComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterMoon : public AActor

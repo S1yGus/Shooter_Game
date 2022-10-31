@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Player/ShooterBaseCharacter.h"
+#include "SHGSettingsCoreTypes.h"
 #include "ShooterPlayerCharacter.generated.h"
 
 class UCameraComponent;
@@ -37,11 +38,14 @@ protected:
     virtual void OnDeath() override;
 
 private:
+    FSensitivitySettings SensitivitySettings;
+
     void MoveForward(float Amount);
     void MoveRight(float Amount);
     void LookUp(float Amount);
     void LookRight(float Amount);
 
+    void OnSensitivityChanged(const FSensitivitySettings& NewSensitivitySettings);
     UFUNCTION()
     void OnCameraComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,    //
                                        AActor* OtherActor,                          //

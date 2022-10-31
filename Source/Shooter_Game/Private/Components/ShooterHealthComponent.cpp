@@ -2,7 +2,7 @@
 
 #include "Components/ShooterHealthComponent.h"
 #include "Components/ShooterBaseVFXComponent.h"
-#include "ShooterArenaGameMode.h"
+#include "SHGGameModeArena.h"
 #include "GameFramework/Character.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
@@ -35,9 +35,9 @@ void UShooterHealthComponent::BeginPlay()
     const auto ComponentOwner = GetOwner();
     if (ComponentOwner)
     {
-        ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &UShooterHealthComponent::OnTakeAnyDamage);
-        ComponentOwner->OnTakePointDamage.AddDynamic(this, &UShooterHealthComponent::OnTakePointDamage);
-        ComponentOwner->OnTakeRadialDamage.AddDynamic(this, &UShooterHealthComponent::OnTakeRadialDamage);
+        ComponentOwner->OnTakeAnyDamage.AddDynamic(this, &ThisClass::OnTakeAnyDamage);
+        ComponentOwner->OnTakePointDamage.AddDynamic(this, &ThisClass::OnTakePointDamage);
+        ComponentOwner->OnTakeRadialDamage.AddDynamic(this, &ThisClass::OnTakeRadialDamage);
     }
 }
 
@@ -120,7 +120,7 @@ void UShooterHealthComponent::SetHealth(float NewHealth)
 
 void UShooterHealthComponent::Killed(AController* KillerController, AController* VictimController)
 {
-    const auto GameMode = GetWorld()->GetAuthGameMode<AShooterArenaGameMode>();
+    const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeArena>();
     if (!GameMode)
         return;
 

@@ -9,15 +9,15 @@ UShooterPlayerVFXComponent::UShooterPlayerVFXComponent()
 
 void UShooterPlayerVFXComponent::MakeCameraShake(TSubclassOf<UCameraShakeBase> CameraShakeClass, float Scale)
 {
+    if (!CameraShakeClass)
+        return;
+
     const auto OwnerPawn = GetOwner<APawn>();
     if (!OwnerPawn)
         return;
 
     const auto PlayerController = OwnerPawn->GetController<APlayerController>();
     if (!PlayerController || !PlayerController->PlayerCameraManager)
-        return;
-
-    if (!CameraShakeClass)
         return;
 
     PlayerController->PlayerCameraManager->StartCameraShake(CameraShakeClass, Scale);
