@@ -7,7 +7,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "GameFramework/Character.h"
 #include "Gameplay/SHGImpactIndicatorActor.h"
-#include "Components/ShooterHealthComponent.h"
+#include "Components/SHGHealthComponent.h"
 
 UShooterBaseVFXComponent::UShooterBaseVFXComponent()
 {
@@ -79,7 +79,7 @@ void UShooterBaseVFXComponent::SpawnImpactIndicator(float DamageAmount, const FV
     if (!ShowImpactIndicators || !ImpactIndicatorClass)
         return;
 
-    if (!GetOwner()->FindComponentByClass<UShooterHealthComponent>() || GetOwner()->FindComponentByClass<UShooterHealthComponent>()->IsDead())
+    if (!GetOwner()->FindComponentByClass<USHGHealthComponent>() || GetOwner()->FindComponentByClass<USHGHealthComponent>()->IsDead())
         return;
 
     FTransform SpawnTransform = FTransform(HitLocation);

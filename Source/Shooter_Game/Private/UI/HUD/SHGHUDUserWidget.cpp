@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "UI/HUD/SHGHUDUserWidget.h"
-#include "Components/ShooterHealthComponent.h"
+#include "Components/SHGHealthComponent.h"
 #include "Components/ShooterStaminaComponent.h"
 #include "Player/ShooterPlayerController.h"
 #include "SHGGameModeArena.h"
@@ -31,7 +31,7 @@ void USHGHUDUserWidget::OnTakeAnyDamage(AActor* DamagedActor,             //
                                         AController* InstigatedBy,        //
                                         AActor* DamageCauser)             //
 {
-    const auto HealthComponent = DamagedActor->FindComponentByClass<UShooterHealthComponent>();
+    const auto HealthComponent = DamagedActor->FindComponentByClass<USHGHealthComponent>();
     if (!HealthComponent || HealthComponent->IsDead())
     {
         if (IsAnimationPlaying(GetDamageAnimation))

@@ -7,7 +7,7 @@
 #include "PhysicalMaterials/PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/DecalComponent.h"
-#include "Components/ShooterHealthComponent.h"
+#include "Components/SHGHealthComponent.h"
 #include "ShooterUtils.h"
 #include "Sound/SoundCue.h"
 
@@ -82,7 +82,7 @@ void UShooterWeaponFXComponent::MakeCameraShake()
         return;
 
     float Scale = 1.0f;
-    const auto HealthComponent = OwnerPawn->FindComponentByClass<UShooterHealthComponent>();
+    const auto HealthComponent = OwnerPawn->FindComponentByClass<USHGHealthComponent>();
     if (HealthComponent)
     {
         const auto CurrentHealth = HealthComponent->GetHealth();

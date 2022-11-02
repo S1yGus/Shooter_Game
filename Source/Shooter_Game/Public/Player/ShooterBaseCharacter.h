@@ -6,7 +6,7 @@
 #include "GameFramework/Character.h"
 #include "ShooterBaseCharacter.generated.h"
 
-class UShooterHealthComponent;
+class USHGHealthComponent;
 class UShooterStaminaComponent;
 class UShooterWeaponComponent;
 class UShooterBaseVFXComponent;
@@ -37,7 +37,7 @@ public:
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UShooterHealthComponent* HealthComponent;
+    USHGHealthComponent* HealthComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UShooterStaminaComponent* StaminaComponent;

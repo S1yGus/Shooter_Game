@@ -8,7 +8,7 @@
 #include "BrainComponent.h"
 #include "Components/WidgetComponent.h"
 #include "UI/Gameplay/SHGAIHealthBarUserWidget.h"
-#include "Components/ShooterHealthComponent.h"
+#include "Components/SHGHealthComponent.h"
 
 constexpr static float UpdateHealthWidgetVisibilityTimerRate = 0.02f;
 

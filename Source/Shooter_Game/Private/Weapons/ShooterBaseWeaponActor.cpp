@@ -6,7 +6,7 @@
 #include "Weapons/ShooterProjectileBaseActor.h"
 #include "Weapons/ShooterShellBaseActor.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "Components/ShooterHealthComponent.h"
+#include "Components/SHGHealthComponent.h"
 #include "Components/ShooterStaminaComponent.h"
 #include "Components/ShooterWeaponComponent.h"
 #include "Components/SpotLightComponent.h"
@@ -254,7 +254,7 @@ FVector AShooterBaseWeaponActor::GetShotDirection(const FVector& Direction) cons
         PercentAmount += StaminaComponent->GetStaminaPercent();
         MaxPercent += 1.0f;
     }
-    if (const auto HealthComponent = GetOwner()->FindComponentByClass<UShooterHealthComponent>())
+    if (const auto HealthComponent = GetOwner()->FindComponentByClass<USHGHealthComponent>())
     {
         PercentAmount += HealthComponent->GetHealthPercent();
         MaxPercent += 1.0f;

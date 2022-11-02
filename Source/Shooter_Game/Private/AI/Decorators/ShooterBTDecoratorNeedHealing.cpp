@@ -2,7 +2,7 @@
 
 #include "AI/Decorators/ShooterBTDecoratorNeedHealing.h"
 #include "AIController.h"
-#include "Components/ShooterHealthComponent.h"
+#include "Components/SHGHealthComponent.h"
 
 UShooterBTDecoratorNeedHealing::UShooterBTDecoratorNeedHealing()
 {
@@ -15,7 +15,7 @@ bool UShooterBTDecoratorNeedHealing::CalculateRawConditionValue(UBehaviorTreeCom
     if (!AIController)
         return false;
 
-    const auto HealthComponent = AIController->GetPawn()->FindComponentByClass<UShooterHealthComponent>();
+    const auto HealthComponent = AIController->GetPawn()->FindComponentByClass<USHGHealthComponent>();
     if (!HealthComponent || HealthComponent->IsDead())
         return false;
 

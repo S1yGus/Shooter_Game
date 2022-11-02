@@ -4,7 +4,7 @@
 #include "Perception/AIPerceptionSystem.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISense_Prediction.h"
-#include "Components/ShooterHealthComponent.h"
+#include "Components/SHGHealthComponent.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "ShooterUtils.h"
@@ -43,7 +43,7 @@ AActor* UShooterAIPerceptionComponent::GetNearestActor()
         if (!PerceivedPawnController)
             continue;
 
-        const auto HealthComponent = PerceivedActor->FindComponentByClass<UShooterHealthComponent>();
+        const auto HealthComponent = PerceivedActor->FindComponentByClass<USHGHealthComponent>();
         if (!HealthComponent || HealthComponent->IsDead() || !ShooterUtils::AreEnemy(AIController, PerceivedPawnController))
             continue;
 

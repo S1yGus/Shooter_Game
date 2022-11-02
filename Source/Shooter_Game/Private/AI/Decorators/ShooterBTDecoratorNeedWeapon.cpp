@@ -2,7 +2,7 @@
 
 #include "AI/Decorators/ShooterBTDecoratorNeedWeapon.h"
 #include "Components/ShooterAIWeaponComponent.h"
-#include "Components/ShooterHealthComponent.h"
+#include "Components/SHGHealthComponent.h"
 #include "AIController.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -26,7 +26,7 @@ bool UShooterBTDecoratorNeedWeapon::CalculateRawConditionValue(UBehaviorTreeComp
     if (!AIController)
         return false;
 
-    const auto HealthComponent = AIController->GetPawn()->FindComponentByClass<UShooterHealthComponent>();
+    const auto HealthComponent = AIController->GetPawn()->FindComponentByClass<USHGHealthComponent>();
     if (!HealthComponent || HealthComponent->IsDead())
         return false;
 

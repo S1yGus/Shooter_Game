@@ -43,3 +43,4 @@ DECLARE_MULTICAST_DELEGATE(FOnClickedButtonSignature);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnClickedOptionsButtonSignature, int32);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnSelectedLevelSignature, const FLevelData&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnShowPopUpHintSignature, const FHintData&);
+DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnTakeDamageSignature, float, const FVector&, UPhysicalMaterial*)

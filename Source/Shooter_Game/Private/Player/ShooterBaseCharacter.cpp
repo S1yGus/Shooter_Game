@@ -2,7 +2,7 @@
 
 #include "Player/ShooterBaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Components/ShooterHealthComponent.h"
+#include "Components/SHGHealthComponent.h"
 #include "Components/ShooterStaminaComponent.h"
 #include "Components/ShooterWeaponComponent.h"
 #include "Components/ShooterBaseVFXComponent.h"
@@ -17,7 +17,7 @@ AShooterBaseCharacter::AShooterBaseCharacter(const FObjectInitializer& ObjectIni
 {
     PrimaryActorTick.bCanEverTick = true;
 
-    HealthComponent = CreateDefaultSubobject<UShooterHealthComponent>("HealthComponent");
+    HealthComponent = CreateDefaultSubobject<USHGHealthComponent>("HealthComponent");
     StaminaComponent = CreateDefaultSubobject<UShooterStaminaComponent>("StaminaComponent");
     WeaponComponent = CreateDefaultSubobject<UShooterWeaponComponent>("WeaponComponent");
     VFXComponent = CreateDefaultSubobject<UShooterBaseVFXComponent>("VFXComponent");
@@ -35,6 +35,7 @@ void AShooterBaseCharacter::BeginPlay()
 
     HealthComponent->OnDeath.AddUObject(this, &AShooterBaseCharacter::OnDeath);
     HealthComponent->OnHealthChanged.AddUObject(this, &AShooterBaseCharacter::OnHealthChanged);
+    HealthComponent->OnTakeDamage.AddUObject(VFXComponent, &UShooterBaseVFXComponent::SpawnImpactIndicator);
     StaminaComponent->OnOutOfStamina.AddUObject(this, &AShooterBaseCharacter::OnOutOfStamina);
     LandedDelegate.AddDynamic(this, &AShooterBaseCharacter::OnGroundLanded);
 }
