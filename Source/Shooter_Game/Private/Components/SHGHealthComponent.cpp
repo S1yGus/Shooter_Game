@@ -16,7 +16,7 @@ USHGHealthComponent::USHGHealthComponent()
 
 bool USHGHealthComponent::TryToHeal(float HealAmount)
 {
-    if (IsCompletelyHealthy() || HealAmount <= 0.0f)
+    if (IsDead() || IsCompletelyHealthy() || HealAmount <= 0.0f)
         return false;
 
     SetHealth(Health + HealAmount);
@@ -116,7 +116,7 @@ void USHGHealthComponent::OnTakeRadialDamage(AActor* DamagedActor,             /
                                              AController* InstigatedBy,        //
                                              AActor* DamageCauser)
 {
-    OnTakeDamage.Broadcast(Damage * CurrentDamageModifier, HitInfo.Location, nullptr);
+    OnTakeDamage.Broadcast(Damage, HitInfo.Location, nullptr);
 }
 
 void USHGHealthComponent::OnAutoHeal()
@@ -125,6 +125,7 @@ void USHGHealthComponent::OnAutoHeal()
 
     if (FMath::IsNearlyEqual(Health, AutoHealThreshold))
     {
+        Health = AutoHealThreshold;
         GetWorld()->GetTimerManager().ClearTimer(AutoHealTimerHandle);
     }
 }
