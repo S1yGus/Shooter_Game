@@ -6,7 +6,7 @@
 #include "Components/ShooterWeaponComponent.h"
 #include "Components/ShooterBaseVFXComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/ShooterMovementComponent.h"
+#include "Components/SHGMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "SHGGameModeArena.h"
 

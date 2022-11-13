@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "ShooterMovementComponent.generated.h"
+#include "SHGMovementComponent.generated.h"
 
 UCLASS()
 class SHOOTER_GAME_API USHGMovementComponent : public UCharacterMovementComponent

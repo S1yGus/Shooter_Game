@@ -1,6 +1,6 @@
 // Shooter_Game, All rights reserved.
 
-#include "Components/ShooterMovementComponent.h"
+#include "Components/SHGMovementComponent.h"
 #include "Player/ShooterBaseCharacter.h"
 
 float USHGMovementComponent::GetMaxSpeed() const
