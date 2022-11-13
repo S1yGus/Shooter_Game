@@ -95,9 +95,9 @@ void AShooterPlayerCharacter::Reset()
     WeaponComponent->Zoom(false);
 }
 
-void AShooterPlayerCharacter::OnDeath()
+void AShooterPlayerCharacter::OnDeath(AController* KillerController, AController* VictimController)
 {
-    Super::OnDeath();
+    Super::OnDeath(KillerController, VictimController);
 
     WeaponComponent->Zoom(false, true);
 

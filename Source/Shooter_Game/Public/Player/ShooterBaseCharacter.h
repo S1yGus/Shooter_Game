@@ -67,7 +67,7 @@ protected:
     void StopSprint();
 
     virtual void OnHealthChanged(float Health, float HealthPercent);
-    virtual void OnDeath();
+    virtual void OnDeath(AController* KillerController, AController* VictimController);
     virtual void OnOutOfStamina();
 
 private:

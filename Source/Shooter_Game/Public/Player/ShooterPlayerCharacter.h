@@ -35,7 +35,7 @@ protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     USphereComponent* CameraCollisionComponent;
 
-    virtual void OnDeath() override;
+    virtual void OnDeath(AController* KillerController, AController* VictimController) override;
 
 private:
     FSensitivitySettings SensitivitySettings;

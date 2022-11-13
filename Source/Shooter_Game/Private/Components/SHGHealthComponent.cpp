@@ -1,7 +1,6 @@
 // Shooter_Game, All rights reserved.
 
 #include "Components/SHGHealthComponent.h"
-#include "SHGGameModeArena.h"
 #include "GameFramework/Character.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
 
@@ -61,15 +60,10 @@ void USHGHealthComponent::OnTakeAnyDamage(AActor* DamagedActor,             //
     {
         GetWorld()->GetTimerManager().ClearTimer(AutoHealTimerHandle);
 
-        if (const auto ComponentOwner = GetOwner<APawn>())
-        {
-            if (const auto OwnerController = ComponentOwner->GetController())
-            {
-                Killed(InstigatedBy, OwnerController);
-            }
-        }
+        const auto ComponentOwner = GetOwner<APawn>();
+        const auto OwnerController = ComponentOwner ? ComponentOwner->GetController() : nullptr;
 
-        OnDeath.Broadcast();
+        OnDeath.Broadcast(InstigatedBy, OwnerController);
     }
     else if (AutoHeal && (Health < AutoHealThreshold))
     {
@@ -135,12 +129,4 @@ void USHGHealthComponent::SetHealth(float NewHealth)
     Health = FMath::Clamp(NewHealth, 0.0f, MaxHealth);
 
     OnHealthChanged.Broadcast(Health, GetHealthPercent());
-}
-
-void USHGHealthComponent::Killed(AController* KillerController, AController* VictimController)
-{
-    if (const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeArena>())
-    {
-        GameMode->Killed(KillerController, VictimController);
-    }
 }

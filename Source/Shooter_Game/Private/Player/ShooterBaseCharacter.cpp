@@ -1,7 +1,6 @@
 // Shooter_Game, All rights reserved.
 
 #include "Player/ShooterBaseCharacter.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SHGHealthComponent.h"
 #include "Components/SHGStaminaComponent.h"
 #include "Components/ShooterWeaponComponent.h"
@@ -9,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/ShooterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "SHGGameModeArena.h"
 
 DEFINE_LOG_CATEGORY_STATIC(ShooterBaseCharacterLog, All, All)
 
@@ -123,7 +123,7 @@ void AShooterBaseCharacter::OnHealthChanged(float Health, float HealthPercent)
 {
 }
 
-void AShooterBaseCharacter::OnDeath()
+void AShooterBaseCharacter::OnDeath(AController* KillerController, AController* VictimController)
 {
     VFXComponent->PlayDeathSound();
 
@@ -137,6 +137,11 @@ void AShooterBaseCharacter::OnDeath()
 
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     GetMesh()->SetSimulatePhysics(true);
+
+    if (const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeArena>())
+    {
+        GameMode->Killed(KillerController, VictimController);
+    }
 }
 
 void AShooterBaseCharacter::OnOutOfStamina()

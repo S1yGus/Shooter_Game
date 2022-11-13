@@ -72,5 +72,4 @@ private:
     void OnAutoHeal();
 
     inline void SetHealth(float NewHealth);
-    void Killed(AController* KillerController, AController* VictimController);
 };

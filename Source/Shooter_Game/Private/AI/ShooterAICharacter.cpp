@@ -75,9 +75,9 @@ void AShooterAICharacter::UpdateHealthWidget()
     HealthWidgetComponent->SetWorldRotation(NewRotation);
 }
 
-void AShooterAICharacter::OnDeath()
+void AShooterAICharacter::OnDeath(AController* KillerController, AController* VictimController)
 {
-    Super::OnDeath();
+    Super::OnDeath(KillerController, VictimController);
 
     const auto AIController = Cast<AAIController>(Controller);
     if (!AIController || !AIController->BrainComponent)

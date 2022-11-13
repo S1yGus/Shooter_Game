@@ -81,13 +81,13 @@ struct FWeaponStatsData
 };
 
 // Health
-DECLARE_MULTICAST_DELEGATE(FOnDeathSignature);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, float);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnDeathSignature, AController*, AController*);    // AController* KillerController, AController* VictimController
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, float);          // float HealthAmount, float HealthPercent
 
 // Stamina
 DECLARE_MULTICAST_DELEGATE(FOnOutOfStaminaSignature);
 DECLARE_MULTICAST_DELEGATE(FOnNotEnoughStaminaSignature);
-DECLARE_MULTICAST_DELEGATE_TwoParams(FOnStaminaChangedSignature, float, float);
+DECLARE_MULTICAST_DELEGATE_TwoParams(FOnStaminaChangedSignature, float, float);    // float StaminaAmount, float StaminaPercent
 
 // VFX
 UENUM(BlueprintType)

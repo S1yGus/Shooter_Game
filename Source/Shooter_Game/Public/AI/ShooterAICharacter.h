@@ -36,5 +36,5 @@ protected:
     virtual void OnHealthChanged(float Health, float HealthPercent) override;
     void UpdateHealthWidget();
 
-    virtual void OnDeath() override;
+    virtual void OnDeath(AController* KillerController, AController* VictimController) override;
 };

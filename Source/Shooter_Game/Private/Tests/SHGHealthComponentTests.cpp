@@ -291,7 +291,7 @@ bool FHealthComponentDelegates::RunTest(const FString& Parameters)
 
     bool bIsDead = false;
     HealthComponent->OnDeath.AddLambda(
-        [&]()
+        [&](AController* KillerController, AController* VictimController)
         {
             bIsDead = true;
         });
