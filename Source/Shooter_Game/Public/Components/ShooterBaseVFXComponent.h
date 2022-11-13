@@ -12,12 +12,12 @@ class ASHGImpactIndicatorActor;
 class UPhysicalMaterial;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class SHOOTER_GAME_API UShooterBaseVFXComponent : public UActorComponent
+class SHOOTER_GAME_API USHGBaseVFXComponent : public UActorComponent
 {
     GENERATED_BODY()
 
 public:
-    UShooterBaseVFXComponent();
+    USHGBaseVFXComponent();
 
     void MakeFootstepVFX(const FFootstepNotifyData& FootstepNotifyData);
     void SpawnImpactIndicator(float DamageAmount, const FVector& HitLocation, UPhysicalMaterial* PhysicalMaterial);

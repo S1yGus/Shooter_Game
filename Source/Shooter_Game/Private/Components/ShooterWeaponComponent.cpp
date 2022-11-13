@@ -12,12 +12,12 @@
 constexpr static float ZoomTimerRate = 0.007f;
 constexpr static float ZoomChangeSpeed = 12.0f;
 
-UShooterWeaponComponent::UShooterWeaponComponent()
+USHGBaseWeaponComponent::USHGBaseWeaponComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UShooterWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void USHGBaseWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
     Super::EndPlay(EndPlayReason);
 
@@ -32,7 +32,7 @@ void UShooterWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
     WeaponsMap.Empty();
 }
 
-void UShooterWeaponComponent::StartFire()
+void USHGBaseWeaponComponent::StartFire()
 {
     if (!CanFire())
         return;
@@ -40,7 +40,7 @@ void UShooterWeaponComponent::StartFire()
     CurrentWeapon->StartFire();
 }
 
-void UShooterWeaponComponent::StopFire()
+void USHGBaseWeaponComponent::StopFire()
 {
     if (!CurrentWeapon)
         return;
@@ -48,7 +48,7 @@ void UShooterWeaponComponent::StopFire()
     CurrentWeapon->StopFire();
 }
 
-void UShooterWeaponComponent::Zoom(bool Condition, bool Force)
+void USHGBaseWeaponComponent::Zoom(bool Condition, bool Force)
 {
     if (!CurrentWeapon || !CurrentWeapon->IsCanZoom())
         return;
@@ -76,10 +76,10 @@ void UShooterWeaponComponent::Zoom(bool Condition, bool Force)
     if (GetWorld()->GetTimerManager().IsTimerActive(ZoomTimerHandle))
         return;
 
-    GetWorld()->GetTimerManager().SetTimer(ZoomTimerHandle, this, &UShooterWeaponComponent::ZoomTick, ZoomTimerRate, true);
+    GetWorld()->GetTimerManager().SetTimer(ZoomTimerHandle, this, &USHGBaseWeaponComponent::ZoomTick, ZoomTimerRate, true);
 }
 
-void UShooterWeaponComponent::SwitchFireMode()
+void USHGBaseWeaponComponent::SwitchFireMode()
 {
     if (!CurrentWeapon)
         return;
@@ -87,7 +87,7 @@ void UShooterWeaponComponent::SwitchFireMode()
     CurrentWeapon->SwitchFireMode();
 }
 
-void UShooterWeaponComponent::SwitchFlashlight()
+void USHGBaseWeaponComponent::SwitchFlashlight()
 {
     FlashlightOff = !FlashlightOff;
 
@@ -97,7 +97,7 @@ void UShooterWeaponComponent::SwitchFlashlight()
     CurrentWeapon->TurnOffFlashlight(FlashlightOff);
 }
 
-void UShooterWeaponComponent::NextWeapon()
+void USHGBaseWeaponComponent::NextWeapon()
 {
     if (!CanEquip() || WeaponsMap.Num() == 0)
         return;
@@ -112,7 +112,7 @@ void UShooterWeaponComponent::NextWeapon()
     NextWeapon();
 }
 
-void UShooterWeaponComponent::PreviousWeapon()
+void USHGBaseWeaponComponent::PreviousWeapon()
 {
     if (!CanEquip() || WeaponsMap.Num() == 0)
         return;
@@ -132,7 +132,7 @@ void UShooterWeaponComponent::PreviousWeapon()
     PreviousWeapon();
 }
 
-void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
+void USHGBaseWeaponComponent::EquipWeapon(EWeaponType WeapontType)
 {
     if (!WeaponsMap.Contains(WeapontType) || !CanEquip() || !GetOwner<ACharacter>())
         return;
@@ -154,7 +154,11 @@ void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
 
     CurrentWeapon->TurnOffFlashlight(FlashlightOff);
 
-    const auto CurrentWeaponData = WeaponData.FindByPredicate([&](const FWeaponData& Data) { return Data.WeaponClass == CurrentWeapon->GetClass(); });
+    const auto CurrentWeaponData = WeaponData.FindByPredicate(
+        [&](const FWeaponData& Data)
+        {
+            return Data.WeaponClass == CurrentWeapon->GetClass();
+        });
     CurrentReloadAnimMontage = CurrentWeaponData->ReloadAnimMontage;
 
     EquipMontageInProgress = true;
@@ -163,12 +167,12 @@ void UShooterWeaponComponent::EquipWeapon(EWeaponType WeapontType)
     OnWeaponChanged.Broadcast(CurrentWeapon->GetUIData(), CurrentWeapon->GetAmmoData());
 }
 
-void UShooterWeaponComponent::ReloadWeapon()
+void USHGBaseWeaponComponent::ReloadWeapon()
 {
     ChangeClip();
 }
 
-bool UShooterWeaponComponent::TryToAddAmmo(TSubclassOf<AShooterBaseWeaponActor> WeaponClass, int32 ClipsAmount)
+bool USHGBaseWeaponComponent::TryToAddAmmo(TSubclassOf<AShooterBaseWeaponActor> WeaponClass, int32 ClipsAmount)
 {
     for (const auto Weapon : GetWeaponsMapValueArray())
     {
@@ -181,7 +185,7 @@ bool UShooterWeaponComponent::TryToAddAmmo(TSubclassOf<AShooterBaseWeaponActor> 
     return false;
 }
 
-bool UShooterWeaponComponent::TryToAddWeapon(const FWeaponData& NewWeaponData)
+bool USHGBaseWeaponComponent::TryToAddWeapon(const FWeaponData& NewWeaponData)
 {
     for (const auto Weapon : GetWeaponsMapValueArray())
     {
@@ -203,20 +207,24 @@ bool UShooterWeaponComponent::TryToAddWeapon(const FWeaponData& NewWeaponData)
     if (!ReloadFinishedNotify)
         return false;
 
-    ReloadFinishedNotify->OnNotified.AddUObject(this, &UShooterWeaponComponent::OnReloadFinished);
+    ReloadFinishedNotify->OnNotified.AddUObject(this, &USHGBaseWeaponComponent::OnReloadFinished);
 
     WeaponData.Add(NewWeaponData);
 
     if (!SpawnWeapon(NewWeaponData.WeaponClass))
     {
-        WeaponData.RemoveAllSwap([&](const FWeaponData& WeaponData) { return WeaponData.WeaponClass == NewWeaponData.WeaponClass; });
+        WeaponData.RemoveAllSwap(
+            [&](const FWeaponData& WeaponData)
+            {
+                return WeaponData.WeaponClass == NewWeaponData.WeaponClass;
+            });
         return false;
     }
 
     return true;
 }
 
-bool UShooterWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& Data) const
+bool USHGBaseWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& Data) const
 {
     if (!CurrentWeapon)
         return false;
@@ -225,7 +233,7 @@ bool UShooterWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& Data) const
     return true;
 }
 
-bool UShooterWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& Data) const
+bool USHGBaseWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& Data) const
 {
     if (!CurrentWeapon)
         return false;
@@ -234,7 +242,7 @@ bool UShooterWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& Data) const
     return true;
 }
 
-void UShooterWeaponComponent::BeginPlay()
+void USHGBaseWeaponComponent::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -246,19 +254,19 @@ void UShooterWeaponComponent::BeginPlay()
     NextWeapon();
 }
 
-APlayerController* UShooterWeaponComponent::GetPlayerController() const
+APlayerController* USHGBaseWeaponComponent::GetPlayerController() const
 {
     return GetOwner<APawn>() ? GetOwner<APawn>()->GetController<APlayerController>() : nullptr;
 }
 
-TArray<AShooterBaseWeaponActor*> UShooterWeaponComponent::GetWeaponsMapValueArray() const
+TArray<AShooterBaseWeaponActor*> USHGBaseWeaponComponent::GetWeaponsMapValueArray() const
 {
     TArray<AShooterBaseWeaponActor*> WeaponsArray;
     WeaponsMap.GenerateValueArray(WeaponsArray);
     return WeaponsArray;
 }
 
-void UShooterWeaponComponent::SpawnWeapons()
+void USHGBaseWeaponComponent::SpawnWeapons()
 {
     for (const auto OneWeaponData : WeaponData)
     {
@@ -266,7 +274,7 @@ void UShooterWeaponComponent::SpawnWeapons()
     }
 }
 
-bool UShooterWeaponComponent::SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> WeaponClass)
+bool USHGBaseWeaponComponent::SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> WeaponClass)
 {
     if (!GetOwner<ACharacter>())
         return false;
@@ -275,8 +283,8 @@ bool UShooterWeaponComponent::SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> W
     if (!Weapon)
         return false;
 
-    Weapon->OnClipEmpty.AddUObject(this, &UShooterWeaponComponent::OnClipEmpty);
-    Weapon->OnFired.AddUObject(this, &UShooterWeaponComponent::OnFired);
+    Weapon->OnClipEmpty.AddUObject(this, &USHGBaseWeaponComponent::OnClipEmpty);
+    Weapon->OnFired.AddUObject(this, &USHGBaseWeaponComponent::OnFired);
     Weapon->SetOwner(GetOwner());
 
     if (WeaponsMap.Contains(Weapon->GetWeaponType()))
@@ -303,7 +311,7 @@ bool UShooterWeaponComponent::SpawnWeapon(TSubclassOf<AShooterBaseWeaponActor> W
     return true;
 }
 
-void UShooterWeaponComponent::AttachToSocket(AShooterBaseWeaponActor* Weapon, USceneComponent* ScenComponent, FName SocketName)
+void USHGBaseWeaponComponent::AttachToSocket(AShooterBaseWeaponActor* Weapon, USceneComponent* ScenComponent, FName SocketName)
 {
     if (!Weapon || !ScenComponent)
         return;
@@ -312,7 +320,7 @@ void UShooterWeaponComponent::AttachToSocket(AShooterBaseWeaponActor* Weapon, US
     Weapon->AttachToComponent(ScenComponent, AttachmentRule, SocketName);
 }
 
-void UShooterWeaponComponent::PlayAnimMontage(UAnimMontage* AnimMontage)
+void USHGBaseWeaponComponent::PlayAnimMontage(UAnimMontage* AnimMontage)
 {
     if (!GetOwner<ACharacter>())
         return;
@@ -320,12 +328,12 @@ void UShooterWeaponComponent::PlayAnimMontage(UAnimMontage* AnimMontage)
     GetOwner<ACharacter>()->PlayAnimMontage(AnimMontage);
 }
 
-void UShooterWeaponComponent::BindNotifys()
+void USHGBaseWeaponComponent::BindNotifys()
 {
     const auto EquipFinishedNotify = AnimUtils::FindNotifyByClass<UShooterEquipFinishedAnimNotify>(EquipAnimMontage);
     if (EquipFinishedNotify)
     {
-        EquipFinishedNotify->OnNotified.AddUObject(this, &UShooterWeaponComponent::OnEquipFinished);
+        EquipFinishedNotify->OnNotified.AddUObject(this, &USHGBaseWeaponComponent::OnEquipFinished);
     }
 
     for (const auto OneWeaponData : WeaponData)
@@ -334,11 +342,11 @@ void UShooterWeaponComponent::BindNotifys()
         if (!ReloadFinishedNotify)
             continue;
 
-        ReloadFinishedNotify->OnNotified.AddUObject(this, &UShooterWeaponComponent::OnReloadFinished);
+        ReloadFinishedNotify->OnNotified.AddUObject(this, &USHGBaseWeaponComponent::OnReloadFinished);
     }
 }
 
-void UShooterWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComp)
+void USHGBaseWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComp)
 {
     if (!GetOwner<ACharacter>() && GetOwner<ACharacter>()->GetMesh() == MeshComp)
         return;
@@ -346,7 +354,7 @@ void UShooterWeaponComponent::OnEquipFinished(USkeletalMeshComponent* MeshComp)
     EquipMontageInProgress = false;
 }
 
-void UShooterWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComp)
+void USHGBaseWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComp)
 {
     if (!GetOwner<ACharacter>() || GetOwner<ACharacter>()->GetMesh() != MeshComp)
         return;
@@ -354,7 +362,7 @@ void UShooterWeaponComponent::OnReloadFinished(USkeletalMeshComponent* MeshComp)
     ReloadMontageInProgress = false;
 }
 
-bool UShooterWeaponComponent::CanFire() const
+bool USHGBaseWeaponComponent::CanFire() const
 {
     if (!GetOwner<AShooterBaseCharacter>())
         return false;
@@ -362,27 +370,27 @@ bool UShooterWeaponComponent::CanFire() const
     return CurrentWeapon && !EquipMontageInProgress && !ReloadMontageInProgress && !GetOwner<AShooterBaseCharacter>()->IsSprinting();
 }
 
-bool UShooterWeaponComponent::CanEquip() const
+bool USHGBaseWeaponComponent::CanEquip() const
 {
     return !EquipMontageInProgress && !ReloadMontageInProgress;
 }
 
-bool UShooterWeaponComponent::CanReload() const
+bool USHGBaseWeaponComponent::CanReload() const
 {
     return CurrentWeapon && !EquipMontageInProgress && !ReloadMontageInProgress;
 }
 
-void UShooterWeaponComponent::OnClipEmpty()
+void USHGBaseWeaponComponent::OnClipEmpty()
 {
     ChangeClip();
 }
 
-void UShooterWeaponComponent::OnFired()
+void USHGBaseWeaponComponent::OnFired()
 {
     OnAmmoInfoChanged.Broadcast(CurrentWeapon->GetAmmoData());
 }
 
-void UShooterWeaponComponent::ChangeClip()
+void USHGBaseWeaponComponent::ChangeClip()
 {
     if (!CanReload() || !CurrentWeapon->ReloadClip())
         return;
@@ -395,7 +403,7 @@ void UShooterWeaponComponent::ChangeClip()
     OnAmmoInfoChanged.Broadcast(CurrentWeapon->GetAmmoData());
 }
 
-bool UShooterWeaponComponent::GetCurrentFOV(float& CurrentFOV)
+bool USHGBaseWeaponComponent::GetCurrentFOV(float& CurrentFOV)
 {
     if (!GetPlayerController() || !GetPlayerController()->PlayerCameraManager)
         return false;
@@ -404,7 +412,7 @@ bool UShooterWeaponComponent::GetCurrentFOV(float& CurrentFOV)
     return true;
 }
 
-void UShooterWeaponComponent::ZoomTick()
+void USHGBaseWeaponComponent::ZoomTick()
 {
     if (!GetPlayerController() || !GetPlayerController()->PlayerCameraManager)
         return;

@@ -204,7 +204,7 @@ void ASHGGameModeArena::Respawn(AController* Controller)
     if (!Controller || GetCurrentRaundTime() < MinRaundTimeForRespawn + GameData.RespawnTime)
         return;
 
-    const auto RespawnComponent = Controller->FindComponentByClass<UShooterRespawnComponent>();
+    const auto RespawnComponent = Controller->FindComponentByClass<USHGRespawnComponent>();
     if (!RespawnComponent)
         return;
 
@@ -249,7 +249,7 @@ void ASHGGameModeArena::StopAllFire()
 {
     for (const auto Pawn : TActorRange<APawn>(GetWorld()))
     {
-        const auto WeaponComponent = Pawn->FindComponentByClass<UShooterWeaponComponent>();
+        const auto WeaponComponent = Pawn->FindComponentByClass<USHGBaseWeaponComponent>();
         if (!WeaponComponent)
             continue;
 

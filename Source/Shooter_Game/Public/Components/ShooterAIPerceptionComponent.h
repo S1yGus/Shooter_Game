@@ -7,7 +7,7 @@
 #include "ShooterAIPerceptionComponent.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API UShooterAIPerceptionComponent : public UAIPerceptionComponent
+class SHOOTER_GAME_API USHGAIPerceptionComponent : public UAIPerceptionComponent
 {
     GENERATED_BODY()
 

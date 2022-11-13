@@ -7,7 +7,7 @@
 #include "ShooterCoreTypes.h"
 #include "ShooterChangeWeaponService.generated.h"
 
-class UShooterAIWeaponComponent;
+class USHGAIWeaponComponent;
 class UEnvQuery;
 
 UCLASS()
@@ -34,7 +34,7 @@ protected:
     virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 private:
-    bool ChooseWeaponInRange(UShooterAIWeaponComponent* AIWeaponComponent, int32 FirstIndex, int32 LastIndex);
+    bool ChooseWeaponInRange(USHGAIWeaponComponent* AIWeaponComponent, int32 FirstIndex, int32 LastIndex);
 
     float FindDistanceBetween(AActor* FirstActor, AActor* SecondActor);
 };

@@ -9,12 +9,12 @@
 class UCameraShakeBase;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class SHOOTER_GAME_API UShooterPlayerVFXComponent : public UShooterBaseVFXComponent
+class SHOOTER_GAME_API USHGPlayerVFXComponent : public USHGBaseVFXComponent
 {
     GENERATED_BODY()
 
 public:
-    UShooterPlayerVFXComponent();
+    USHGPlayerVFXComponent();
 
     void MakeCameraShake(TSubclassOf<UCameraShakeBase> CameraShakeClass, float Scale = 1.0f);
 

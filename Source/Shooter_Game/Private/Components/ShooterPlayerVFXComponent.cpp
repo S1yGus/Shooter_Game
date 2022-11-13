@@ -2,12 +2,12 @@
 
 #include "Components/ShooterPlayerVFXComponent.h"
 
-UShooterPlayerVFXComponent::UShooterPlayerVFXComponent()
+USHGPlayerVFXComponent::USHGPlayerVFXComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UShooterPlayerVFXComponent::MakeCameraShake(TSubclassOf<UCameraShakeBase> CameraShakeClass, float Scale)
+void USHGPlayerVFXComponent::MakeCameraShake(TSubclassOf<UCameraShakeBase> CameraShakeClass, float Scale)
 {
     if (!CameraShakeClass)
         return;
@@ -23,17 +23,16 @@ void UShooterPlayerVFXComponent::MakeCameraShake(TSubclassOf<UCameraShakeBase> C
     PlayerController->PlayerCameraManager->StartCameraShake(CameraShakeClass, Scale);
 }
 
-void UShooterPlayerVFXComponent::BeginPlay()
+void USHGPlayerVFXComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    GetOwner()->OnTakeAnyDamage.AddDynamic(this, &UShooterPlayerVFXComponent::OnTakeAnyDamage);
+    GetOwner()->OnTakeAnyDamage.AddDynamic(this, &USHGPlayerVFXComponent::OnTakeAnyDamage);
 
     MakeCameraShake(LocomotionCameraShakeClass);
 }
 
-void UShooterPlayerVFXComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy,
-                                                 AActor* DamageCauser)
+void USHGPlayerVFXComponent::OnTakeAnyDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
     MakeCameraShake(GetDamageCameraShakeClass);
 }

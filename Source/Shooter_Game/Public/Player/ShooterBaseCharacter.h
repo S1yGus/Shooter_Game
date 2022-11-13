@@ -7,9 +7,9 @@
 #include "ShooterBaseCharacter.generated.h"
 
 class USHGHealthComponent;
-class UShooterStaminaComponent;
-class UShooterWeaponComponent;
-class UShooterBaseVFXComponent;
+class USHGStaminaComponent;
+class USHGBaseWeaponComponent;
+class USHGBaseVFXComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
@@ -40,22 +40,22 @@ protected:
     USHGHealthComponent* HealthComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UShooterStaminaComponent* StaminaComponent;
+    USHGStaminaComponent* StaminaComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UShooterWeaponComponent* WeaponComponent;
+    USHGBaseWeaponComponent* WeaponComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UShooterBaseVFXComponent* VFXComponent;
+    USHGBaseVFXComponent* VFXComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     float LifeSpanOnDeath = 5.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
-    FVector2D LandedDamageVelocity = FVector2D(800.0f, 1500.0f);
+    FVector2D LandedDamageVelocity{800.0f, 1500.0f};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
-    FVector2D LandedDamageValue = FVector2D(10.0f, 100.0f);
+    FVector2D LandedDamageValue{10.0f, 100.0f};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Material")
     FName MaterialColorParameterName = "Paint Color";

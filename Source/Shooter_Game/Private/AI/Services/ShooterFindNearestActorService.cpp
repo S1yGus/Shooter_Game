@@ -19,7 +19,7 @@ void UShooterFindNearestActorService::TickNode(UBehaviorTreeComponent& OwnerComp
     if (!Blackboard || !ShooterAIController)
         return;
 
-    const auto PerceptionComponent = ShooterAIController->FindComponentByClass<UShooterAIPerceptionComponent>();
+    const auto PerceptionComponent = ShooterAIController->FindComponentByClass<USHGAIPerceptionComponent>();
     if (!PerceptionComponent)
         return;
 

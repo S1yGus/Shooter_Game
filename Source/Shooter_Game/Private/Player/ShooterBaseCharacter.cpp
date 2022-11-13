@@ -3,7 +3,7 @@
 #include "Player/ShooterBaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SHGHealthComponent.h"
-#include "Components/ShooterStaminaComponent.h"
+#include "Components/SHGStaminaComponent.h"
 #include "Components/ShooterWeaponComponent.h"
 #include "Components/ShooterBaseVFXComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -13,14 +13,14 @@
 DEFINE_LOG_CATEGORY_STATIC(ShooterBaseCharacterLog, All, All)
 
 AShooterBaseCharacter::AShooterBaseCharacter(const FObjectInitializer& ObjectInitializer)
-    : Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterMovementComponent>(CharacterMovementComponentName))
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<USHGMovementComponent>(CharacterMovementComponentName))
 {
     PrimaryActorTick.bCanEverTick = true;
 
     HealthComponent = CreateDefaultSubobject<USHGHealthComponent>("HealthComponent");
-    StaminaComponent = CreateDefaultSubobject<UShooterStaminaComponent>("StaminaComponent");
-    WeaponComponent = CreateDefaultSubobject<UShooterWeaponComponent>("WeaponComponent");
-    VFXComponent = CreateDefaultSubobject<UShooterBaseVFXComponent>("VFXComponent");
+    StaminaComponent = CreateDefaultSubobject<USHGStaminaComponent>("StaminaComponent");
+    WeaponComponent = CreateDefaultSubobject<USHGBaseWeaponComponent>("WeaponComponent");
+    VFXComponent = CreateDefaultSubobject<USHGBaseVFXComponent>("VFXComponent");
 }
 
 void AShooterBaseCharacter::BeginPlay()
@@ -35,7 +35,7 @@ void AShooterBaseCharacter::BeginPlay()
 
     HealthComponent->OnDeath.AddUObject(this, &AShooterBaseCharacter::OnDeath);
     HealthComponent->OnHealthChanged.AddUObject(this, &AShooterBaseCharacter::OnHealthChanged);
-    HealthComponent->OnTakeDamage.AddUObject(VFXComponent, &UShooterBaseVFXComponent::SpawnImpactIndicator);
+    HealthComponent->OnTakeDamage.AddUObject(VFXComponent, &USHGBaseVFXComponent::SpawnImpactIndicator);
     StaminaComponent->OnOutOfStamina.AddUObject(this, &AShooterBaseCharacter::OnOutOfStamina);
     LandedDelegate.AddDynamic(this, &AShooterBaseCharacter::OnGroundLanded);
 }
@@ -56,10 +56,15 @@ void AShooterBaseCharacter::Reset()
 
 void AShooterBaseCharacter::Jump()
 {
-    if (GetCharacterMovement()->IsFalling() || !StaminaComponent->UsingStaminaValidCheck(StaminaComponent->GetJumpStaminaCost()))
+    if (GetCharacterMovement()->IsFalling() || !StaminaComponent->Jump())
         return;
 
     Super::Jump();
+
+    if (IsSprinting())
+    {
+        StaminaComponent->Sprint(false);
+    }
 }
 
 void AShooterBaseCharacter::SetColor(const FLinearColor& Color)
@@ -92,7 +97,7 @@ FRotator AShooterBaseCharacter::GetViewDeltaRotator() const
 
 void AShooterBaseCharacter::StartSprint()
 {
-    if (StaminaComponent->IsOutOfStamina())
+    if (!StaminaComponent->Sprint(true))
         return;
 
     WantsToSprint = true;
@@ -102,11 +107,16 @@ void AShooterBaseCharacter::StartSprint()
         WeaponComponent->StopFire();
         WeaponComponent->Zoom(false);
     }
+    else
+    {
+        StaminaComponent->Sprint(false);
+    }
 }
 
 void AShooterBaseCharacter::StopSprint()
 {
     WantsToSprint = false;
+    StaminaComponent->Sprint(false);
 }
 
 void AShooterBaseCharacter::OnHealthChanged(float Health, float HealthPercent)
@@ -136,6 +146,11 @@ void AShooterBaseCharacter::OnOutOfStamina()
 
 void AShooterBaseCharacter::OnGroundLanded(const FHitResult& Hit)
 {
+    if (WantsToSprint && MovingForward)
+    {
+        StaminaComponent->Sprint(true);
+    }
+
     const auto LandedVelocityZ = -GetVelocity().Z;
 
     if (LandedVelocityZ < LandedDamageVelocity.X)

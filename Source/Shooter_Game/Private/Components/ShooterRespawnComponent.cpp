@@ -3,17 +3,17 @@
 #include "Components/ShooterRespawnComponent.h"
 #include "SHGGameModeArena.h"
 
-UShooterRespawnComponent::UShooterRespawnComponent()
+USHGRespawnComponent::USHGRespawnComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UShooterRespawnComponent::StartRespawn(int32 RespawnTime)
+void USHGRespawnComponent::StartRespawn(int32 RespawnTime)
 {
     GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, this, &ThisClass::EndRespawn, RespawnTime);
 }
 
-bool UShooterRespawnComponent::GetCurrentRespawnTime(float& CurrentRespawnTime) const
+bool USHGRespawnComponent::GetCurrentRespawnTime(float& CurrentRespawnTime) const
 {
     if (!GetWorld()->GetTimerManager().IsTimerActive(RespawnTimerHandle))
         return false;
@@ -22,7 +22,7 @@ bool UShooterRespawnComponent::GetCurrentRespawnTime(float& CurrentRespawnTime) 
     return true;
 }
 
-void UShooterRespawnComponent::EndRespawn()
+void USHGRespawnComponent::EndRespawn()
 {
     const auto GameMode = Cast<ASHGGameModeArena>(GetWorld()->GetAuthGameMode());
     if (!GameMode)
@@ -35,7 +35,7 @@ void UShooterRespawnComponent::EndRespawn()
     GameMode->RespawnRequest(Controller);
 }
 
-void UShooterRespawnComponent::BeginPlay()
+void USHGRespawnComponent::BeginPlay()
 {
     Super::BeginPlay();
 }

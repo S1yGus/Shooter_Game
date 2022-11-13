@@ -10,7 +10,7 @@ void UShooterFootstepAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimS
     if (!Character)
         return;
 
-    const auto VFXComponent = Character->FindComponentByClass<UShooterBaseVFXComponent>();
+    const auto VFXComponent = Character->FindComponentByClass<USHGBaseVFXComponent>();
     if (!VFXComponent)
         return;
 

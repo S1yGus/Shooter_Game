@@ -10,7 +10,7 @@ FText USHGSpectatingUserWidget::GetCurrentRespawnTime() const
     if (!PC)
         return DeathText;
 
-    const auto RespawnComponent = PC->FindComponentByClass<UShooterRespawnComponent>();
+    const auto RespawnComponent = PC->FindComponentByClass<USHGRespawnComponent>();
     if (!RespawnComponent)
         return DeathText;
 

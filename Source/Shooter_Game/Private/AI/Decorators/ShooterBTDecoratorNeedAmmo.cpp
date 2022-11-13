@@ -30,7 +30,7 @@ bool UShooterBTDecoratorNeedAmmo::CalculateRawConditionValue(UBehaviorTreeCompon
     if (!HealthComponent || HealthComponent->IsDead())
         return false;
 
-    const auto AIWeaponComponent = AIController->GetPawn()->FindComponentByClass<UShooterAIWeaponComponent>();
+    const auto AIWeaponComponent = AIController->GetPawn()->FindComponentByClass<USHGAIWeaponComponent>();
     if (!AIWeaponComponent || !AIWeaponComponent->CheckWeapon(WeaponType))
         return false;
 

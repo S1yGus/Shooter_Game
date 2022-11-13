@@ -28,7 +28,7 @@ void UShooterChangeWeaponService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
     if (!AIPawn)
         return;
 
-    const auto AIWeaponComponent = AIPawn->FindComponentByClass<UShooterAIWeaponComponent>();
+    const auto AIWeaponComponent = AIPawn->FindComponentByClass<USHGAIWeaponComponent>();
     if (!AIWeaponComponent)
         return;
 
@@ -52,7 +52,7 @@ void UShooterChangeWeaponService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
     AIWeaponComponent->NextWeapon();
 }
 
-bool UShooterChangeWeaponService::ChooseWeaponInRange(UShooterAIWeaponComponent* AIWeaponComponent, int32 FirstIndex, int32 LastIndex)
+bool UShooterChangeWeaponService::ChooseWeaponInRange(USHGAIWeaponComponent* AIWeaponComponent, int32 FirstIndex, int32 LastIndex)
 {
     for (int32 WeaponIndex = FirstIndex; WeaponIndex < LastIndex + 1; ++WeaponIndex)
     {

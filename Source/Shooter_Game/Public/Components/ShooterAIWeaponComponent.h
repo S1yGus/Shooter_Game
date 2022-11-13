@@ -7,7 +7,7 @@
 #include "ShooterAIWeaponComponent.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API UShooterAIWeaponComponent : public UShooterWeaponComponent
+class SHOOTER_GAME_API USHGAIWeaponComponent : public USHGBaseWeaponComponent
 {
     GENERATED_BODY()
 

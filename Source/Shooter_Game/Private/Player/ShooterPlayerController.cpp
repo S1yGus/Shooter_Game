@@ -6,7 +6,7 @@
 
 AShooterPlayerController::AShooterPlayerController()
 {
-    RespawnComponent = CreateDefaultSubobject<UShooterRespawnComponent>("RespawnComponent");
+    RespawnComponent = CreateDefaultSubobject<USHGRespawnComponent>("RespawnComponent");
 }
 
 void AShooterPlayerController::BeginPlay()

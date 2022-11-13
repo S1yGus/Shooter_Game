@@ -11,7 +11,7 @@ bool AShooterPickupAmmoActor::GivePickupTo(APawn* PlayerPawn)
     if (!HealthComponent || HealthComponent->IsDead())
         return false;
 
-    const auto WeaponComponent = ShooterUtils::GetShooterPlayerComponent<UShooterWeaponComponent>(PlayerPawn);
+    const auto WeaponComponent = ShooterUtils::GetShooterPlayerComponent<USHGBaseWeaponComponent>(PlayerPawn);
     if (!WeaponComponent)
         return false;
 

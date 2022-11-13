@@ -3,7 +3,7 @@
 #include "Components/ShooterMovementComponent.h"
 #include "Player/ShooterBaseCharacter.h"
 
-float UShooterMovementComponent::GetMaxSpeed() const
+float USHGMovementComponent::GetMaxSpeed() const
 {
     const auto OwnerCharacter = GetOwner<AShooterBaseCharacter>();
     if (!OwnerCharacter)

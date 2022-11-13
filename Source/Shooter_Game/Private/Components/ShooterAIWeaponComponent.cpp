@@ -4,7 +4,7 @@
 #include "Weapons/ShooterBaseWeaponActor.h"
 #include "ShooterCoreTypes.h"
 
-void UShooterAIWeaponComponent::StartFire()
+void USHGAIWeaponComponent::StartFire()
 {
     if (!CanFire())
         return;
@@ -19,7 +19,7 @@ void UShooterAIWeaponComponent::StartFire()
     }
 }
 
-void UShooterAIWeaponComponent::NextWeapon()
+void USHGAIWeaponComponent::NextWeapon()
 {
     if (!CanEquip() || WeaponsMap.Num() == 0)
         return;
@@ -44,12 +44,12 @@ void UShooterAIWeaponComponent::NextWeapon()
     EquipWeapon(static_cast<EWeaponType>(CurrentWeaponIndex));
 }
 
-bool UShooterAIWeaponComponent::CheckWeapon(EWeaponType WeaponType) const
+bool USHGAIWeaponComponent::CheckWeapon(EWeaponType WeaponType) const
 {
     return WeaponsMap.Contains(WeaponType);
 }
 
-bool UShooterAIWeaponComponent::CheckWeaponAmmo(EWeaponType WeaponType) const
+bool USHGAIWeaponComponent::CheckWeaponAmmo(EWeaponType WeaponType) const
 {
     if (!WeaponsMap.Contains(WeaponType))
         return false;
@@ -57,12 +57,12 @@ bool UShooterAIWeaponComponent::CheckWeaponAmmo(EWeaponType WeaponType) const
     return !WeaponsMap[WeaponType]->IsAmmoEmpty();
 }
 
-bool UShooterAIWeaponComponent::CheckCurrentWeapon(EWeaponType WeaponType) const
+bool USHGAIWeaponComponent::CheckCurrentWeapon(EWeaponType WeaponType) const
 {
     return CurrentWeapon->GetWeaponType() == WeaponType;
 }
 
-float UShooterAIWeaponComponent::GetCurrentMinAttackDistance() const
+float USHGAIWeaponComponent::GetCurrentMinAttackDistance() const
 {
     if (!CurrentWeapon)
         return 0.0f;
@@ -70,7 +70,7 @@ float UShooterAIWeaponComponent::GetCurrentMinAttackDistance() const
     return CurrentWeapon->GetOptimalAttackDistance();
 }
 
-float UShooterAIWeaponComponent::GetCurrentMaxAttackDistance() const
+float USHGAIWeaponComponent::GetCurrentMaxAttackDistance() const
 {
     if (!CurrentWeapon)
         return MAX_FLT;

@@ -9,14 +9,13 @@
 #include "Components/ShooterPlayerVFXComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Components/ShooterStaminaComponent.h"
 #include "SHGGameModeBase.h"
 #include "Settings/SHGGameUserSettings.h"
 
 constexpr static float MouseSensMultiplier = 200.0f;
 
 AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& ObjectInitializer)
-    : Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterPlayerVFXComponent>("VFXComponent"))
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<USHGPlayerVFXComponent>("VFXComponent"))
 {
     SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
     SpringArmComponent->SetupAttachment(GetRootComponent());
@@ -63,23 +62,23 @@ void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
     PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ThisClass::Jump);
     PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &ThisClass::StartSprint);
     PlayerInputComponent->BindAction("Sprint", IE_Released, this, &ThisClass::StopSprint);
-    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::StartFire);
-    PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &UShooterWeaponComponent::StopFire);
-    PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::NextWeapon);
-    PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::PreviousWeapon);
-    PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::ReloadWeapon);
-    PlayerInputComponent->BindAction("SwitchFireMode", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::SwitchFireMode);
-    PlayerInputComponent->BindAction("Flashlight", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::SwitchFlashlight);
+    PlayerInputComponent->BindAction("Fire", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::StartFire);
+    PlayerInputComponent->BindAction("Fire", IE_Released, WeaponComponent, &USHGBaseWeaponComponent::StopFire);
+    PlayerInputComponent->BindAction("NextWeapon", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::NextWeapon);
+    PlayerInputComponent->BindAction("PreviousWeapon", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::PreviousWeapon);
+    PlayerInputComponent->BindAction("Reload", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::ReloadWeapon);
+    PlayerInputComponent->BindAction("SwitchFireMode", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::SwitchFireMode);
+    PlayerInputComponent->BindAction("Flashlight", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::SwitchFlashlight);
 
     DECLARE_DELEGATE_OneParam(FEquipWeaponSignature, EWeaponType);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Pistol);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("SecondWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Rifle);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("ThirdWeapom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Shotgun);
-    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FourthWeapon", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::EquipWeapon, EWeaponType::Launcher);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FirstWeapon", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::EquipWeapon, EWeaponType::Pistol);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("SecondWeapon", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::EquipWeapon, EWeaponType::Rifle);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("ThirdWeapom", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::EquipWeapon, EWeaponType::Shotgun);
+    PlayerInputComponent->BindAction<FEquipWeaponSignature>("FourthWeapon", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::EquipWeapon, EWeaponType::Launcher);
 
     DECLARE_DELEGATE_TwoParams(FZoomSignature, bool, bool);
-    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Pressed, WeaponComponent, &UShooterWeaponComponent::Zoom, true, false);
-    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Released, WeaponComponent, &UShooterWeaponComponent::Zoom, false, false);
+    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Pressed, WeaponComponent, &USHGBaseWeaponComponent::Zoom, true, false);
+    PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Released, WeaponComponent, &USHGBaseWeaponComponent::Zoom, false, false);
 }
 
 void AShooterPlayerCharacter::TurnOff()

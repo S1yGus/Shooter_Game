@@ -7,7 +7,7 @@
 #include "Weapons/ShooterShellBaseActor.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Components/SHGHealthComponent.h"
-#include "Components/ShooterStaminaComponent.h"
+#include "Components/SHGStaminaComponent.h"
 #include "Components/ShooterWeaponComponent.h"
 #include "Components/SpotLightComponent.h"
 #include "DrawDebugHelpers.h"
@@ -241,15 +241,15 @@ FVector AShooterBaseWeaponActor::GetShotDirection(const FVector& Direction) cons
     const auto WeaponStatsData = AlternativeFireMode ? AlternativeWeaponStatsData : MainWeaponStatsData;
 
     auto CurrentShotSpreadRange = WeaponStatsData.AIShotSpread;
-    if (GetController()->IsPlayerController() && GetOwner()->FindComponentByClass<UShooterWeaponComponent>())
+    if (GetController()->IsPlayerController() && GetOwner()->FindComponentByClass<USHGBaseWeaponComponent>())
     {
-        const auto ZoomingNow = GetOwner()->FindComponentByClass<UShooterWeaponComponent>()->IsZoomingNow();
+        const auto ZoomingNow = GetOwner()->FindComponentByClass<USHGBaseWeaponComponent>()->IsZoomingNow();
         CurrentShotSpreadRange = ZoomingNow ? WeaponStatsData.AimedShotSpread : WeaponStatsData.ShotSpread;
     }
 
     float PercentAmount = 0.0f;
     float MaxPercent = 0.0f;
-    if (const auto StaminaComponent = GetOwner()->FindComponentByClass<UShooterStaminaComponent>())
+    if (const auto StaminaComponent = GetOwner()->FindComponentByClass<USHGStaminaComponent>())
     {
         PercentAmount += StaminaComponent->GetStaminaPercent();
         MaxPercent += 1.0f;

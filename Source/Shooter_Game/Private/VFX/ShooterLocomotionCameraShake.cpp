@@ -19,7 +19,7 @@ bool UShooterLocomotionCameraShake::IsZooming() const
     if (!OwnerPawn)
         return false;
 
-    const auto WeaponComponent = OwnerPawn->FindComponentByClass<UShooterWeaponComponent>();
+    const auto WeaponComponent = OwnerPawn->FindComponentByClass<USHGBaseWeaponComponent>();
     if (!WeaponComponent)
         return false;
 

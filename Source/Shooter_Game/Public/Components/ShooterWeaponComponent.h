@@ -13,12 +13,12 @@ class AShooterBaseWeaponActor;
 class UAnimMontage;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class SHOOTER_GAME_API UShooterWeaponComponent : public UActorComponent
+class SHOOTER_GAME_API USHGBaseWeaponComponent : public UActorComponent
 {
     GENERATED_BODY()
 
 public:
-    UShooterWeaponComponent();
+    USHGBaseWeaponComponent();
 
     FOnWeaponChangedSignature OnWeaponChanged;
     FOnAmmoInfoChangedSignature OnAmmoInfoChanged;

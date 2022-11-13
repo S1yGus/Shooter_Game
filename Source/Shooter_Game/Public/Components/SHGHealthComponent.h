@@ -25,8 +25,8 @@ public:
     UFUNCTION(BlueprintCallable)
     inline bool IsDead() const { return FMath::IsNearlyZero(Health); }
     UFUNCTION(BlueprintCallable)
-    float GetHealthPercent() const { return Health / MaxHealth; }
-    float GetHealth() const { return Health; }
+    inline float GetHealthPercent() const { return Health / MaxHealth; }
+    inline float GetHealth() const { return Health; }
     bool TryToHeal(float HealAmount);
 
 protected:
@@ -71,6 +71,6 @@ private:
                             AActor* DamageCauser);
     void OnAutoHeal();
 
-    void SetHealth(float NewHealth);
+    inline void SetHealth(float NewHealth);
     void Killed(AController* KillerController, AController* VictimController);
 };

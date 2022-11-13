@@ -3,7 +3,7 @@
 #include "UI/HUD/SHGStatsUserWidget.h"
 #include "Components/ProgressBar.h"
 #include "Components/SHGHealthComponent.h"
-#include "Components/ShooterStaminaComponent.h"
+#include "Components/SHGStaminaComponent.h"
 
 void USHGStatsUserWidget::NativeOnInitialized()
 {
@@ -29,7 +29,7 @@ void USHGStatsUserWidget::OnNewPawn(APawn* NewPawn)
         UpdateHealthProgressBar(HealthComponent->GetHealthPercent());
     }
 
-    if (const auto StaminaComponent = NewPawn->FindComponentByClass<UShooterStaminaComponent>())
+    if (const auto StaminaComponent = NewPawn->FindComponentByClass<USHGStaminaComponent>())
     {
         StaminaComponent->OnStaminaChanged.AddUObject(this, &ThisClass::OnStaminaChanged);
         StaminaComponent->OnOutOfStamina.AddUObject(this, &ThisClass::OnNotEnoughStamina);

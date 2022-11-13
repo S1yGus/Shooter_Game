@@ -9,10 +9,10 @@
 
 AShooterAIController::AShooterAIController()
 {
-    AIPerceptionComponent = CreateDefaultSubobject<UShooterAIPerceptionComponent>("PerceptionComponent");
+    AIPerceptionComponent = CreateDefaultSubobject<USHGAIPerceptionComponent>("PerceptionComponent");
     SetPerceptionComponent(*AIPerceptionComponent);
 
-    RespawnComponent = CreateDefaultSubobject<UShooterRespawnComponent>("RespawnComponent");
+    RespawnComponent = CreateDefaultSubobject<USHGRespawnComponent>("RespawnComponent");
 
     bWantsPlayerState = true;
     bAllowStrafe = true;
@@ -49,7 +49,7 @@ void AShooterAIController::OnTakeDamage(AActor* DamagedActor, float Damage, cons
 
     if (!GetBlackboardComponent())
         return;
-    
+
     GetBlackboardComponent()->SetValueAsObject(EnemyBlackboardKeyName, InstigatedBy->GetPawn());
 }
 

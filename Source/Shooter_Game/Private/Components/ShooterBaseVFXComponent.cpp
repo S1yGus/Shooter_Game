@@ -9,12 +9,12 @@
 #include "Gameplay/SHGImpactIndicatorActor.h"
 #include "Components/SHGHealthComponent.h"
 
-UShooterBaseVFXComponent::UShooterBaseVFXComponent()
+USHGBaseVFXComponent::USHGBaseVFXComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
 }
 
-void UShooterBaseVFXComponent::MakeFootstepVFX(const FFootstepNotifyData& FootstepNotifyData)
+void USHGBaseVFXComponent::MakeFootstepVFX(const FFootstepNotifyData& FootstepNotifyData)
 {
     const auto OwnerCharacter = GetOwner<ACharacter>();
     if (!OwnerCharacter)
@@ -74,7 +74,7 @@ void UShooterBaseVFXComponent::MakeFootstepVFX(const FFootstepNotifyData& Footst
     DecalComponent->SetFadeOut(FootstepDecalData.LifeTime, FootstepDecalData.FadeOutTime);
 }
 
-void UShooterBaseVFXComponent::SpawnImpactIndicator(float DamageAmount, const FVector& HitLocation, UPhysicalMaterial* PhysicalMaterial)
+void USHGBaseVFXComponent::SpawnImpactIndicator(float DamageAmount, const FVector& HitLocation, UPhysicalMaterial* PhysicalMaterial)
 {
     if (!ShowImpactIndicators || !ImpactIndicatorClass)
         return;
@@ -96,7 +96,7 @@ void UShooterBaseVFXComponent::SpawnImpactIndicator(float DamageAmount, const FV
     ImpactIndicator->FinishSpawning(SpawnTransform);
 }
 
-void UShooterBaseVFXComponent::PlayDeathSound()
+void USHGBaseVFXComponent::PlayDeathSound()
 {
     if (!GetOwner())
         return;
@@ -104,12 +104,12 @@ void UShooterBaseVFXComponent::PlayDeathSound()
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetOwner()->GetActorLocation());
 }
 
-void UShooterBaseVFXComponent::BeginPlay()
+void USHGBaseVFXComponent::BeginPlay()
 {
     Super::BeginPlay();
 }
 
-bool UShooterBaseVFXComponent::MakeFootstepTrace(const FVector& TraceStart, const FVector& TraceEnd, FHitResult& HitResult)
+bool USHGBaseVFXComponent::MakeFootstepTrace(const FVector& TraceStart, const FVector& TraceEnd, FHitResult& HitResult)
 {
     const auto OwnerCharacter = GetOwner<ACharacter>();
     if (!OwnerCharacter)

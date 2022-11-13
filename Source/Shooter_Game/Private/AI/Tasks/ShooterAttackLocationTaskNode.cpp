@@ -18,7 +18,7 @@ EBTNodeResult::Type UShooterAttackLocationTaskNode::ExecuteTask(UBehaviorTreeCom
     if (!AIPawn)
         return EBTNodeResult::Failed;
 
-    const auto AIWeaponComponent = AIPawn->FindComponentByClass<UShooterAIWeaponComponent>();
+    const auto AIWeaponComponent = AIPawn->FindComponentByClass<USHGAIWeaponComponent>();
     if (!AIWeaponComponent)
         return EBTNodeResult::Failed;
 

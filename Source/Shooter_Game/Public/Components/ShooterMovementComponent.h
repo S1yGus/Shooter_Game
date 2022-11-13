@@ -7,7 +7,7 @@
 #include "ShooterMovementComponent.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API UShooterMovementComponent : public UCharacterMovementComponent
+class SHOOTER_GAME_API USHGMovementComponent : public UCharacterMovementComponent
 {
     GENERATED_BODY()
 

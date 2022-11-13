@@ -13,7 +13,7 @@
 constexpr static float UpdateHealthWidgetVisibilityTimerRate = 0.02f;
 
 AShooterAICharacter::AShooterAICharacter(const FObjectInitializer& ObjectInitializer)
-    : Super(ObjectInitializer.SetDefaultSubobjectClass<UShooterAIWeaponComponent>("WeaponComponent"))
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<USHGAIWeaponComponent>("WeaponComponent"))
 {
     AutoPossessAI = EAutoPossessAI::Disabled;
     AIControllerClass = AShooterAIController::StaticClass();

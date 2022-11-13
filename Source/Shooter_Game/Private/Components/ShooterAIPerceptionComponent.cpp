@@ -9,14 +9,14 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "ShooterUtils.h"
 
-void UShooterAIPerceptionComponent::BeginPlay()
+void USHGAIPerceptionComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    OnTargetPerceptionInfoUpdated.AddDynamic(this, &UShooterAIPerceptionComponent::CheckForEnemyLost);
+    OnTargetPerceptionInfoUpdated.AddDynamic(this, &USHGAIPerceptionComponent::CheckForEnemyLost);
 }
 
-AActor* UShooterAIPerceptionComponent::GetNearestActor()
+AActor* USHGAIPerceptionComponent::GetNearestActor()
 {
     TArray<AActor*> PerceivedActors;
     GetCurrentlyPerceivedActors(UAISense_Sight::StaticClass(), PerceivedActors);
@@ -58,7 +58,7 @@ AActor* UShooterAIPerceptionComponent::GetNearestActor()
     return NearestActor;
 }
 
-void UShooterAIPerceptionComponent::CheckForEnemyLost(const FActorPerceptionUpdateInfo& UpdateInfo)
+void USHGAIPerceptionComponent::CheckForEnemyLost(const FActorPerceptionUpdateInfo& UpdateInfo)
 {
     const auto StimulusClass = UAIPerceptionSystem::GetSenseClassForStimulus(GetWorld(), UpdateInfo.Stimulus);
     if (UpdateInfo.Stimulus.SensingSucceeded || StimulusClass != UAISense_Prediction::StaticClass())

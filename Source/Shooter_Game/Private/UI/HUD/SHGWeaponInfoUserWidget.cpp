@@ -26,7 +26,7 @@ void USHGWeaponInfoUserWidget::OnNewPawn(APawn* NewPawn)
     if (!NewPawn)
         return;
 
-    if (const auto WeaponComponent = NewPawn->FindComponentByClass<UShooterWeaponComponent>())
+    if (const auto WeaponComponent = NewPawn->FindComponentByClass<USHGBaseWeaponComponent>())
     {
         WeaponComponent->OnWeaponChanged.AddUObject(this, &ThisClass::OnWeaponChanged);
         WeaponComponent->OnAmmoInfoChanged.AddUObject(this, &ThisClass::UpdateAmmoInfo);

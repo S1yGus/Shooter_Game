@@ -19,7 +19,7 @@ void UShooterAttackService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
     if (!Blackboard && !AIController)
         return;
 
-    const auto WeaponComponent = AIController->GetPawn()->FindComponentByClass<UShooterWeaponComponent>();
+    const auto WeaponComponent = AIController->GetPawn()->FindComponentByClass<USHGBaseWeaponComponent>();
 
     if (WeaponComponent)
     {

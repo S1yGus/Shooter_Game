@@ -8,7 +8,7 @@
 #include "ShooterCoreTypes.h"
 #include "ShooterPlayerController.generated.h"
 
-class UShooterRespawnComponent;
+class USHGRespawnComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterPlayerController : public APlayerController
@@ -23,7 +23,7 @@ public:
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UShooterRespawnComponent* RespawnComponent;
+    USHGRespawnComponent* RespawnComponent;
 
     virtual void BeginPlay() override;
     virtual void SetupInputComponent() override;

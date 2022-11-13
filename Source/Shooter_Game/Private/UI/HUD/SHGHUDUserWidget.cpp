@@ -2,7 +2,7 @@
 
 #include "UI/HUD/SHGHUDUserWidget.h"
 #include "Components/SHGHealthComponent.h"
-#include "Components/ShooterStaminaComponent.h"
+#include "Components/SHGStaminaComponent.h"
 #include "Player/ShooterPlayerController.h"
 #include "SHGGameModeArena.h"
 
@@ -51,7 +51,7 @@ void USHGHUDUserWidget::OnNewPawn(APawn* NewPawn)
 
     NewPawn->OnTakeAnyDamage.AddDynamic(this, &ThisClass::OnTakeAnyDamage);
 
-    if (const auto StaminaComponent = NewPawn->FindComponentByClass<UShooterStaminaComponent>())
+    if (const auto StaminaComponent = NewPawn->FindComponentByClass<USHGStaminaComponent>())
     {
         StaminaComponent->OnOutOfStamina.AddUObject(this, &ThisClass::OnOutOfStamina);
     }

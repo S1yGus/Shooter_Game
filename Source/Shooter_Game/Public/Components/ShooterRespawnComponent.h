@@ -7,12 +7,12 @@
 #include "ShooterRespawnComponent.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class SHOOTER_GAME_API UShooterRespawnComponent : public UActorComponent
+class SHOOTER_GAME_API USHGRespawnComponent : public UActorComponent
 {
     GENERATED_BODY()
 
 public:
-    UShooterRespawnComponent();
+    USHGRespawnComponent();
 
     void StartRespawn(int32 RespawnTime);
     bool GetCurrentRespawnTime(float& CurrentRespawnTime) const;

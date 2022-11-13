@@ -6,8 +6,8 @@
 #include "AIController.h"
 #include "ShooterAIController.generated.h"
 
-class UShooterAIPerceptionComponent;
-class UShooterRespawnComponent;
+class USHGAIPerceptionComponent;
+class USHGRespawnComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterAIController : public AAIController
@@ -21,10 +21,10 @@ public:
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UShooterAIPerceptionComponent* AIPerceptionComponent;
+    USHGAIPerceptionComponent* AIPerceptionComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UShooterRespawnComponent* RespawnComponent;
+    USHGRespawnComponent* RespawnComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     FName EnemyBlackboardKeyName = "Enemy";
