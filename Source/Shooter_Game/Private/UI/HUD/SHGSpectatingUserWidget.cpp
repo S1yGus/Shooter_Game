@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "UI/HUD/SHGSpectatingUserWidget.h"
-#include "Components/ShooterRespawnComponent.h"
+#include "Components/SHGRespawnComponent.h"
 #include "Kismet/KismetTextLibrary.h"
 
 FText USHGSpectatingUserWidget::GetCurrentRespawnTime() const

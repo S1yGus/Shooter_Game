@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "ShooterRespawnComponent.generated.h"
+#include "SHGRespawnComponent.generated.h"
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SHOOTER_GAME_API USHGRespawnComponent : public UActorComponent
@@ -14,14 +14,11 @@ class SHOOTER_GAME_API USHGRespawnComponent : public UActorComponent
 public:
     USHGRespawnComponent();
 
-    void StartRespawn(int32 RespawnTime);
+    void StartRespawn(float RespawnTime);
     bool GetCurrentRespawnTime(float& CurrentRespawnTime) const;
-
-protected:
-    virtual void BeginPlay() override;
 
 private:
     FTimerHandle RespawnTimerHandle;
 
-    void EndRespawn();
+    void OnEndRespawn();
 };

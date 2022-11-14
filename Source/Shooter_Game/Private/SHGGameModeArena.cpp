@@ -4,7 +4,7 @@
 #include "Player/ShooterPlayerCharacter.h"
 #include "Player/ShooterPlayerController.h"
 #include "Player/ShooterPlayerState.h"
-#include "Components/ShooterRespawnComponent.h"
+#include "Components/SHGRespawnComponent.h"
 #include "Components/ShooterAIWeaponComponent.h"
 #include "UI/SHGGameHUD.h"
 #include "AIController.h"

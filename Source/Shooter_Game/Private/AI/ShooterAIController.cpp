@@ -5,7 +5,7 @@
 #include "Components/ShooterAIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Perception/AISense_Prediction.h"
-#include "Components/ShooterRespawnComponent.h"
+#include "Components/SHGRespawnComponent.h"
 
 AShooterAIController::AShooterAIController()
 {
@@ -25,8 +25,7 @@ void AShooterAIController::Tick(float DeltaTime)
     const auto FocusOnActor = GetFocusOnActor();
     SetFocus(FocusOnActor);
 
-    // update Prediction Sense
-    UAISense_Prediction::RequestControllerPredictionEvent(this, FocusOnActor, 0.2f);
+    UAISense_Prediction::RequestControllerPredictionEvent(this, FocusOnActor, 0.2f);    // Update prediction sense.
 }
 
 void AShooterAIController::OnPossess(APawn* InPawn)

@@ -1,8 +1,8 @@
 // Shooter_Game, All rights reserved.
 
 #include "Player/ShooterPlayerController.h"
-#include "Components/ShooterRespawnComponent.h"
-#include "SHGGameModeBase.h"
+#include "Components/SHGRespawnComponent.h"
+#include "SHGGameModeArena.h"
 
 AShooterPlayerController::AShooterPlayerController()
 {
@@ -13,11 +13,12 @@ void AShooterPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
-    const auto GameMode = Cast<ASHGGameModeBase>(GetWorld()->GetAuthGameMode());
-    if (!GameMode)
-        return;
+    check(RespawnComponent);
 
-    GameMode->OnGameStateChanged.AddUObject(this, &ThisClass::OnGameStateChanged);
+    if (const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeArena>())
+    {
+        GameMode->OnGameStateChanged.AddUObject(this, &ThisClass::OnGameStateChanged);
+    }
 }
 
 void AShooterPlayerController::SetupInputComponent()
