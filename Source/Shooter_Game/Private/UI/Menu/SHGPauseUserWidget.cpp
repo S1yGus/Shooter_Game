@@ -4,7 +4,7 @@
 #include "UI/Menu/SHGButtonUserWidget.h"
 #include "SHGGameModeBase.h"
 #include "SHGGameInstance.h"
-#include "Player/ShooterPlayerController.h"
+#include "Player/SHGPlayerController.h"
 
 void USHGPauseUserWidget::NativeOnInitialized()
 {
@@ -20,7 +20,7 @@ void USHGPauseUserWidget::NativeOnInitialized()
     MenuButton->OnClickedButton.AddUObject(this, &ThisClass::OnClickedMenuButton);
     QuitButton->OnClickedButton.AddUObject(this, &ThisClass::OnClickedQuitButton);
 
-    if (const auto PC = GetOwningPlayer<AShooterPlayerController>())
+    if (const auto PC = GetOwningPlayer<ASHGPlayerController>())
     {
         PC->OnPressedEsc.AddUObject(this, &ThisClass::OnPressedEsc);
     }

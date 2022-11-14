@@ -4,7 +4,7 @@
 #include "UI/Menu/SHGButtonUserWidget.h"
 #include "SHGGameModeBase.h"
 #include "Settings/SHGGameUserSettings.h"
-#include "Player/ShooterPlayerController.h"
+#include "Player/SHGPlayerController.h"
 
 FText USHGOptionsWarningUserWidget::GetCountdownTime() const
 {
@@ -26,7 +26,7 @@ void USHGOptionsWarningUserWidget::NativeOnInitialized()
         GameMode->OnGameStateChanged.AddUObject(this, &ThisClass::OnGameStateChanged);
     }
 
-    if (const auto PC = GetOwningPlayer<AShooterPlayerController>())
+    if (const auto PC = GetOwningPlayer<ASHGPlayerController>())
     {
         PC->OnPressedEnt.AddUObject(this, &ThisClass::OnPressedEnter);
         PC->OnPressedEsc.AddUObject(this, &ThisClass::OnPressedEsc);

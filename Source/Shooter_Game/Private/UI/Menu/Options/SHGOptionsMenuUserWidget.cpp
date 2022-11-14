@@ -9,7 +9,7 @@
 #include "Settings/SHGGameUserSettings.h"
 #include "SHGGameModeBase.h"
 #include "SHGBaseHUD.h"
-#include "Player/ShooterPlayerController.h"
+#include "Player/SHGPlayerController.h"
 
 void USHGOptionsMenuUserWidget::NativeOnInitialized()
 {
@@ -28,7 +28,7 @@ void USHGOptionsMenuUserWidget::NativeOnInitialized()
         GameUserSettings->OnResolutionChanged.AddUObject(this, &ThisClass::OnResolutionChanged);
     }
 
-    if (const auto PC = GetOwningPlayer<AShooterPlayerController>())
+    if (const auto PC = GetOwningPlayer<ASHGPlayerController>())
     {
         PC->OnPressedEsc.AddUObject(this, &ThisClass::OnPressedEscape);
     }

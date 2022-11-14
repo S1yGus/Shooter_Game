@@ -6,12 +6,12 @@
 #include "GameFramework/PlayerController.h"
 #include "SHGSettingsCoreTypes.h"
 #include "ShooterCoreTypes.h"
-#include "ShooterPlayerController.generated.h"
+#include "SHGPlayerController.generated.h"
 
 class USHGRespawnComponent;
 
 UCLASS()
-class SHOOTER_GAME_API AShooterPlayerController : public APlayerController
+class SHOOTER_GAME_API ASHGPlayerController : public APlayerController
 {
     GENERATED_BODY()
 
@@ -19,7 +19,7 @@ public:
     FOnPressedEntSignature OnPressedEnt;
     FOnPressedEscSignature OnPressedEsc;
 
-    AShooterPlayerController();
+    ASHGPlayerController();
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")

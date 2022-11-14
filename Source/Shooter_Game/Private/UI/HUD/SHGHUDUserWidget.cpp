@@ -3,7 +3,7 @@
 #include "UI/HUD/SHGHUDUserWidget.h"
 #include "Components/SHGHealthComponent.h"
 #include "Components/SHGStaminaComponent.h"
-#include "Player/ShooterPlayerController.h"
+#include "Player/SHGPlayerController.h"
 #include "SHGGameModeArena.h"
 
 void USHGHUDUserWidget::NativeOnInitialized()
@@ -13,7 +13,7 @@ void USHGHUDUserWidget::NativeOnInitialized()
     check(GetDamageAnimation);
     check(OutOfStaminaAnimation);
 
-    if (const auto PC = GetOwningPlayer<AShooterPlayerController>())
+    if (const auto PC = GetOwningPlayer<ASHGPlayerController>())
     {
         PC->GetOnNewPawnNotifier().AddUObject(this, &ThisClass::OnNewPawn);
         PC->OnPressedEsc.AddUObject(this, &ThisClass::OnPressedEsc);

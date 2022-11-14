@@ -1,27 +1,27 @@
 // Shooter_Game, All rights reserved.
 
-#include "Player/ShooterPlayerController.h"
+#include "Player/SHGPlayerController.h"
 #include "Components/SHGRespawnComponent.h"
-#include "SHGGameModeArena.h"
+#include "SHGGameMode.h"
 
-AShooterPlayerController::AShooterPlayerController()
+ASHGPlayerController::ASHGPlayerController()
 {
     RespawnComponent = CreateDefaultSubobject<USHGRespawnComponent>("RespawnComponent");
 }
 
-void AShooterPlayerController::BeginPlay()
+void ASHGPlayerController::BeginPlay()
 {
     Super::BeginPlay();
 
     check(RespawnComponent);
 
-    if (const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeArena>())
+    if (const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameMode>())
     {
         GameMode->OnGameStateChanged.AddUObject(this, &ThisClass::OnGameStateChanged);
     }
 }
 
-void AShooterPlayerController::SetupInputComponent()
+void ASHGPlayerController::SetupInputComponent()
 {
     Super::SetupInputComponent();
 
@@ -31,17 +31,17 @@ void AShooterPlayerController::SetupInputComponent()
     InputComponent->BindAction("Esc", EInputEvent::IE_Pressed, this, &ThisClass::OnPressedEscape).bExecuteWhenPaused = true;
 }
 
-void AShooterPlayerController::OnPressedEnter()
+void ASHGPlayerController::OnPressedEnter()
 {
     OnPressedEnt.Broadcast();
 }
 
-void AShooterPlayerController::OnPressedEscape()
+void ASHGPlayerController::OnPressedEscape()
 {
     OnPressedEsc.Broadcast();
 }
 
-void AShooterPlayerController::OnGameStateChanged(EGameState GameState)
+void ASHGPlayerController::OnGameStateChanged(EGameState GameState)
 {
     if (GameState == EGameState::Game || GameState == EGameState::Spectating)
     {

@@ -5,7 +5,7 @@
 #include "UI/Menu/SHGTitleUserWidget.h"
 #include "Components/TextBlock.h"
 #include "SHGGameMode.h"
-#include "Player/ShooterPlayerController.h"
+#include "Player/SHGPlayerController.h"
 
 void USHGPopUpHintUserWidget::NativeOnInitialized()
 {
@@ -22,7 +22,7 @@ void USHGPopUpHintUserWidget::NativeOnInitialized()
         GameMode->OnShowPopUpHint.AddUObject(this, &ThisClass::OnShowPopUpHint);
     }
 
-    if (const auto PC = GetOwningPlayer<AShooterPlayerController>())
+    if (const auto PC = GetOwningPlayer<ASHGPlayerController>())
     {
         PC->OnPressedEnt.AddUObject(this, &ThisClass::OnPressedEnter);
         PC->OnPressedEsc.AddUObject(this, &ThisClass::OnPressedEnter);
