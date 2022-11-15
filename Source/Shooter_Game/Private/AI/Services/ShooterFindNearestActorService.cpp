@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "AI/Services/ShooterFindNearestActorService.h"
-#include "AI/ShooterAIController.h"
+#include "AI/SHGAIController.h"
 #include "Components/ShooterAIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
@@ -15,7 +15,7 @@ void UShooterFindNearestActorService::TickNode(UBehaviorTreeComponent& OwnerComp
     Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
     const auto Blackboard = OwnerComp.GetBlackboardComponent();
-    const auto ShooterAIController = Cast<AShooterAIController>(OwnerComp.GetAIOwner());
+    const auto ShooterAIController = Cast<ASHGAIController>(OwnerComp.GetAIOwner());
     if (!Blackboard || !ShooterAIController)
         return;
 

@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "AI/ShooterAICharacter.h"
-#include "AI/ShooterAIController.h"
+#include "AI/SHGAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/ShooterAIWeaponComponent.h"
 #include "AIController.h"
@@ -16,7 +16,7 @@ AShooterAICharacter::AShooterAICharacter(const FObjectInitializer& ObjectInitial
     : Super(ObjectInitializer.SetDefaultSubobjectClass<USHGAIWeaponComponent>("WeaponComponent"))
 {
     AutoPossessAI = EAutoPossessAI::Disabled;
-    AIControllerClass = AShooterAIController::StaticClass();
+    AIControllerClass = ASHGAIController::StaticClass();
 
     bUseControllerRotationYaw = false;
     if (GetCharacterMovement())

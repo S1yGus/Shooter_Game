@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "AI/Services/ShooterFindDistanceService.h"
-#include "AI/ShooterAIController.h"
+#include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UShooterFindDistanceService::UShooterFindDistanceService()

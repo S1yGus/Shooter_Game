@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "AI/Tasks/ShooterNextLocationTaskNode.h"
-#include "AI/ShooterAIController.h"
+#include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NavigationSystem.h"
 
