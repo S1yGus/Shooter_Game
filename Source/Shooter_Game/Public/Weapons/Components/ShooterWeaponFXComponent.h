@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "ShooterCoreTypes.h"
+#include "SHGFXCoreTypes.h"
 #include "ShooterWeaponFXComponent.generated.h"
 
 class UPhysicalMaterial;
+class UNiagaraSystem;
 class USoundCue;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
@@ -22,10 +23,10 @@ public:
     void MakeTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
     void MakeCameraShake();
 
-    UParticleSystem* GetMainMuzzleFX() const { return MainWeaponFXData.MuzzleFX; }
+    UNiagaraSystem* GetMainMuzzleFX() const { return MainWeaponFXData.MuzzleFX; }
     USoundCue* GetMainFireSound() const { return MainWeaponFXData.FireSound; }
 
-    UParticleSystem* GetAlternativeMuzzleFX() const { return AlternativeWeaponFXData.MuzzleFX; }
+    UNiagaraSystem* GetAlternativeMuzzleFX() const { return AlternativeWeaponFXData.MuzzleFX; }
     USoundCue* GetAlternativeFireSound() const { return AlternativeWeaponFXData.FireSound; }
 
     USoundCue* GetNoAmmoSound() const { return NoAmmoSound; }

@@ -4,8 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "ShooterCoreTypes.h"
-#include "SHGUICoreTypes.h"
+#include "SHGBaseCoreTypes.h"
 #include "SHGGameModeBase.generated.h"
 
 UCLASS(Abstract)

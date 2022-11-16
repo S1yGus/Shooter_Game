@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ShooterCoreTypes.h"
 #include "SHGWeaponInfoBaseUserWidget.generated.h"
 
 UCLASS()

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Pickups/ShooterPickupBaseActor.h"
-#include "ShooterCoreTypes.h"
+#include "SHGWeaponCoreTypes.h"
 #include "ShooterPickupWeaponActor.generated.h"
 
 class AShooterBaseWeaponActor;

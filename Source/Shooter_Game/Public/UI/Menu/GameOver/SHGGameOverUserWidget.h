@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/SHGAnimatedUserWidget.h"
-#include "ShooterCoreTypes.h"
+#include "SHGBaseCoreTypes.h"
 #include "SHGGameOverUserWidget.generated.h"
 
 class UVerticalBox;

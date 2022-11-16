@@ -31,9 +31,10 @@ void UShooterWeaponFXComponent::MakeImpactFX(const FHitResult& HitResult)
     }
 
     // VFX
-    UGameplayStatics::SpawnEmitterAtLocation(GetWorld(),                           //
-                                             ImpactFXData.ImpactParticleSystem,    //
-                                             FTransform(HitResult.ImpactNormal.Rotation() + FRotator(-90.0f, 0.0f, 0.0f), HitResult.ImpactPoint));
+    UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,                                //
+                                                   ImpactFXData.ImpactNiagaraSystem,    //
+                                                   HitResult.ImpactPoint,               //
+                                                   HitResult.ImpactNormal.Rotation() + FRotator(-90.0f, 0.0f, 0.0f));
 
     // Sound
     UGameplayStatics::PlaySoundAtLocation(GetWorld(), ImpactFXData.ImpactSound, HitResult.ImpactPoint);

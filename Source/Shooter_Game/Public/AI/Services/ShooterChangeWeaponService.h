@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "ShooterCoreTypes.h"
+#include "SHGWeaponCoreTypes.h"
 #include "ShooterChangeWeaponService.generated.h"
 
 class USHGAIWeaponComponent;

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SHGGameMode.h"
-#include "ShooterCoreTypes.h"
+#include "SHGBaseCoreTypes.h"
 #include "SHGGameModeArena.generated.h"
 
 class AAIController;
@@ -41,7 +41,7 @@ protected:
     TSubclassOf<APawn> AIDefaultPawnClass;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
-    FGameData GameData;
+    FArenaData GameData;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Hints")
     float StartupHintDelay = 2.0f;

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "ShooterCoreTypes.h"
+#include "SHGBaseCoreTypes.h"
 #include "SHGAnimatedUserWidget.generated.h"
 
 class UWidgetAnimation;

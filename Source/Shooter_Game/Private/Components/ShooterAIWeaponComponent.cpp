@@ -2,7 +2,7 @@
 
 #include "Components/ShooterAIWeaponComponent.h"
 #include "Weapons/ShooterBaseWeaponActor.h"
-#include "ShooterCoreTypes.h"
+#include "SHGWeaponCoreTypes.h"
 
 void USHGAIWeaponComponent::StartFire()
 {

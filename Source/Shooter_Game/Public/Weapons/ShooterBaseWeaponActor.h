@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ShooterCoreTypes.h"
+#include "SHGWeaponCoreTypes.h"
+#include "SHGUICoreTypes.h"
 #include "ShooterBaseWeaponActor.generated.h"
 
 DEFINE_LOG_CATEGORY_STATIC(BaseWeaponLog, All, All)

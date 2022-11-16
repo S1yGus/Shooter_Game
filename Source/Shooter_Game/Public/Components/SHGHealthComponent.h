@@ -4,8 +4,7 @@
 
 #include "Components/ActorComponent.h"
 #include "CoreMinimal.h"
-#include "ShooterCoreTypes.h"
-#include "SHGUICoreTypes.h"
+#include "SHGBaseCoreTypes.h"
 #include "SHGHealthComponent.generated.h"
 
 class UPhysicalMaterial;

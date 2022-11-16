@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
-#include "ShooterCoreTypes.h"
+#include "SHGBaseCoreTypes.h"
 #include "ShooterPlayerState.generated.h"
 
 UCLASS()

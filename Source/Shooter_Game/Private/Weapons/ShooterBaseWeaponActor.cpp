@@ -15,6 +15,7 @@
 #include "Player/ShooterBaseCharacter.h"
 #include "ShooterUtils.h"
 #include "Sound/SoundCue.h"
+#include "NiagaraFunctionLibrary.h"
 
 constexpr static float MaxShotDirectionDegrees = 80.0f;
 constexpr static float ShellDropDirectionHalfAngle = 30.0f;
@@ -186,7 +187,7 @@ void AShooterBaseWeaponActor::MakeFX()
     const auto MuzzleFX = AlternativeFireMode ? FXComponent->GetAlternativeMuzzleFX() : FXComponent->GetMainMuzzleFX();
     if (MuzzleFX)
     {
-        UGameplayStatics::SpawnEmitterAttached(MuzzleFX, WeaponMesh, MuzzleSocketName);
+        UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, MuzzleFX, WeaponMesh->GetSocketLocation(MuzzleSocketName));
     }
 
     const auto FireSound = AlternativeFireMode ? FXComponent->GetAlternativeFireSound() : FXComponent->GetMainFireSound();

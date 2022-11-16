@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "ShooterCoreTypes.h"
+#include "SHGFXCoreTypes.h"
 #include "ShooterBaseVFXComponent.generated.h"
 
 class USoundCue;
@@ -24,22 +24,22 @@ public:
     void PlayDeathSound();
 
 protected:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     bool ShowImpactIndicators = true;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX", Meta = (EditCondition = "ShowImpactIndicators"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX", Meta = (EditCondition = "ShowImpactIndicators"))
     TSubclassOf<ASHGImpactIndicatorActor> ImpactIndicatorClass;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX|Footsteps")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX|Footsteps")
     FName RightFootBoneName = "b_RightToeBase";
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX|Footsteps")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX|Footsteps")
     FName LeftFootBoneName = "b_LeftToeBase";
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX|Footsteps")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX|Footsteps")
     FFootstepFXData DefaultFootstepFXData;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VFX|Footsteps")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX|Footsteps")
     TMap<ELocomotionType, FFootstepFXDataMap> FootstepsFXDataMap;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")

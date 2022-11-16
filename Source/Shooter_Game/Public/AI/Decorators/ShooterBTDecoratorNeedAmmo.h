@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTDecorator.h"
-#include "ShooterCoreTypes.h"
+#include "SHGWeaponCoreTypes.h"
 #include "ShooterBTDecoratorNeedAmmo.generated.h"
 
 UCLASS()

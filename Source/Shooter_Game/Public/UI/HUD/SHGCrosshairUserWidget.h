@@ -4,7 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "UI/HUD/SHGWeaponInfoBaseUserWidget.h"
-#include "ShooterCoreTypes.h"
+#include "SHGUICoreTypes.h"
+#include "SHGWeaponCoreTypes.h"
 #include "SHGCrosshairUserWidget.generated.h"
 
 class UImage;

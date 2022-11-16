@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTDecorator.h"
-#include "ShooterCoreTypes.h"
+#include "SHGWeaponCoreTypes.h"
 #include "ShooterBTDecoratorNeedWeapon.generated.h"
 
 class AShooterBaseWeaponActor;

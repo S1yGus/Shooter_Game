@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "SHGBaseHUD.h"
-#include "ShooterCoreTypes.h"
 #include "SHGGameHUD.generated.h"
 
 class UShooterAnimatedUserWidget;

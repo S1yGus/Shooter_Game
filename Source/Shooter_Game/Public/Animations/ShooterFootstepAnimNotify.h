@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotify.h"
-#include "ShooterCoreTypes.h"
+#include "SHGFXCoreTypes.h"
 #include "ShooterFootstepAnimNotify.generated.h"
 
 UCLASS()
@@ -15,6 +15,6 @@ class SHOOTER_GAME_API UShooterFootstepAnimNotify : public UAnimNotify
     virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation);
 
 protected:
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "VFX")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "FX")
     FFootstepNotifyData FootstepNotifyData;
 };

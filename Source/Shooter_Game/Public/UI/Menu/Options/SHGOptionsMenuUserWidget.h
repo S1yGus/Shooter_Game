@@ -4,8 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "UI/SHGAnimatedUserWidget.h"
-#include "SHGUICoreTypes.h"
-#include "ShooterCoreTypes.h"
+#include "SHGBaseCoreTypes.h"
 #include "SHGOptionsMenuUserWidget.generated.h"
 
 class USHGButtonUserWidget;
