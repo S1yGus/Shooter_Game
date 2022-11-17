@@ -4,7 +4,7 @@
 #include "Components/SHGHealthComponent.h"
 #include "Components/SHGStaminaComponent.h"
 #include "Components/ShooterWeaponComponent.h"
-#include "Components/ShooterBaseVFXComponent.h"
+#include "Components/SHGBaseFXComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SHGMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -20,7 +20,7 @@ AShooterBaseCharacter::AShooterBaseCharacter(const FObjectInitializer& ObjectIni
     HealthComponent = CreateDefaultSubobject<USHGHealthComponent>("HealthComponent");
     StaminaComponent = CreateDefaultSubobject<USHGStaminaComponent>("StaminaComponent");
     WeaponComponent = CreateDefaultSubobject<USHGBaseWeaponComponent>("WeaponComponent");
-    VFXComponent = CreateDefaultSubobject<USHGBaseVFXComponent>("VFXComponent");
+    FXComponent = CreateDefaultSubobject<USHGBaseFXComponent>("FXComponent");
 }
 
 void AShooterBaseCharacter::BeginPlay()
@@ -29,13 +29,13 @@ void AShooterBaseCharacter::BeginPlay()
 
     check(HealthComponent);
     check(WeaponComponent);
-    check(VFXComponent);
+    check(FXComponent);
     check(GetCharacterMovement());
     check(GetMesh());
 
     HealthComponent->OnDeath.AddUObject(this, &AShooterBaseCharacter::OnDeath);
     HealthComponent->OnHealthChanged.AddUObject(this, &AShooterBaseCharacter::OnHealthChanged);
-    HealthComponent->OnTakeDamage.AddUObject(VFXComponent, &USHGBaseVFXComponent::SpawnImpactIndicator);
+    HealthComponent->OnTakeLocalDamage.AddUObject(FXComponent, &USHGBaseFXComponent::SpawnImpactIndicator);
     StaminaComponent->OnOutOfStamina.AddUObject(this, &AShooterBaseCharacter::OnOutOfStamina);
     LandedDelegate.AddDynamic(this, &AShooterBaseCharacter::OnGroundLanded);
 }
@@ -125,7 +125,7 @@ void AShooterBaseCharacter::OnHealthChanged(float Health, float HealthPercent)
 
 void AShooterBaseCharacter::OnDeath(AController* KillerController, AController* VictimController)
 {
-    VFXComponent->PlayDeathSound();
+    FXComponent->PlayDeathSound();
 
     WeaponComponent->StopFire();
 

@@ -9,7 +9,7 @@
 class USHGHealthComponent;
 class USHGStaminaComponent;
 class USHGBaseWeaponComponent;
-class USHGBaseVFXComponent;
+class USHGBaseFXComponent;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
@@ -46,7 +46,7 @@ protected:
     USHGBaseWeaponComponent* WeaponComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    USHGBaseVFXComponent* VFXComponent;
+    USHGBaseFXComponent* FXComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     float LifeSpanOnDeath = 5.0f;

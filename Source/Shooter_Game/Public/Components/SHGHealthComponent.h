@@ -17,7 +17,7 @@ class SHOOTER_GAME_API USHGHealthComponent : public UActorComponent
 public:
     FOnDeathSignature OnDeath;
     FOnHealthChangedSignature OnHealthChanged;
-    FOnTakeDamageSignature OnTakeDamage;
+    FOnTakeLocalDamageSignature OnTakeLocalDamage;
 
     USHGHealthComponent();
 

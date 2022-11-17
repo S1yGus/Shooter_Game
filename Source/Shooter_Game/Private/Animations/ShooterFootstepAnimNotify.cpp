@@ -2,7 +2,7 @@
 
 #include "Animations/ShooterFootstepAnimNotify.h"
 #include "Player/ShooterBaseCharacter.h"
-#include "Components/ShooterBaseVFXComponent.h"
+#include "Components/SHGBaseFXComponent.h"
 
 void UShooterFootstepAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
@@ -10,9 +10,9 @@ void UShooterFootstepAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimS
     if (!Character)
         return;
 
-    const auto VFXComponent = Character->FindComponentByClass<USHGBaseVFXComponent>();
-    if (!VFXComponent)
+    const auto FXComponent = Character->FindComponentByClass<USHGBaseFXComponent>();
+    if (!FXComponent)
         return;
 
-    VFXComponent->MakeFootstepVFX(FootstepNotifyData);
+    FXComponent->MakeFootstepsFX(FootstepNotifyData);
 }

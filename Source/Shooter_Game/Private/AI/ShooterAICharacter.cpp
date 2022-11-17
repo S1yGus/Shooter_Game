@@ -26,10 +26,11 @@ AShooterAICharacter::AShooterAICharacter(const FObjectInitializer& ObjectInitial
     }
 
     HealthWidgetComponent = CreateDefaultSubobject<UWidgetComponent>("HealthWidgetComponent");
-    HealthWidgetComponent->SetupAttachment(GetRootComponent());
+    HealthWidgetComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     HealthWidgetComponent->SetWidgetSpace(EWidgetSpace::World);
     HealthWidgetComponent->SetDrawSize(FVector2D(100.0, 6.0));
     HealthWidgetComponent->SetDrawAtDesiredSize(false);
+    HealthWidgetComponent->SetupAttachment(GetRootComponent());
 }
 
 void AShooterAICharacter::BeginPlay()

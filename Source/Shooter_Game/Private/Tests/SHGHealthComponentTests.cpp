@@ -264,7 +264,7 @@ bool FHealthComponentDelegates::RunTest(const FString& Parameters)
     TestTrueExpr(HealthComponent->TryToHeal(MaxHealth));
     TestTrueExpr(HealthComponent->GetHealth() == MaxHealth);
     float DelegateDamage = 0.0f;
-    HealthComponent->OnTakeDamage.AddLambda(
+    HealthComponent->OnTakeLocalDamage.AddLambda(
         [&](float NewDamage, const FVector& NewLoacation, UPhysicalMaterial* NewPhysicalMaterial)
         {
             DelegateDamage = NewDamage;

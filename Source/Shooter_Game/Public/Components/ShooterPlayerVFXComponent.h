@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ShooterBaseVFXComponent.h"
+#include "Components/SHGBaseFXComponent.h"
 #include "ShooterPlayerVFXComponent.generated.h"
 
 class UCameraShakeBase;
 
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class SHOOTER_GAME_API USHGPlayerVFXComponent : public USHGBaseVFXComponent
+class SHOOTER_GAME_API USHGPlayerVFXComponent : public USHGBaseFXComponent
 {
     GENERATED_BODY()
 

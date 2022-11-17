@@ -81,6 +81,9 @@ void USHGHealthComponent::OnTakePointDamage(AActor* DamagedActor,               
                                             const UDamageType* DamageType,         //
                                             AActor* DamageCauser)
 {
+    if (IsDead() || Damage <= 0.0f)
+        return;
+
     const auto DamagedCharacter = Cast<ACharacter>(DamagedActor);
     if (!DamagedCharacter)
         return;
@@ -99,7 +102,7 @@ void USHGHealthComponent::OnTakePointDamage(AActor* DamagedActor,               
 
     CurrentDamageModifier = DamageModifiersMap.Contains(PhysicalMaterial) ? DamageModifiersMap[PhysicalMaterial] : 1.0f;
 
-    OnTakeDamage.Broadcast(Damage * CurrentDamageModifier, HitLocation, PhysicalMaterial);
+    OnTakeLocalDamage.Broadcast(Damage * CurrentDamageModifier, HitLocation, PhysicalMaterial);
 }
 
 void USHGHealthComponent::OnTakeRadialDamage(AActor* DamagedActor,             //
@@ -110,7 +113,10 @@ void USHGHealthComponent::OnTakeRadialDamage(AActor* DamagedActor,             /
                                              AController* InstigatedBy,        //
                                              AActor* DamageCauser)
 {
-    OnTakeDamage.Broadcast(Damage, HitInfo.Location, nullptr);
+    if (IsDead() || Damage <= 0.0f)
+        return;
+
+    OnTakeLocalDamage.Broadcast(Damage, HitInfo.Location, nullptr);
 }
 
 void USHGHealthComponent::OnAutoHeal()

@@ -2,14 +2,6 @@
 
 #include "SHGFXCoreTypes.generated.h"
 
-UENUM(BlueprintType)
-enum class ELocomotionType : uint8
-{
-    Run,
-    StartJump,
-    EndJump
-};
-
 USTRUCT(BlueprintType)
 struct FDecalData
 {
@@ -83,7 +75,7 @@ struct FFootstepDecalDataPair
 };
 
 USTRUCT(BlueprintType)
-struct FFootstepFXData
+struct FFootstepsFXData
 {
     GENERATED_USTRUCT_BODY()
 
@@ -98,21 +90,9 @@ struct FFootstepFXData
 };
 
 USTRUCT(BlueprintType)
-struct FFootstepFXDataMap
-{
-    GENERATED_USTRUCT_BODY()
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
-    TMap<UPhysicalMaterial*, FFootstepFXData> FootstepFXDataMap;
-};
-
-USTRUCT(BlueprintType)
 struct FFootstepNotifyData
 {
     GENERATED_USTRUCT_BODY()
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
-    ELocomotionType LocomotionType;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     bool IsLeft = false;
