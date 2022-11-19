@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MatineeCameraShake.h"
+#include "Camera/CameraShakeBase.h"
 #include "ShooterLocomotionCameraShake.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API UShooterLocomotionCameraShake : public UMatineeCameraShake
+class SHOOTER_GAME_API UShooterLocomotionCameraShake : public UCameraShakeBase
 {
     GENERATED_BODY()
 
