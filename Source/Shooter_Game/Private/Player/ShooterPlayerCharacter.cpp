@@ -6,7 +6,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
-#include "Components/ShooterPlayerVFXComponent.h"
+#include "Components/SHGPlayerFXComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SHGGameModeBase.h"
@@ -15,7 +15,7 @@
 constexpr static float MouseSensMultiplier = 200.0f;
 
 AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& ObjectInitializer)
-    : Super(ObjectInitializer.SetDefaultSubobjectClass<USHGPlayerVFXComponent>("VFXComponent"))
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<USHGPlayerFXComponent>("FXComponent"))
 {
     SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
     SpringArmComponent->SetupAttachment(GetRootComponent());
