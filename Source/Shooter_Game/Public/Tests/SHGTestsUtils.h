@@ -1,3 +1,7 @@
+// Shooter_Game, All rights reserved.
+
+#if WITH_AUTOMATION_TESTS
+
 #pragma once
 
 #include "CoreMinimal.h"
@@ -31,3 +35,5 @@ UWorld* GetCurrentWorld();
 
 void CallFunctionByNameWithParameters(UObject* Object, const FString& FuncName, const TArray<FString>& Params);
 }    // namespace Tests
+
+#endif    // WITH_AUTOMATION_TESTS

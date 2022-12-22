@@ -1,3 +1,7 @@
+// Shooter_Game, All rights reserved.
+
+#if WITH_AUTOMATION_TESTS
+
 #include "Tests/SHGTestsUtils.h"
 #include "Misc/OutputDeviceNull.h"
 
@@ -28,3 +32,5 @@ void Tests::CallFunctionByNameWithParameters(UObject* Object, const FString& Fun
     FOutputDeviceNull OutputDeviceNull;
     Object->CallFunctionByNameWithArguments(*Command, OutputDeviceNull, nullptr, true);
 }
+
+#endif    // WITH_AUTOMATION_TESTS

@@ -67,3 +67,4 @@ DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnWeaponChangedSignature, const FWeaponUIData&, const FAmmoData&);
 DECLARE_MULTICAST_DELEGATE(FOnFiredSignature);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnAmmoInfoChangedSignature, const FAmmoData&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnZoomSignature, bool);

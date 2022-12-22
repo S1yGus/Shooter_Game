@@ -65,6 +65,7 @@ void USHGBaseWeaponComponent::Zoom(bool Condition, bool Force)
 
     TargetFOVAngle = Condition ? CurrentWeapon->GetZoomFOVAngle() : DefaultFOVAngle;
     ZoomingNow = Condition;
+    OnZoom.Broadcast(Condition);
 
     if (Force)
     {

@@ -22,6 +22,7 @@ public:
 
     FOnWeaponChangedSignature OnWeaponChanged;
     FOnAmmoInfoChangedSignature OnAmmoInfoChanged;
+    FOnZoomSignature OnZoom;
 
     virtual void BeginPlay() override;
     virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;

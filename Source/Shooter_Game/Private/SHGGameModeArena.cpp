@@ -184,8 +184,7 @@ void ASHGGameModeArena::ResetOnePlayer(AController* Controller)
     if (!Controller)
         return;
 
-    const auto Pawn = Controller->GetPawn();
-    if (Pawn)
+    if (const auto Pawn = Controller->GetPawn())
     {
         Pawn->Reset();
     }
