@@ -140,11 +140,17 @@ void USHGBaseWeaponComponent::PreviousWeapon()
 
 void USHGBaseWeaponComponent::EquipWeapon(EWeaponType WeapontType)
 {
+    if (!CanEquip())
+        return;
+
     TryToEquipWeapon(WeapontType);
 }
 
 void USHGBaseWeaponComponent::ReloadWeapon()
 {
+    if (!CanReload())
+        return;
+
     ChangeClip();
 }
 
@@ -279,7 +285,7 @@ void USHGBaseWeaponComponent::SetFlashlight(bool bCondition)
 
 void USHGBaseWeaponComponent::ChangeClip()
 {
-    if (!CanReload() || !CurrentWeapon->ReloadClip())
+    if (!CurrentWeapon->ReloadClip())
         return;
 
     CurrentWeapon->StopFire();
@@ -420,5 +426,5 @@ void USHGBaseWeaponComponent::OnFired()
 
 void USHGBaseWeaponComponent::OnClipEmpty()
 {
-    ChangeClip();
+    ReloadWeapon();
 }
