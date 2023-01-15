@@ -24,6 +24,7 @@ public:
     FOnAspectRatioChangedSignature OnAspectRatioChanged;
     FOnSensitivityChangedSignature OnSensitivityChanged;
     FOnHintsStatusChangedSignature OnHintsStatusChanged;
+    FOnDifficultyChangedSignature OnDifficultyChanged;
 
     USHGGameUserSettings();
 
@@ -33,6 +34,7 @@ public:
     const FAspectRatioData& GetAspectRatio() const;
     const FSensitivitySettings& GetSensitivitySettings() const;
     const TMap<EHintType, bool>& GetHintsStatus() const;
+    float GetDifficulty() const;
     void SetHintsStatus(const TMap<EHintType, bool>& NewHintsMap);
     void SetLastConfirmedResolutionSettings();
 

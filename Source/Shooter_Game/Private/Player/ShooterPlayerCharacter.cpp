@@ -2,7 +2,7 @@
 
 #include "Player/ShooterPlayerCharacter.h"
 #include "Camera/CameraComponent.h"
-#include "Components/ShooterWeaponComponent.h"
+#include "Components/SHGBaseWeaponComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -43,6 +43,7 @@ void AShooterPlayerCharacter::BeginPlay()
 
     CameraCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnCameraComponentBeginOverlap);
     CameraCollisionComponent->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnCameraComponentEndOverlap);
+    WeaponComponent->OnZoom.AddUObject(this, &ThisClass::OnZoom);
 
     if (const auto GameUserSettings = USHGGameUserSettings::Get())
     {
@@ -134,14 +135,19 @@ void AShooterPlayerCharacter::MoveRight(float Amount)
 
 void AShooterPlayerCharacter::LookUp(float Amount)
 {
-    float MouseYSens = WeaponComponent->IsZoomingNow() ? SensitivitySettings.MouseAimedYSens : SensitivitySettings.MouseYSens;
+    float MouseYSens = bIsZoomingNow ? SensitivitySettings.MouseAimedYSens : SensitivitySettings.MouseYSens;
     AddControllerPitchInput(Amount * MouseYSens * MouseSensMultiplier * GetWorld()->GetDeltaSeconds());
 }
 
 void AShooterPlayerCharacter::LookRight(float Amount)
 {
-    float MouseXSens = WeaponComponent->IsZoomingNow() ? SensitivitySettings.MouseAimedXSens : SensitivitySettings.MouseXSens;
+    float MouseXSens = bIsZoomingNow ? SensitivitySettings.MouseAimedXSens : SensitivitySettings.MouseXSens;
     AddControllerYawInput(Amount * MouseXSens * MouseSensMultiplier * GetWorld()->GetDeltaSeconds());
+}
+
+void AShooterPlayerCharacter::OnZoom(bool bCondition)
+{
+    bIsZoomingNow = bCondition;
 }
 
 void AShooterPlayerCharacter::OnSensitivityChanged(const FSensitivitySettings& NewSensitivitySettings)

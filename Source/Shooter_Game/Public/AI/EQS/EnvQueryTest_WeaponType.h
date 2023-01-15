@@ -6,7 +6,7 @@
 #include "EnvironmentQuery/EnvQueryTest.h"
 #include "EnvQueryTest_WeaponType.generated.h"
 
-class AShooterBaseWeaponActor;
+class ASHGBaseWeaponActor;
 
 UCLASS()
 class SHOOTER_GAME_API UEnvQueryTest_WeaponType : public UEnvQueryTest
@@ -20,5 +20,5 @@ public:
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-    TSubclassOf<AShooterBaseWeaponActor> NeededWeaponClass;
+    TSubclassOf<ASHGBaseWeaponActor> NeededWeaponClass;
 };

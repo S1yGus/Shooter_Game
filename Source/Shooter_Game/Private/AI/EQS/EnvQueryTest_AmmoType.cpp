@@ -4,7 +4,7 @@
 #include "EnvironmentQuery/Items/EnvQueryItemType_ActorBase.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
 #include "Pickups/ShooterPickupAmmoActor.h"
-#include "Weapons/ShooterBaseWeaponActor.h"
+#include "Weapons/SHGBaseWeaponActor.h"
 
 UEnvQueryTest_AmmoType::UEnvQueryTest_AmmoType(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {

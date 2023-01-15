@@ -3,8 +3,8 @@
 #include "AI/EQS/EnvQueryTest_WeaponType.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_ActorBase.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
-#include "Pickups/ShooterPickupWeaponActor.h"
-#include "Weapons/ShooterBaseWeaponActor.h"
+#include "Pickups/SHGPickupWeaponActor.h"
+#include "Weapons/SHGBaseWeaponActor.h"
 
 UEnvQueryTest_WeaponType::UEnvQueryTest_WeaponType(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -21,7 +21,7 @@ void UEnvQueryTest_WeaponType::RunTest(FEnvQueryInstance& QueryInstance) const
     for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
     {
         AActor* ItemActor = GetItemActor(QueryInstance, It.GetIndex());
-        const auto Pickup = Cast<AShooterPickupWeaponActor>(ItemActor);
+        const auto Pickup = Cast<ASHGPickupWeaponActor>(ItemActor);
         if (!Pickup)
             continue;
 

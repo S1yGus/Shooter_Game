@@ -7,7 +7,7 @@
 #include "SHGWeaponCoreTypes.h"
 #include "ShooterBTDecoratorNeedWeapon.generated.h"
 
-class AShooterBaseWeaponActor;
+class ASHGBaseWeaponActor;
 
 UCLASS()
 class SHOOTER_GAME_API UShooterBTDecoratorNeedWeapon : public UBTDecorator

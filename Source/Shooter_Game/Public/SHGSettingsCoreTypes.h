@@ -73,6 +73,9 @@ struct FGameSettings
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GameSettings")
     TMap<EHintType, bool> HintsStatus{{EHintType::Startup, true}};
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "GameSettings", Meta = (ClampMin = "1.0", ClampMax = "2.0"))
+    float Difficulty = 1.0f;
 };
 
 USTRUCT(BlueprintType)
@@ -112,5 +115,6 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnHintsStatusChangedSignature, const HintsS
 DECLARE_MULTICAST_DELEGATE(FOnResolutionChangedSignature);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnAspectRatioChangedSignature, const FAspectRatioData&);
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnSensitivityChangedSignature, const FSensitivitySettings&);
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnDifficultyChangedSignature, float);
 DECLARE_MULTICAST_DELEGATE(FOnPressedEntSignature);
 DECLARE_MULTICAST_DELEGATE(FOnPressedEscSignature);

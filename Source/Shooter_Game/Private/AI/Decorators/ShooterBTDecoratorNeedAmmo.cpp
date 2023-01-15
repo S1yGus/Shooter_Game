@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "AI/Decorators/ShooterBTDecoratorNeedAmmo.h"
-#include "Components/ShooterAIWeaponComponent.h"
+#include "Components/SHGAIWeaponComponent.h"
 #include "Components/SHGHealthComponent.h"
 #include "AIController.h"
 #include "Kismet/KismetMathLibrary.h"

@@ -2,7 +2,7 @@
 
 #include "AI/Services/ShooterChangeWeaponService.h"
 #include "AIController.h"
-#include "Components/ShooterAIWeaponComponent.h"
+#include "Components/SHGAIWeaponComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "EnvironmentQuery/EnvQueryManager.h"

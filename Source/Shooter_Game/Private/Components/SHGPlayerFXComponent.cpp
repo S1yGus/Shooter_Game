@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "Components/SHGPlayerFXComponent.h"
-#include "Components/ShooterWeaponComponent.h"
+#include "Components/SHGBaseWeaponComponent.h"
 #include "GameFramework/PawnMovementComponent.h"
 #include "VFX/SHGLocomotionCameraShake.h"
 #include "Kismet/KismetMathLibrary.h"

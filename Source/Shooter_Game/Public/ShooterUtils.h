@@ -15,7 +15,7 @@ public:
         return Cast<T>(Component);
     }
 
-    static bool AreEnemy(AController* Controller1, AController* Controller2)
+    static bool AreEnemies(AController* Controller1, AController* Controller2)
     {
         if (!Controller1 || !Controller2 || Controller1 == Controller2)
             return false;
@@ -26,7 +26,7 @@ public:
         return ShooterPlayerState1 && ShooterPlayerState2 && ShooterPlayerState1->GetTeamID() != ShooterPlayerState2->GetTeamID();
     }
 
-    static FText TextFromInt(int32 Number) { return FText::FromString(FString::FromInt(Number)); }
+    inline static FText TextFromInt(int32 Number) { return FText::FromString(FString::FromInt(Number)); }
 
     static FString FormatStringFromInt(int32 InValue, int32 MinLen, TCHAR FillChar) 
     { 

@@ -33,26 +33,26 @@ void USHGBaseFXComponent::MakeFootstepsFX(const FFootstepNotifyData& FootstepNot
     if (!MakeFootstepTrace(TraceStart, TraceEnd, HitResult, OwnerCharacter))
         return;
 
-    auto FootstepsFXData = DefaultFootstepsFXData;
+    const FFootstepsFXData* FootstepsFXData = &DefaultFootstepsFXData;
     if (HitResult.PhysMaterial.IsValid() && FootstepsFXDataMap.Contains(HitResult.PhysMaterial.Get()))
     {
-        FootstepsFXData = FootstepsFXDataMap[HitResult.PhysMaterial.Get()];
+        FootstepsFXData = &FootstepsFXDataMap[HitResult.PhysMaterial.Get()];
     }
 
     // VFX
-    UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),                               //
-                                                   FootstepsFXData.FootstepNiagaraSystem,    //
-                                                   HitResult.ImpactPoint,                    //
+    UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),                                //
+                                                   FootstepsFXData->FootstepNiagaraSystem,    //
+                                                   HitResult.ImpactPoint,                     //
                                                    HitResult.ImpactNormal.Rotation());
 
     // Sound
     if (!FootstepNotifyData.NoSound)
     {
-        UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootstepsFXData.FootstepSound, HitResult.ImpactPoint);
+        UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootstepsFXData->FootstepSound, HitResult.ImpactPoint);
     }
 
     // Decal
-    const auto FootstepsDecalData = FootstepNotifyData.IsLeft ? FootstepsFXData.FootstepDecalDataPair.Left : FootstepsFXData.FootstepDecalDataPair.Right;
+    const auto FootstepsDecalData = FootstepNotifyData.IsLeft ? FootstepsFXData->FootstepDecalDataPair.Left : FootstepsFXData->FootstepDecalDataPair.Right;
     if (FootstepsDecalData.Material.Num() != 0)
     {
         const auto RandomDecalArrayIndex = FMath::RandHelper(FootstepsDecalData.Material.Num());
@@ -74,7 +74,7 @@ void USHGBaseFXComponent::SpawnImpactIndicator(float DamageAmount, const FVector
         return;
 
     const FTransform SpawnTransform{HitLocation};
-    const auto ImpactIndicator = GetWorld()->SpawnActorDeferred<ASHGImpactIndicatorActor>(ImpactIndicatorClass, SpawnTransform);
+    auto ImpactIndicator = GetWorld()->SpawnActorDeferred<ASHGImpactIndicatorActor>(ImpactIndicatorClass, SpawnTransform);
     check(ImpactIndicator);
     ImpactIndicator->SetDamageAmount(DamageAmount);
     if (PhysicalMaterial)

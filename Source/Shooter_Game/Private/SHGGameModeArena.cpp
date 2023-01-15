@@ -5,7 +5,7 @@
 #include "Player/SHGPlayerController.h"
 #include "Player/ShooterPlayerState.h"
 #include "Components/SHGRespawnComponent.h"
-#include "Components/ShooterAIWeaponComponent.h"
+#include "Components/SHGAIWeaponComponent.h"
 #include "UI/SHGGameHUD.h"
 #include "AIController.h"
 #include "EngineUtils.h"

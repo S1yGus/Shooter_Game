@@ -2,7 +2,7 @@
 
 #include "AI/Tasks/ShooterAttackLocationTaskNode.h"
 #include "AIController.h"
-#include "Components/ShooterAIWeaponComponent.h"
+#include "Components/SHGAIWeaponComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "EnvironmentQuery/EnvQueryTypes.h"

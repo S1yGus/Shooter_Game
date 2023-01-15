@@ -3,7 +3,7 @@
 #include "Player/ShooterBaseCharacter.h"
 #include "Components/SHGHealthComponent.h"
 #include "Components/SHGStaminaComponent.h"
-#include "Components/ShooterWeaponComponent.h"
+#include "Components/SHGBaseWeaponComponent.h"
 #include "Components/SHGBaseFXComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SHGMovementComponent.h"

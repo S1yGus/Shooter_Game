@@ -2,6 +2,9 @@
 
 #include "SHGFXCoreTypes.generated.h"
 
+class USoundCue;
+class UNiagaraSystem;
+
 USTRUCT(BlueprintType)
 struct FDecalData
 {
@@ -19,9 +22,6 @@ struct FDecalData
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     float FadeOutTime = 10.0f;
 };
-
-class USoundCue;
-class UNiagaraSystem;
 
 USTRUCT(BlueprintType)
 struct FImpactFXData
@@ -44,22 +44,13 @@ struct FWeaponFXData
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
-    FImpactFXData DefaultImpactFXData;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
-    TMap<UPhysicalMaterial*, FImpactFXData> ImpactFXDataMap;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     UNiagaraSystem* MuzzleFX;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
-    UNiagaraSystem* TraceFX;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
-    TSubclassOf<UCameraShakeBase> CameraShakeClass;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
     USoundCue* FireSound;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    TSubclassOf<UCameraShakeBase> FireCameraShakeClass;
 };
 
 USTRUCT(BlueprintType)

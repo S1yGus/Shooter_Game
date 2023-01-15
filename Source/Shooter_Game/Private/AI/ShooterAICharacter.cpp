@@ -3,7 +3,7 @@
 #include "AI/ShooterAICharacter.h"
 #include "AI/SHGAIController.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Components/ShooterAIWeaponComponent.h"
+#include "Components/SHGAIWeaponComponent.h"
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "Components/WidgetComponent.h"

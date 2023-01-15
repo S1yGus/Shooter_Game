@@ -6,7 +6,7 @@
 #include "Pickups/ShooterPickupBaseActor.h"
 #include "ShooterPickupAmmoActor.generated.h"
 
-class AShooterBaseWeaponActor;
+class ASHGBaseWeaponActor;
 
 UCLASS()
 class SHOOTER_GAME_API AShooterPickupAmmoActor : public AShooterPickupBaseActor
@@ -14,11 +14,11 @@ class SHOOTER_GAME_API AShooterPickupAmmoActor : public AShooterPickupBaseActor
     GENERATED_BODY()
 
 public:
-    TSubclassOf<AShooterBaseWeaponActor> GetWeaponClass() const { return AmmoWeaponClass; }
+    TSubclassOf<ASHGBaseWeaponActor> GetWeaponClass() const { return AmmoWeaponClass; }
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings");
-    TSubclassOf<AShooterBaseWeaponActor> AmmoWeaponClass;
+    TSubclassOf<ASHGBaseWeaponActor> AmmoWeaponClass;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "1"));
     int32 ClipsAmount = 1;

@@ -39,12 +39,14 @@ protected:
 
 private:
     FSensitivitySettings SensitivitySettings;
+    bool bIsZoomingNow = false;
 
     void MoveForward(float Amount);
     void MoveRight(float Amount);
     void LookUp(float Amount);
     void LookRight(float Amount);
 
+    void OnZoom(bool bCondition);
     void OnSensitivityChanged(const FSensitivitySettings& NewSensitivitySettings);
     UFUNCTION()
     void OnCameraComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,    //

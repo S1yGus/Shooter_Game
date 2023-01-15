@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "UI/HUD/SHGCrosshairUserWidget.h"
-#include "Components/ShooterWeaponComponent.h"
+#include "Components/SHGBaseWeaponComponent.h"
 #include "Components/Image.h"
 #include "Brushes/SlateImageBrush.h"
 

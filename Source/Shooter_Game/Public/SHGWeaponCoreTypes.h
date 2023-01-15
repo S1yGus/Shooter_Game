@@ -3,6 +3,8 @@
 #include "SHGUICoreTypes.h"
 #include "SHGWeaponCoreTypes.generated.h"
 
+class ASHGProjectileBaseActor;
+
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
@@ -13,17 +15,30 @@ enum class EWeaponType : uint8
     Max
 };
 
-class AShooterBaseWeaponActor;
-
 USTRUCT(BlueprintType)
 struct FWeaponData
 {
     GENERATED_USTRUCT_BODY()
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon")
-    TSubclassOf<AShooterBaseWeaponActor> WeaponClass;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    EWeaponType WeaponType;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sockets")
+    FName WeaponArmorySocketName{NAME_None};
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sockets")
+    FName MuzzleSocketName = "MuzzleSocket";
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sockets")
+    FName ShellWindowSocketName = "ShellWindowSocket";
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sockets")
+    FName ModeSwitcherSocketName = "ModeSwitcherSocket";
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sockets")
+    FName FlashlightSocketName = "FlashlightSocket";
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
     UAnimMontage* ReloadAnimMontage;
 };
 
@@ -47,20 +62,20 @@ struct FWeaponStatsData
 {
     GENERATED_USTRUCT_BODY()
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
-    float MinDamage = 0.0f;
+    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Weapon")
+    TSubclassOf<ASHGProjectileBaseActor> ProjectileClass;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
-    float MaxDamage = 0.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
-    FVector2D ShotSpread = FVector2D{3.0f, 10.0f};
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.01", ClampMax = "100.0"))
+    float TimeBetweenShots = 0.3f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
-    FVector2D AimedShotSpread = FVector2D{1.0f, 1.0f};
+    FVector2D ShotSpread{0.0f, 0.0f};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0"))
-    FVector2D AIShotSpread = FVector2D{3.0f, 10.0f};
+    FVector2D AimedShotSpread{0.0f, 0.0f};
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", Meta = (ClampMin = "0"))
+    float OptimalDistance = 0.0f;
 };
 
 DECLARE_MULTICAST_DELEGATE(FOnClipEmptySignature);

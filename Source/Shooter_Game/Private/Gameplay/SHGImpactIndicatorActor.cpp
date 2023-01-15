@@ -27,15 +27,13 @@ void ASHGImpactIndicatorActor::BeginPlay()
 {
     Super::BeginPlay();
 
-    SetLifeSpan(LifeSpan);
-
     check(ImpactWidgetComponent);
 
     const auto ImpactIndicatorWidget = Cast<USHGImpactIndicatorUserWidget>(ImpactWidgetComponent->GetUserWidgetObject());
-
     check(ImpactIndicatorWidget);
-
     ImpactIndicatorWidget->SetImpactWidgetText(ShooterUtils::TextFromInt(DamageAmount));
     ImpactIndicatorWidget->SetImpactWidgetTextColor(ImpactColor);
     ImpactIndicatorWidget->ShowStartupAnimation();
+
+    SetLifeSpan(LifeSpan);
 }

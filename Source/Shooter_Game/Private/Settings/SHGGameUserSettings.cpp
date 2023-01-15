@@ -105,6 +105,11 @@ const TMap<EHintType, bool>& USHGGameUserSettings::GetHintsStatus() const
     return SettingsSave->GameSettings.HintsStatus;
 }
 
+float USHGGameUserSettings::GetDifficulty() const
+{
+    return SettingsSave->GameSettings.Difficulty;
+}
+
 void USHGGameUserSettings::SetHintsStatus(const TMap<EHintType, bool>& NewHintsMap)
 {
     SettingsSave->GameSettings.HintsStatus = NewHintsMap;

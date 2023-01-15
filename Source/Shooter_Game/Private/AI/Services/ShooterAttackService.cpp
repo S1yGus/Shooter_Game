@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "AI/Services/ShooterAttackService.h"
-#include "Components/ShooterWeaponComponent.h"
+#include "Components/SHGBaseWeaponComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "AIController.h"
 

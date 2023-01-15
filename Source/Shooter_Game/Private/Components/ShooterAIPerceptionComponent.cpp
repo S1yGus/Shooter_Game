@@ -44,7 +44,7 @@ AActor* USHGAIPerceptionComponent::GetNearestActor()
             continue;
 
         const auto HealthComponent = PerceivedActor->FindComponentByClass<USHGHealthComponent>();
-        if (!HealthComponent || HealthComponent->IsDead() || !ShooterUtils::AreEnemy(AIController, PerceivedPawnController))
+        if (!HealthComponent || HealthComponent->IsDead() || !ShooterUtils::AreEnemies(AIController, PerceivedPawnController))
             continue;
 
         float CurrentDistance = (PerceivedActor->GetActorLocation() - Pawn->GetActorLocation()).Size();

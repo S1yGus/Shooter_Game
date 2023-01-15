@@ -2,7 +2,7 @@
 
 #include "Pickups/ShooterPickupAmmoActor.h"
 #include "Components/SHGHealthComponent.h"
-#include "Components/ShooterWeaponComponent.h"
+#include "Components/SHGBaseWeaponComponent.h"
 #include "ShooterUtils.h"
 
 bool AShooterPickupAmmoActor::GivePickupTo(APawn* PlayerPawn)
