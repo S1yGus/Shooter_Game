@@ -5,7 +5,7 @@
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
 #include "Brushes/SlateImageBrush.h"
-#include "ShooterUtils.h"
+#include "SHGUtils.h"
 
 constexpr static int32 AmmoInfoMinStrLen = 2;
 constexpr static char AmmoInfoFillChar = '0';
@@ -53,13 +53,13 @@ void USHGWeaponInfoUserWidget::UpdateWeaponIconImage(const FWeaponUIData& Curren
 
 void USHGWeaponInfoUserWidget::UpdateAmmoInfo(const FAmmoData& CurrentAmmoData)
 {
-    const auto NewBulletsStr = ShooterUtils::FormatStringFromInt(CurrentAmmoData.BulletsInClip, AmmoInfoMinStrLen, AmmoInfoFillChar);
+    const auto NewBulletsStr = SHGUtils::FormatStringFromInt(CurrentAmmoData.BulletsInClip, AmmoInfoMinStrLen, AmmoInfoFillChar);
     BulletsTextBlock->SetText(FText::FromString(NewBulletsStr));
 
     auto NewClipsStr = InfiniteClipsSymbol;
     if (!CurrentAmmoData.InfiniteClips)
     {
-        NewClipsStr = ShooterUtils::FormatStringFromInt(CurrentAmmoData.Clips, AmmoInfoMinStrLen, AmmoInfoFillChar);
+        NewClipsStr = SHGUtils::FormatStringFromInt(CurrentAmmoData.Clips, AmmoInfoMinStrLen, AmmoInfoFillChar);
     }
     NewClipsStr = FString::Printf(TEXT("/%s"), *NewClipsStr);
     ClipsTextBlock->SetText(FText::FromString(NewClipsStr));

@@ -2,11 +2,11 @@
 
 #include "Pickups/ShooterPickupHealthActor.h"
 #include "Components/SHGHealthComponent.h"
-#include "ShooterUtils.h"
+#include "SHGUtils.h"
 
 bool AShooterPickupHealthActor::GivePickupTo(APawn* PlayerPawn)
 {
-    const auto HealthComponent = ShooterUtils::GetShooterPlayerComponent<USHGHealthComponent>(PlayerPawn);
+    const auto HealthComponent = SHGUtils::GetSHGComponent<USHGHealthComponent>(PlayerPawn);
     if (!HealthComponent || HealthComponent->IsDead())
         return false;
 

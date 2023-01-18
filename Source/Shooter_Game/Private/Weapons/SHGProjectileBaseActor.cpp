@@ -21,10 +21,12 @@ ASHGProjectileBaseActor::ASHGProjectileBaseActor()
     SphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
     SphereComponent->SetCollisionResponseToChannel(ECC_Projectile, ECollisionResponse::ECR_Ignore);
     SphereComponent->bReturnMaterialOnMove = true;
+    SphereComponent->SetWalkableSlopeOverride(FWalkableSlopeOverride{WalkableSlope_Unwalkable, 0.0f});
+    SphereComponent->CanCharacterStepUpOn = ECB_No;
     SetRootComponent(SphereComponent);
 
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovment");
-    ProjectileMovement->InitialSpeed = 10000.0f;
+    ProjectileMovement->InitialSpeed = 20000.0f;
     ProjectileMovement->ProjectileGravityScale = 0.3f;
 }
 
@@ -48,14 +50,19 @@ void ASHGProjectileBaseActor::OnProjectileHit(UPrimitiveComponent* HitComponent,
                                               FVector NormalImpulse,                //
                                               const FHitResult& Hit)
 {
-    if (!OtherActor)
+    if (!OtherActor || OtherActor == this || !OtherComp)
         return;
-
-    ProjectileMovement->StopMovementImmediately();
 
     FPointDamageEvent DamageEvent;
     DamageEvent.HitInfo = Hit;
     OtherActor->TakeDamage(FMath::RandRange(Damage.X, Damage.Y), DamageEvent, GetController(), this);
+
+    if (OtherComp->IsSimulatingPhysics())
+    {
+        OtherComp->AddImpulseAtLocation(GetVelocity() * ImpulseMultiplier, GetActorLocation());
+    }
+
+    ProjectileMovement->StopMovementImmediately();
 
     MakeImpactFX(Hit);
 

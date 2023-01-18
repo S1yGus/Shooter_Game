@@ -5,10 +5,10 @@
 #include "UI/Menu/SHGButtonUserWidget.h"
 #include "Components/VerticalBox.h"
 #include "Player/ShooterPlayerState.h"
-#include "EngineUtils.h"
-#include "ShooterUtils.h"
 #include "SHGGameModeBase.h"
 #include "SHGGameInstance.h"
+#include "EngineUtils.h"
+#include "SHGUtils.h"
 
 void USHGGameOverUserWidget::NativeOnInitialized()
 {
@@ -82,9 +82,9 @@ void USHGGameOverUserWidget::UpdatePlayersInfo()
             continue;
 
         PlayerInfoWidget->SetName(FText::FromString(PlayerState->GetPlayerName()));
-        PlayerInfoWidget->SetKills(ShooterUtils::TextFromInt(PlayerState->GetKillsNum()));
-        PlayerInfoWidget->SetDeaths(ShooterUtils::TextFromInt(PlayerState->GetDeathsNum()));
-        PlayerInfoWidget->SetTeam(ShooterUtils::TextFromInt(PlayerState->GetTeamID()));
+        PlayerInfoWidget->SetKills(SHGUtils::TextFromInt(PlayerState->GetKillsNum()));
+        PlayerInfoWidget->SetDeaths(SHGUtils::TextFromInt(PlayerState->GetDeathsNum()));
+        PlayerInfoWidget->SetTeam(SHGUtils::TextFromInt(PlayerState->GetTeamID()));
         PlayerInfoWidget->SetTeamColor(PlayerState->GetTeamColor());
         PlayerInfoWidget->SetPlayerHighlighting(Controller->IsPlayerController());
 

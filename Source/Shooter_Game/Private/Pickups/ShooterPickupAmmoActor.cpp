@@ -3,15 +3,15 @@
 #include "Pickups/ShooterPickupAmmoActor.h"
 #include "Components/SHGHealthComponent.h"
 #include "Components/SHGBaseWeaponComponent.h"
-#include "ShooterUtils.h"
+#include "SHGUtils.h"
 
 bool AShooterPickupAmmoActor::GivePickupTo(APawn* PlayerPawn)
 {
-    const auto HealthComponent = ShooterUtils::GetShooterPlayerComponent<USHGHealthComponent>(PlayerPawn);
+    const auto HealthComponent = SHGUtils::GetSHGComponent<USHGHealthComponent>(PlayerPawn);
     if (!HealthComponent || HealthComponent->IsDead())
         return false;
 
-    const auto WeaponComponent = ShooterUtils::GetShooterPlayerComponent<USHGBaseWeaponComponent>(PlayerPawn);
+    const auto WeaponComponent = SHGUtils::GetSHGComponent<USHGBaseWeaponComponent>(PlayerPawn);
     if (!WeaponComponent)
         return false;
 

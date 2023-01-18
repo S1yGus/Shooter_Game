@@ -138,6 +138,11 @@ void ASHGBaseWeaponActor::BeginPlay()
     }
 }
 
+void ASHGBaseWeaponActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+    Flashlight->Destroy();
+}
+
 void ASHGBaseWeaponActor::MakeMainShot()
 {
     if (!CheckShot())

@@ -31,6 +31,9 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     FVector2D Damage{0.0f, 0.0f};
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Physics")
+    float ImpulseMultiplier = 1.0f;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     FImpactFXData DefaultImpactFXData;
 

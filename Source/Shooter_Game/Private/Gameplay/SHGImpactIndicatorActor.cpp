@@ -3,7 +3,7 @@
 #include "Gameplay/SHGImpactIndicatorActor.h"
 #include "Components/WidgetComponent.h"
 #include "UI/Gameplay/SHGImpactIndicatorUserWidget.h"
-#include "ShooterUtils.h"
+#include "SHGUtils.h"
 
 ASHGImpactIndicatorActor::ASHGImpactIndicatorActor()
 {
@@ -31,7 +31,7 @@ void ASHGImpactIndicatorActor::BeginPlay()
 
     const auto ImpactIndicatorWidget = Cast<USHGImpactIndicatorUserWidget>(ImpactWidgetComponent->GetUserWidgetObject());
     check(ImpactIndicatorWidget);
-    ImpactIndicatorWidget->SetImpactWidgetText(ShooterUtils::TextFromInt(DamageAmount));
+    ImpactIndicatorWidget->SetImpactWidgetText(SHGUtils::TextFromInt(DamageAmount));
     ImpactIndicatorWidget->SetImpactWidgetTextColor(ImpactColor);
     ImpactIndicatorWidget->ShowStartupAnimation();
 

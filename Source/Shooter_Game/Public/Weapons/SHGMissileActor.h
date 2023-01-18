@@ -16,7 +16,10 @@ protected:
     float DamageRadius = 100.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
-    bool DoFullDamage = false;
+    bool bDoFullDamage = false;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
+    TEnumAsByte<ECollisionChannel> DamageTraceChannel = ECC_Visibility;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     TSubclassOf<UCameraShakeBase> ExplosionCameraShakeClass;

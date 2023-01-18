@@ -95,6 +95,7 @@ protected:
     inline AController* GetController() const;
 
     virtual void BeginPlay() override;
+    virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     virtual void MakeMainShot();
     virtual void MakeAlternativeShot();

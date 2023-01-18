@@ -7,7 +7,7 @@
 #include "Components/SHGHealthComponent.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "ShooterUtils.h"
+#include "SHGUtils.h"
 
 void USHGAIPerceptionComponent::BeginPlay()
 {
@@ -44,7 +44,7 @@ AActor* USHGAIPerceptionComponent::GetNearestActor()
             continue;
 
         const auto HealthComponent = PerceivedActor->FindComponentByClass<USHGHealthComponent>();
-        if (!HealthComponent || HealthComponent->IsDead() || !ShooterUtils::AreEnemies(AIController, PerceivedPawnController))
+        if (!HealthComponent || HealthComponent->IsDead() || !SHGUtils::AreEnemies(AIController, PerceivedPawnController))
             continue;
 
         float CurrentDistance = (PerceivedActor->GetActorLocation() - Pawn->GetActorLocation()).Size();
