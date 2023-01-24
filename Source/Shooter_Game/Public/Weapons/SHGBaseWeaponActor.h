@@ -11,7 +11,7 @@
 class USkeletalMeshComponent;
 class USHGWeaponFXComponent;
 class USHGRecoilComponent;
-class ASHGProjectileBaseActor;
+class ASHGBaseProjectileActor;
 class ASHGShellBaseActor;
 class ASHGFlashlightActor;
 

@@ -22,13 +22,29 @@ void ASHGMissileActor::OnProjectileHit(UPrimitiveComponent* HitComponent,    //
                                        FVector NormalImpulse,                //
                                        const FHitResult& Hit)
 {
-    SHGUtils::ApplyRadialDamageWithImpulse(this, FMath::RandRange(Damage.X, Damage.Y), MinimumDamage, ImpulseMultiplier, GetActorLocation(), InnerRadius, DamageRadius,
-                                           false, UDamageType::StaticClass(), {}, this, GetController(), DamageTraceChannel);
+    SHGUtils::ApplyRadialDamageWithImpulse(this,                                    //
+                                           FMath::RandRange(Damage.X, Damage.Y),    //
+                                           MinimumDamage,                           //
+                                           ImpulseMultiplier,                       //
+                                           GetActorLocation(),                      //
+                                           InnerRadius,                             //
+                                           DamageRadius,                            //
+                                           false,                                   //
+                                           UDamageType::StaticClass(),              //
+                                           {},                                      //
+                                           this,                                    //
+                                           GetController(),                         //
+                                           DamageTraceChannel);
 
     ProjectileMovement->StopMovementImmediately();
 
     MakeImpactFX(Hit);
     MakeExplosionCameraShake();
+
+    if (SpawningOnHitClass)
+    {
+        GetWorld()->SpawnActor<AActor>(SpawningOnHitClass, GetActorLocation(), FRotator::ZeroRotator);
+    }
 
     Destroy();
 }

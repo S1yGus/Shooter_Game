@@ -9,7 +9,8 @@ enum class ESettingType : uint8
     Video,
     Sound,
     Control,
-    Game
+    Game,
+    Max UMETA(Hidden)
 };
 
 USTRUCT(BlueprintType)

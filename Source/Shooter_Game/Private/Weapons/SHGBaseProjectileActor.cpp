@@ -1,6 +1,6 @@
 // Shooter_Game, All rights reserved.
 
-#include "Weapons/SHGProjectileBaseActor.h"
+#include "Weapons/SHGBaseProjectileActor.h"
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -10,41 +10,41 @@
 
 #define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel3
 
-ASHGProjectileBaseActor::ASHGProjectileBaseActor()
+ASHGBaseProjectileActor::ASHGBaseProjectileActor()
 {
     PrimaryActorTick.bCanEverTick = false;
 
-    SphereComponent = CreateDefaultSubobject<USphereComponent>("SphereComponent");
-    SphereComponent->SetSphereRadius(5.0f);
-    SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-    SphereComponent->SetCollisionObjectType(ECC_Projectile);
-    SphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
-    SphereComponent->SetCollisionResponseToChannel(ECC_Projectile, ECollisionResponse::ECR_Ignore);
-    SphereComponent->bReturnMaterialOnMove = true;
-    SphereComponent->SetWalkableSlopeOverride(FWalkableSlopeOverride{WalkableSlope_Unwalkable, 0.0f});
-    SphereComponent->CanCharacterStepUpOn = ECB_No;
-    SetRootComponent(SphereComponent);
+    HitSphereComponent = CreateDefaultSubobject<USphereComponent>("HitSphereComponent");
+    HitSphereComponent->SetSphereRadius(2.0f);
+    HitSphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+    HitSphereComponent->SetCollisionObjectType(ECC_Projectile);
+    HitSphereComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+    HitSphereComponent->SetCollisionResponseToChannel(ECC_Projectile, ECollisionResponse::ECR_Ignore);
+    HitSphereComponent->bReturnMaterialOnMove = true;
+    HitSphereComponent->SetWalkableSlopeOverride(FWalkableSlopeOverride{WalkableSlope_Unwalkable, 0.0f});
+    HitSphereComponent->CanCharacterStepUpOn = ECB_No;
+    SetRootComponent(HitSphereComponent);
 
     ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>("ProjectileMovment");
     ProjectileMovement->InitialSpeed = 20000.0f;
     ProjectileMovement->ProjectileGravityScale = 0.3f;
 }
 
-void ASHGProjectileBaseActor::BeginPlay()
+void ASHGBaseProjectileActor::BeginPlay()
 {
     Super::BeginPlay();
 
-    check(SphereComponent);
+    check(HitSphereComponent);
     check(ProjectileMovement);
 
     // SphereComponent->IgnoreActorWhenMoving(GetOwner(), true);
-    SphereComponent->OnComponentHit.AddDynamic(this, &ThisClass::OnProjectileHit);
+    HitSphereComponent->OnComponentHit.AddDynamic(this, &ThisClass::OnProjectileHit);
     ProjectileMovement->Velocity = ShotDirection * ProjectileMovement->InitialSpeed;
 
-    SetLifeSpan(LifeSpan);
+    SetLifeSpan(LifeSpanTime);
 }
 
-void ASHGProjectileBaseActor::OnProjectileHit(UPrimitiveComponent* HitComponent,    //
+void ASHGBaseProjectileActor::OnProjectileHit(UPrimitiveComponent* HitComponent,    //
                                               AActor* OtherActor,                   //
                                               UPrimitiveComponent* OtherComp,       //
                                               FVector NormalImpulse,                //
@@ -69,7 +69,7 @@ void ASHGProjectileBaseActor::OnProjectileHit(UPrimitiveComponent* HitComponent,
     Destroy();
 }
 
-AController* ASHGProjectileBaseActor::GetController() const
+AController* ASHGBaseProjectileActor::GetController() const
 {
     if (Owner)
     {
@@ -80,7 +80,7 @@ AController* ASHGProjectileBaseActor::GetController() const
     return nullptr;
 }
 
-void ASHGProjectileBaseActor::MakeImpactFX(const FHitResult& HitResult)
+void ASHGBaseProjectileActor::MakeImpactFX(const FHitResult& HitResult)
 {
     FImpactFXData* ImpactFXData = &DefaultImpactFXData;
     if (HitResult.PhysMaterial.IsValid())

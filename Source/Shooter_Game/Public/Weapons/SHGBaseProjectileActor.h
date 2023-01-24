@@ -5,25 +5,25 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "SHGFXCoreTypes.h"
-#include "SHGProjectileBaseActor.generated.h"
+#include "SHGBaseProjectileActor.generated.h"
 
 class USphereComponent;
 class UProjectileMovementComponent;
 class UPhysicalMaterial;
 
 UCLASS()
-class SHOOTER_GAME_API ASHGProjectileBaseActor : public AActor
+class SHOOTER_GAME_API ASHGBaseProjectileActor : public AActor
 {
     GENERATED_BODY()
 
 public:
-    ASHGProjectileBaseActor();
+    ASHGBaseProjectileActor();
 
     void SetShotDirection(const FVector& Direction) { ShotDirection = Direction; }
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    USphereComponent* SphereComponent;
+    USphereComponent* HitSphereComponent;
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UProjectileMovementComponent* ProjectileMovement;
@@ -41,7 +41,7 @@ protected:
     TMap<UPhysicalMaterial*, FImpactFXData> ImpactFXDataMap;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
-    float LifeSpan = 3.0f;
+    float LifeSpanTime = 3.0f;
 
     virtual void BeginPlay() override;
 

@@ -3,7 +3,7 @@
 #include "SHGUICoreTypes.h"
 #include "SHGWeaponCoreTypes.generated.h"
 
-class ASHGProjectileBaseActor;
+class ASHGBaseProjectileActor;
 
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
@@ -12,7 +12,7 @@ enum class EWeaponType : uint8
     Launcher,
     Rifle,
     Pistol,
-    Max
+    Max UMETA(Hidden)
 };
 
 USTRUCT(BlueprintType)
@@ -63,7 +63,7 @@ struct FWeaponStatsData
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Weapon")
-    TSubclassOf<ASHGProjectileBaseActor> ProjectileClass;
+    TSubclassOf<ASHGBaseProjectileActor> ProjectileClass;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.01", ClampMax = "100.0"))
     float TimeBetweenShots = 0.3f;

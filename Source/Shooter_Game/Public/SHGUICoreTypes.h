@@ -7,7 +7,7 @@ UENUM(BlueprintType)
 enum class EHintType : uint8
 {
     Startup,
-    Max
+    Max UMETA(Hidden)
 };
 
 USTRUCT(BlueprintType)

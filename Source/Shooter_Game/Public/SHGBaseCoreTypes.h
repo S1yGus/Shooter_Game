@@ -15,7 +15,8 @@ enum class EGameState : uint8
     Pause,
     BackToRootMenu,
     GameOver,
-    Quit
+    Quit,
+    Max UMETA(Hidden)
 };
 
 USTRUCT(BlueprintType)

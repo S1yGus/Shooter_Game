@@ -4,7 +4,7 @@
 #include "Weapons/Components/SHGWeaponFXComponent.h"
 #include "Weapons/Components/SHGRecoilComponent.h"
 #include "Weapons/SHGFlashlightActor.h"
-#include "Weapons/SHGProjectileBaseActor.h"
+#include "Weapons/SHGBaseProjectileActor.h"
 #include "Weapons/SHGShellBaseActor.h"
 #include "Components/SHGHealthComponent.h"
 #include "Components/SHGStaminaComponent.h"
@@ -221,7 +221,7 @@ void ASHGBaseWeaponActor::DecreaseAmmo()
 void ASHGBaseWeaponActor::SpawnProjectile(const FVector& Direction)
 {
     const FTransform Transform{FRotator::ZeroRotator, GetMuzzleLocation()};
-    auto Projectile = GetWorld()->SpawnActorDeferred<ASHGProjectileBaseActor>(CurrentWeaponStatsData.ProjectileClass, Transform);
+    auto Projectile = GetWorld()->SpawnActorDeferred<ASHGBaseProjectileActor>(CurrentWeaponStatsData.ProjectileClass, Transform);
     if (!Projectile)
         return;
 

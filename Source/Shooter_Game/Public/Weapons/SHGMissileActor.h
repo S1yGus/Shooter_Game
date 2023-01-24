@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Weapons/SHGProjectileBaseActor.h"
+#include "Weapons/SHGBaseProjectileActor.h"
 #include "SHGMissileActor.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API ASHGMissileActor : public ASHGProjectileBaseActor
+class SHOOTER_GAME_API ASHGMissileActor : public ASHGBaseProjectileActor
 {
     GENERATED_BODY()
 
@@ -26,6 +26,9 @@ protected:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     float ExplosionCameraShakeRadius = 1000.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
+    TSubclassOf<AActor> SpawningOnHitClass;
 
     virtual void BeginPlay() override;
 

@@ -11,3 +11,13 @@ float USHGMovementComponent::GetMaxSpeed() const
 
     return OwnerCharacter->IsSprinting() ? Super::GetMaxSpeed() * SprintSpeedMultiplier : Super::GetMaxSpeed();
 }
+
+void USHGMovementComponent::InForceField(bool bCondition)
+{
+    if (!DefaultGroundFriction)
+    {
+        DefaultGroundFriction = GroundFriction;
+    }
+
+    GroundFriction = bCondition ? GroundFrictionInForceField : DefaultGroundFriction;
+}
