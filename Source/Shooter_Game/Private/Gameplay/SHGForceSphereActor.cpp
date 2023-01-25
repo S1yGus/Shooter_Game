@@ -20,11 +20,12 @@ ASHGForceSphereActor::ASHGForceSphereActor()
 
 void ASHGForceSphereActor::Tick(float DeltaSeconds)
 {
+    Super::Tick(DeltaSeconds);
+
     for (const auto& [Actor, ComponentsArray] : OverlapComponentsMap)
     {
         if (!IsValid(Actor))
         {
-            OverlapComponentsMap.Remove(Actor);
             continue;
         }
 
@@ -41,13 +42,13 @@ void ASHGForceSphereActor::Tick(float DeltaSeconds)
 
         for (const auto Component : ComponentsArray)
         {
-            if (!Component->IsSimulatingPhysics())
-                continue;
-
-            Component->AddRadialForce(GetActorLocation(),                                        //
-                                      ForceField->GetScaledSphereRadius(),                       //
-                                      (bForceOut ? 1.0f : -1.0f) * ForcePower * DeltaSeconds,    //
-                                      ERadialImpulseFalloff::RIF_Linear);
+            if (Component->IsSimulatingPhysics())
+            {
+                Component->AddRadialForce(GetActorLocation(),                                        //
+                                          ForceField->GetScaledSphereRadius(),                       //
+                                          (bForceOut ? 1.0f : -1.0f) * ForcePower * DeltaSeconds,    //
+                                          ERadialImpulseFalloff::RIF_Linear);
+            }
         }
     }
 }

@@ -10,10 +10,4 @@ public:
                                              float DamageInnerRadius, float DamageOuterRadius, bool bDoFullDamage, TSubclassOf<UDamageType> DamageTypeClass,
                                              const TArray<AActor*>& IgnoreActors, AActor* DamageCauser, AController* InstigatedByController,
                                              ECollisionChannel DamagePreventionChannel);
-
-    template <class T>
-    static T* GetSHGComponent(APawn* Pawn)
-    {
-        return Pawn ? Cast<T>(Pawn->GetComponentByClass(T::StaticClass())) : nullptr;
-    }
 };

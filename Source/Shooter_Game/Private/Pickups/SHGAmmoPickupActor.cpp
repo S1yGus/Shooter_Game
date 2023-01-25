@@ -1,17 +1,16 @@
 // Shooter_Game, All rights reserved.
 
-#include "Pickups/ShooterPickupAmmoActor.h"
+#include "Pickups/SHGAmmoPickupActor.h"
 #include "Components/SHGHealthComponent.h"
 #include "Components/SHGBaseWeaponComponent.h"
-#include "SHGUtils.h"
 
-bool AShooterPickupAmmoActor::GivePickupTo(APawn* PlayerPawn)
+bool ASHGAmmoPickupActor::TryToGivePickupTo(AActor* Actor)
 {
-    const auto HealthComponent = SHGUtils::GetSHGComponent<USHGHealthComponent>(PlayerPawn);
+    const auto HealthComponent = Actor->FindComponentByClass<USHGHealthComponent>();
     if (!HealthComponent || HealthComponent->IsDead())
         return false;
 
-    const auto WeaponComponent = SHGUtils::GetSHGComponent<USHGBaseWeaponComponent>(PlayerPawn);
+    const auto WeaponComponent = Actor->FindComponentByClass<USHGBaseWeaponComponent>();
     if (!WeaponComponent)
         return false;
 

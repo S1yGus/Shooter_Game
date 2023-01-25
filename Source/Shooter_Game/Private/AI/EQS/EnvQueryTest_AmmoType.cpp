@@ -3,7 +3,7 @@
 #include "AI/EQS/EnvQueryTest_AmmoType.h"
 #include "EnvironmentQuery/Items/EnvQueryItemType_ActorBase.h"
 #include "EnvironmentQuery/Contexts/EnvQueryContext_Querier.h"
-#include "Pickups/ShooterPickupAmmoActor.h"
+#include "Pickups/SHGAmmoPickupActor.h"
 #include "Weapons/SHGBaseWeaponActor.h"
 
 UEnvQueryTest_AmmoType::UEnvQueryTest_AmmoType(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
@@ -21,7 +21,7 @@ void UEnvQueryTest_AmmoType::RunTest(FEnvQueryInstance& QueryInstance) const
     for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
     {
         AActor* ItemActor = GetItemActor(QueryInstance, It.GetIndex());
-        const auto Pickup = Cast<AShooterPickupAmmoActor>(ItemActor);
+        const auto Pickup = Cast<ASHGAmmoPickupActor>(ItemActor);
         if (!Pickup)
             continue;
 
