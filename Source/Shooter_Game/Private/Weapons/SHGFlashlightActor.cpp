@@ -3,6 +3,7 @@
 #include "Weapons/SHGFlashlightActor.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SpotLightComponent.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 ASHGFlashlightActor::ASHGFlashlightActor()
 {
@@ -25,6 +26,13 @@ ASHGFlashlightActor::ASHGFlashlightActor()
 void ASHGFlashlightActor::SetFlashlight(bool bCondition)
 {
     SpotLight->SetHiddenInGame(!bCondition);
+
+    if (!DynamicMaterial)
+    {
+        DynamicMaterial = FlashlightMesh->CreateAndSetMaterialInstanceDynamic(0);
+    }
+
+    DynamicMaterial->SetScalarParameterValue(EmissivePowerParameterName, bCondition ? EmissivePower : 0.0f);
 }
 
 void ASHGFlashlightActor::BeginPlay()
