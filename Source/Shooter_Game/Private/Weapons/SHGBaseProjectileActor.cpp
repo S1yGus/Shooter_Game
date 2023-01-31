@@ -7,6 +7,7 @@
 #include "NiagaraFunctionLibrary.h"
 #include "Sound/SoundCue.h"
 #include "Components/DecalComponent.h"
+#include "Components/SHGHealthComponent.h"
 
 #define ECC_Projectile ECollisionChannel::ECC_GameTraceChannel3
 
@@ -39,9 +40,19 @@ void ASHGBaseProjectileActor::BeginPlay()
 
     // SphereComponent->IgnoreActorWhenMoving(GetOwner(), true);
     HitSphereComponent->OnComponentHit.AddDynamic(this, &ThisClass::OnProjectileHit);
+
+    ProjectileMovement->OnProjectileStop.AddDynamic(this, &ThisClass::OnProjectileStop);
+    ProjectileMovement->OnProjectileBounce.AddDynamic(this, &ThisClass::OnProjectileBounce);
     ProjectileMovement->Velocity = ShotDirection * ProjectileMovement->InitialSpeed;
 
     SetLifeSpan(LifeSpanTime);
+}
+
+float ASHGBaseProjectileActor::GetDamage() const
+{
+    return FMath::GetMappedRangeValueClamped(FVector2D{ProjectileMovement->BounceVelocityStopSimulatingThreshold, ProjectileMovement->InitialSpeed},    //
+                                             FVector2D{MinRicochetDamageMultiplier, 1.0f},                                                              //
+                                             GetVelocity().Length()) * FMath::RandRange(Damage.X, Damage.Y);
 }
 
 void ASHGBaseProjectileActor::OnProjectileHit(UPrimitiveComponent* HitComponent,    //
@@ -53,23 +64,43 @@ void ASHGBaseProjectileActor::OnProjectileHit(UPrimitiveComponent* HitComponent,
     if (!OtherActor || OtherActor == this || !OtherComp)
         return;
 
-    FPointDamageEvent DamageEvent;
-    DamageEvent.HitInfo = Hit;
-    OtherActor->TakeDamage(FMath::RandRange(Damage.X, Damage.Y), DamageEvent, GetController(), this);
+    bool bAppliedDamage = false;
+    if (OtherActor->FindComponentByClass<USHGHealthComponent>())
+    {
+        FPointDamageEvent DamageEvent;
+        DamageEvent.HitInfo = Hit;
+        OtherActor->TakeDamage(GetDamage(), DamageEvent, GetOwnerPawnController(), this);
+
+        bAppliedDamage = true;
+    }
 
     if (OtherComp->IsSimulatingPhysics())
     {
-        OtherComp->AddImpulseAtLocation(GetVelocity() * ImpulseMultiplier, GetActorLocation());
+        OtherComp->AddImpulseAtLocation(GetVelocity() * ImpulseMultiplier, Hit.ImpactPoint);
     }
 
-    ProjectileMovement->StopMovementImmediately();
+    if (bAppliedDamage)
+    {
+        ProjectileMovement->StopSimulating(Hit);
+    }
+}
 
-    MakeImpactFX(Hit);
+void ASHGBaseProjectileActor::OnProjectileStop(const FHitResult& ImpactResult)
+{
+    if (!ProjectileMovement->bShouldBounce)
+    {
+        MakeImpactFX(ImpactResult);
+    }
 
     Destroy();
 }
 
-AController* ASHGBaseProjectileActor::GetController() const
+void ASHGBaseProjectileActor::OnProjectileBounce(const FHitResult& ImpactResult, const FVector& ImpactVelocity)
+{
+    MakeImpactFX(ImpactResult, !ProjectileMovement->IsVelocityUnderSimulationThreshold());
+}
+
+AController* ASHGBaseProjectileActor::GetOwnerPawnController() const
 {
     if (Owner)
     {
@@ -80,12 +111,14 @@ AController* ASHGBaseProjectileActor::GetController() const
     return nullptr;
 }
 
-void ASHGBaseProjectileActor::MakeImpactFX(const FHitResult& HitResult)
+void ASHGBaseProjectileActor::MakeImpactFX(const FHitResult& HitResult, bool bRicochet)
 {
-    FImpactFXData* ImpactFXData = &DefaultImpactFXData;
+    FImpactFXData* ImpactFXData = bRicochet ? &DefaultRicochetFXData : &DefaultImpactFXData;
     if (HitResult.PhysMaterial.IsValid())
     {
-        if (const auto PhysMaterial = HitResult.PhysMaterial.Get(); ImpactFXDataMap.Contains(PhysMaterial))
+        const auto& FXDataMap = bRicochet ? RicochetFXDataMap : ImpactFXDataMap;
+        const auto PhysMaterial = HitResult.PhysMaterial.Get();
+        if (FXDataMap.Contains(PhysMaterial))
         {
             ImpactFXData = &ImpactFXDataMap[PhysMaterial];
         }

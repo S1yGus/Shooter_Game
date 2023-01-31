@@ -33,20 +33,15 @@ void ASHGMissileActor::OnProjectileHit(UPrimitiveComponent* HitComponent,    //
                                            UDamageType::StaticClass(),              //
                                            {},                                      //
                                            this,                                    //
-                                           GetController(),                         //
+                                           GetOwnerPawnController(),                //
                                            DamageTraceChannel);
 
-    ProjectileMovement->StopMovementImmediately();
-
-    MakeImpactFX(Hit);
     MakeExplosionCameraShake();
 
     if (SpawningOnHitClass)
     {
-        GetWorld()->SpawnActor<AActor>(SpawningOnHitClass, GetActorLocation(), FRotator::ZeroRotator);
+        GetWorld()->SpawnActor<AActor>(SpawningOnHitClass, Hit.ImpactPoint, FRotator::ZeroRotator);
     }
-
-    Destroy();
 }
 
 void ASHGMissileActor::MakeExplosionCameraShake()
