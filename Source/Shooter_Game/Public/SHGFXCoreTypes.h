@@ -21,6 +21,9 @@ struct FDecalData
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     float FadeOutTime = 10.0f;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    float FadeScreenSize = 0.01f;
 };
 
 USTRUCT(BlueprintType)

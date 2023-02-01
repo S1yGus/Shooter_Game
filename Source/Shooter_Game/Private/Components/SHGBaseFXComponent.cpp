@@ -9,6 +9,7 @@
 #include "Gameplay/SHGImpactIndicatorActor.h"
 
 constexpr static int32 FootstepTraceLen = 100;
+constexpr static double SpawnDecalPitch = -90.0, SpawnDecalRoll = 0.0;
 
 USHGBaseFXComponent::USHGBaseFXComponent()
 {
@@ -25,7 +26,7 @@ void USHGBaseFXComponent::MakeFootstepsFX(const FFootstepNotifyData& FootstepNot
     if (!OwnerCharacterMesh)
         return;
 
-    const auto CurrentBoneName = FootstepNotifyData.IsLeft ? LeftFootBoneName : RightFootBoneName;
+    const auto& CurrentBoneName = FootstepNotifyData.IsLeft ? LeftFootBoneName : RightFootBoneName;
     const auto TraceStart = OwnerCharacterMesh->GetBoneLocation(CurrentBoneName);
     const auto TraceEnd = TraceStart + OwnerCharacter->GetActorUpVector() * -FootstepTraceLen;
 
@@ -40,7 +41,7 @@ void USHGBaseFXComponent::MakeFootstepsFX(const FFootstepNotifyData& FootstepNot
     }
 
     // VFX
-    UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(),                                //
+    UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,                                      //
                                                    FootstepsFXData->FootstepNiagaraSystem,    //
                                                    HitResult.ImpactPoint,                     //
                                                    HitResult.ImpactNormal.Rotation());
@@ -48,23 +49,27 @@ void USHGBaseFXComponent::MakeFootstepsFX(const FFootstepNotifyData& FootstepNot
     // Sound
     if (!FootstepNotifyData.NoSound)
     {
-        UGameplayStatics::PlaySoundAtLocation(GetWorld(), FootstepsFXData->FootstepSound, HitResult.ImpactPoint);
+        UGameplayStatics::PlaySoundAtLocation(this, FootstepsFXData->FootstepSound, HitResult.ImpactPoint);
     }
 
     // Decal
-    const auto FootstepsDecalData = FootstepNotifyData.IsLeft ? FootstepsFXData->FootstepDecalDataPair.Left : FootstepsFXData->FootstepDecalDataPair.Right;
+    const auto& FootstepsDecalData = FootstepNotifyData.IsLeft ? FootstepsFXData->FootstepDecalDataPair.Left : FootstepsFXData->FootstepDecalDataPair.Right;
     if (FootstepsDecalData.Material.Num() != 0)
     {
         const auto RandomDecalArrayIndex = FMath::RandHelper(FootstepsDecalData.Material.Num());
-        const auto DecalRotator = FRotator(-90.0, OwnerCharacterMesh->GetBoneQuaternion(CurrentBoneName).Rotator().Yaw, 0.0);
-        auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(GetWorld(),                                            //
-                                                                     FootstepsDecalData.Material[RandomDecalArrayIndex],    //
-                                                                     FootstepsDecalData.Size,                               //
-                                                                     HitResult.ImpactPoint,                                 //
-                                                                     DecalRotator);
+        auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(this,                                                                     //
+                                                                     FootstepsDecalData.Material[RandomDecalArrayIndex],                       //
+                                                                     FootstepsDecalData.Size,                                                  //
+                                                                     HitResult.ImpactPoint,                                                    //
+                                                                     {SpawnDecalPitch,                                                         //
+                                                                      OwnerCharacterMesh->GetBoneQuaternion(CurrentBoneName).Rotator().Yaw,    //
+                                                                      SpawnDecalRoll});
 
-        check(DecalComponent);
-        DecalComponent->SetFadeOut(FootstepsDecalData.LifeTime, FootstepsDecalData.FadeOutTime);
+        if (DecalComponent)
+        {
+            DecalComponent->SetFadeScreenSize(FootstepsDecalData.FadeScreenSize);
+            DecalComponent->SetFadeOut(FootstepsDecalData.LifeTime, FootstepsDecalData.FadeOutTime);
+        }
     }
 }
 
@@ -74,22 +79,23 @@ void USHGBaseFXComponent::SpawnImpactIndicator(float DamageAmount, const FVector
         return;
 
     const FTransform SpawnTransform{HitLocation};
-    auto ImpactIndicator = GetWorld()->SpawnActorDeferred<ASHGImpactIndicatorActor>(ImpactIndicatorClass, SpawnTransform);
-    check(ImpactIndicator);
-    ImpactIndicator->SetDamageAmount(DamageAmount);
-    if (PhysicalMaterial)
+    if (auto ImpactIndicator = GetWorld()->SpawnActorDeferred<ASHGImpactIndicatorActor>(ImpactIndicatorClass, SpawnTransform))
     {
-        ImpactIndicator->SetImpactColor(PhysicalMaterial);
-    }
+        ImpactIndicator->SetDamageAmount(DamageAmount);
+        if (PhysicalMaterial)
+        {
+            ImpactIndicator->SetImpactColor(PhysicalMaterial);
+        }
 
-    ImpactIndicator->FinishSpawning(SpawnTransform);
+        ImpactIndicator->FinishSpawning(SpawnTransform);
+    }
 }
 
 void USHGBaseFXComponent::PlayDeathSound()
 {
     if (const auto Owner = GetOwner())
     {
-        UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetOwner()->GetActorLocation());
+        UGameplayStatics::PlaySoundAtLocation(this, DeathSound, Owner->GetActorLocation());
     }
 }
 
@@ -101,10 +107,10 @@ void USHGBaseFXComponent::BeginPlay()
     check(ImpactIndicatorClass);
 }
 
-bool USHGBaseFXComponent::MakeFootstepTrace(const FVector& TraceStart, const FVector& TraceEnd, FHitResult& HitResult, const ACharacter* OwnerCharacter)
+bool USHGBaseFXComponent::MakeFootstepTrace(const FVector& TraceStart, const FVector& TraceEnd, FHitResult& HitResult, const AActor* Owner)
 {
     FCollisionQueryParams CollisionQueryParams;
-    CollisionQueryParams.AddIgnoredActor(OwnerCharacter);
+    CollisionQueryParams.AddIgnoredActor(Owner);
     CollisionQueryParams.bReturnPhysicalMaterial = true;
 
     return GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility, CollisionQueryParams);

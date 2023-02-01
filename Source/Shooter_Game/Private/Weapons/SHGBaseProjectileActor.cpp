@@ -128,24 +128,25 @@ void ASHGBaseProjectileActor::MakeImpactFX(const FHitResult& HitResult, bool bRi
     UNiagaraFunctionLibrary::SpawnSystemAtLocation(this,                                 //
                                                    ImpactFXData->ImpactNiagaraSystem,    //
                                                    HitResult.ImpactPoint,                //
-                                                   HitResult.ImpactNormal.Rotation() + FRotator(-90.0f, 0.0f, 0.0f));
+                                                   HitResult.ImpactNormal.Rotation());
 
     // Sound
     UGameplayStatics::PlaySoundAtLocation(this, ImpactFXData->ImpactSound, HitResult.ImpactPoint);
 
     // Decal
-    if (ImpactFXData->ImpactDecalData.Material.Num() == 0)
-        return;
-
-    const auto RandomDecalArrayIndex = FMath::RandHelper(ImpactFXData->ImpactDecalData.Material.Num());
-    auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(this,                                                             //
-                                                                 ImpactFXData->ImpactDecalData.Material[RandomDecalArrayIndex],    //
-                                                                 ImpactFXData->ImpactDecalData.Size,                               //
-                                                                 HitResult.ImpactPoint,                                            //
-                                                                 (HitResult.ImpactNormal * -1.0f).Rotation());
-
-    if (DecalComponent)
+    if (ImpactFXData->ImpactDecalData.Material.Num() != 0)
     {
-        DecalComponent->SetFadeOut(ImpactFXData->ImpactDecalData.LifeTime, ImpactFXData->ImpactDecalData.FadeOutTime);
+        const auto RandomDecalArrayIndex = FMath::RandHelper(ImpactFXData->ImpactDecalData.Material.Num());
+        auto DecalComponent = UGameplayStatics::SpawnDecalAtLocation(this,                                                             //
+                                                                     ImpactFXData->ImpactDecalData.Material[RandomDecalArrayIndex],    //
+                                                                     ImpactFXData->ImpactDecalData.Size,                               //
+                                                                     HitResult.ImpactPoint,                                            //
+                                                                     (HitResult.ImpactNormal * -1.0f).Rotation());                     // -1.0f to spawn decal the right side.
+
+        if (DecalComponent)
+        {
+            DecalComponent->SetFadeScreenSize(ImpactFXData->ImpactDecalData.FadeScreenSize);
+            DecalComponent->SetFadeOut(ImpactFXData->ImpactDecalData.LifeTime, ImpactFXData->ImpactDecalData.FadeOutTime);
+        }
     }
 }

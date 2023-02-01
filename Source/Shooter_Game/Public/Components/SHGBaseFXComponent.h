@@ -48,5 +48,5 @@ protected:
     virtual void BeginPlay() override;
 
 private:
-    bool MakeFootstepTrace(const FVector& TraceStart, const FVector& TraceEnd, FHitResult& HitResult, const ACharacter* OwnerCharacter);
+    bool MakeFootstepTrace(const FVector& TraceStart, const FVector& TraceEnd, FHitResult& HitResult, const AActor* Owner);
 };
