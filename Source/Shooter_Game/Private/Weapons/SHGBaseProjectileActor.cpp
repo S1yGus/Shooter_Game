@@ -50,8 +50,8 @@ void ASHGBaseProjectileActor::BeginPlay()
 
 float ASHGBaseProjectileActor::GetDamage() const
 {
-    return FMath::GetMappedRangeValueClamped(FVector2D{ProjectileMovement->BounceVelocityStopSimulatingThreshold, ProjectileMovement->InitialSpeed},    //
-                                             FVector2D{MinRicochetDamageMultiplier, 1.0f},                                                              //
+    return FMath::GetMappedRangeValueClamped(TRange<double>{ProjectileMovement->BounceVelocityStopSimulatingThreshold, ProjectileMovement->InitialSpeed},    //
+                                             TRange<double>{MinRicochetDamageMultiplier, 1.0},                                                               //
                                              GetVelocity().Length()) * FMath::RandRange(Damage.X, Damage.Y);
 }
 
@@ -141,7 +141,7 @@ void ASHGBaseProjectileActor::MakeImpactFX(const FHitResult& HitResult, bool bRi
                                                                      ImpactFXData->ImpactDecalData.Material[RandomDecalArrayIndex],    //
                                                                      ImpactFXData->ImpactDecalData.Size,                               //
                                                                      HitResult.ImpactPoint,                                            //
-                                                                     (HitResult.ImpactNormal * -1.0f).Rotation());                     // -1.0f to spawn decal the right side.
+                                                                     (HitResult.ImpactNormal * -1.0f).Rotation());    // -1.0f to spawn decal the right side.
 
         if (DecalComponent)
         {

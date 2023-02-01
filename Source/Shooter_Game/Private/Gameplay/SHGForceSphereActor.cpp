@@ -5,8 +5,6 @@
 #include "GameFramework/Character.h"
 #include "Components/SHGMovementComponent.h"
 
-constexpr static float ForceTimerRate = 0.016f;
-
 ASHGForceSphereActor::ASHGForceSphereActor()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -29,13 +27,17 @@ void ASHGForceSphereActor::Tick(float DeltaSeconds)
             continue;
         }
 
+        const auto DistanceMultiplier = FMath::GetMappedRangeValueClamped(TRange<float>{0.0f, ForceField->GetScaledSphereRadius()},    //
+                                                                          TRange<float>{MinForcePowerMultiplier, 1.0f},                //
+                                                                          static_cast<float>(FVector::Distance(GetActorLocation(), Actor->GetActorLocation())));
+
         if (const auto Character = Cast<ACharacter>(Actor))
         {
             if (const auto CharacterMovement = Character->GetCharacterMovement())
             {
-                CharacterMovement->AddRadialForce(GetActorLocation(),                                        //
-                                                  ForceField->GetScaledSphereRadius(),                       //
-                                                  (bForceOut ? 1.0f : -1.0f) * ForcePower * DeltaSeconds,    //
+                CharacterMovement->AddRadialForce(GetActorLocation(),                                //
+                                                  ForceField->GetScaledSphereRadius(),               //
+                                                  ForcePower * DeltaSeconds * DistanceMultiplier,    //
                                                   ERadialImpulseFalloff::RIF_Linear);
             }
         }
@@ -44,9 +46,9 @@ void ASHGForceSphereActor::Tick(float DeltaSeconds)
         {
             if (Component->IsSimulatingPhysics())
             {
-                Component->AddRadialForce(GetActorLocation(),                                        //
-                                          ForceField->GetScaledSphereRadius(),                       //
-                                          (bForceOut ? 1.0f : -1.0f) * ForcePower * DeltaSeconds,    //
+                Component->AddRadialForce(GetActorLocation(),                                //
+                                          ForceField->GetScaledSphereRadius(),               //
+                                          ForcePower * DeltaSeconds * DistanceMultiplier,    //
                                           ERadialImpulseFalloff::RIF_Linear);
             }
         }

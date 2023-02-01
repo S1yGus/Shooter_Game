@@ -18,14 +18,14 @@ public:
     virtual void Tick(float DeltaSeconds) override;
 
 protected:
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
     USphereComponent* ForceField;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physics")
     float ForcePower = 4000000.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physics")
-    bool bForceOut = false;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Physics", Meta = (ClampMin = "-1.0", ClampMax = "1.0"))
+    float MinForcePowerMultiplier = 0.0f;
 
     virtual void BeginPlay() override;
 
