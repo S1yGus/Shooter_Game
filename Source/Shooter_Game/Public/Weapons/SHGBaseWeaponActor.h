@@ -115,7 +115,7 @@ private:
 
     FTimerHandle ShotDelayTimerHandle;
 
-    bool bCanShot = true;
+    bool bOnShotDelay = false;
     bool bIsZoomingNow = false;
     float Difficulty = 1.0f;
 

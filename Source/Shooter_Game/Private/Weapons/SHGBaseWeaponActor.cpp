@@ -32,10 +32,10 @@ ASHGBaseWeaponActor::ASHGBaseWeaponActor()
 
 void ASHGBaseWeaponActor::StartFire()
 {
-    if (!bCanShot)
+    if (bOnShotDelay)
         return;
 
-    bCanShot = false;
+    bOnShotDelay = true;
     GetWorldTimerManager().SetTimer(ShotDelayTimerHandle, this, &ThisClass::OnReleaseShotDelayFlag, CurrentWeaponStatsData.TimeBetweenShots);
 
     bAlternativeFireMode ? MakeAlternativeShot() : MakeMainShot();
@@ -342,6 +342,7 @@ bool ASHGBaseWeaponActor::MakeTrace(FHitResult& HitResult, const FVector& TraceS
     FCollisionQueryParams CollisionParams;
     CollisionParams.AddIgnoredActor(GetOwner());
     CollisionParams.bReturnPhysicalMaterial = true;
+    CollisionParams.bTraceComplex = true;
 
     return GetWorld()->LineTraceSingleByChannel(HitResult, TraceStart, TraceEnd, ECC_BulletTrace, CollisionParams);
 }
@@ -355,7 +356,7 @@ void ASHGBaseWeaponActor::SpawnAndAttachFlashlight()
 
 void ASHGBaseWeaponActor::OnReleaseShotDelayFlag()
 {
-    bCanShot = true;
+    bOnShotDelay = false;
 }
 
 void ASHGBaseWeaponActor::OnZoom(bool bCondition)
