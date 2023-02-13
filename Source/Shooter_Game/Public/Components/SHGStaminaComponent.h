@@ -19,10 +19,10 @@ public:
     FOnNotEnoughStaminaSignature OnNotEnoughStamina;
     FOnStaminaChangedSignature OnStaminaChanged;
 
-    bool Sprint(bool bIsSprinting);
+    bool CanSprint();
     bool Jump();
 
-    inline float GetStaminaPercent() const { return Stamina / MaxStamina; }
+    float GetStaminaPercent() const { return Stamina / MaxStamina; }
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina", Meta = (ClampMin = "0.0"))
@@ -46,15 +46,13 @@ protected:
     virtual void BeginPlay() override;
 
 private:
-    FTimerHandle StaminaUpdateTimerHandle;
-
     float Stamina = 0.0f;
     float StaminaRecoveryCountdown = 0.0f;
-    bool bSprinting = false;
 
-    inline bool IsOutOfStamina() const { return FMath::IsNearlyZero(Stamina); }
+    inline bool IsOutOfStamina() const { return FMath::IsNearlyZero(Stamina, StaminaSprintCost); }
     inline void SetStamina(float NewStamina);
-    bool UsingStaminaValidCheck(float StaminaToUse);
+    inline bool StaminaValidCheck(float StaminaToUse);
+    bool UseStaminaWithValidCheck(float StaminaToUse);
 
     void OnStaminaUpdate();
 };

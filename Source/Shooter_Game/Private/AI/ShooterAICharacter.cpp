@@ -50,8 +50,6 @@ void AShooterAICharacter::BeginPlay()
 
 void AShooterAICharacter::OnHealthChanged(float Health, float HealthPercent)
 {
-    Super::OnHealthChanged(Health, HealthPercent);
-
     const auto HealthWidget = Cast<USHGAIHealthBarUserWidget>(HealthWidgetComponent->GetUserWidgetObject());
     if (!HealthWidget)
         return;

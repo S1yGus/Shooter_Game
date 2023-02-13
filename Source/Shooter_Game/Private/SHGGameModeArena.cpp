@@ -131,7 +131,7 @@ FLinearColor ASHGGameModeArena::DetermenColorByTeamID(int32 TeamID) const
 void ASHGGameModeArena::SetPlayerColor(AController* Controller)
 {
     const auto ShooterPlayerState = Cast<AShooterPlayerState>(Controller->PlayerState);
-    const auto ShooterBaseCharacter = Cast<AShooterBaseCharacter>(Controller->GetPawn());
+    const auto ShooterBaseCharacter = Cast<ASHGBaseCharacter>(Controller->GetPawn());
     if (!ShooterPlayerState || !ShooterBaseCharacter)
         return;
 

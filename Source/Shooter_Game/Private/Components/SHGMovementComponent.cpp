@@ -1,15 +1,23 @@
 // Shooter_Game, All rights reserved.
 
 #include "Components/SHGMovementComponent.h"
-#include "Player/ShooterBaseCharacter.h"
+#include "Player/SHGBaseCharacter.h"
 
 float USHGMovementComponent::GetMaxSpeed() const
 {
-    const auto OwnerCharacter = GetOwner<AShooterBaseCharacter>();
-    if (!OwnerCharacter)
-        return Super::GetMaxSpeed();
+    if (const auto OwnerCharacter = GetOwner<ASHGBaseCharacter>())
+    {
+        if (OwnerCharacter->IsSprinting())
+        {
+            return Super::GetMaxSpeed() * SprintSpeedMultiplier;
+        }
+        else if (OwnerCharacter->IsZooming())
+        {
+            return Super::GetMaxSpeed() * ZoomSpeedMultiplier;
+        }
+    }
 
-    return OwnerCharacter->IsSprinting() ? Super::GetMaxSpeed() * SprintSpeedMultiplier : Super::GetMaxSpeed();
+    return Super::GetMaxSpeed();
 }
 
 void USHGMovementComponent::InForceField(bool bCondition)

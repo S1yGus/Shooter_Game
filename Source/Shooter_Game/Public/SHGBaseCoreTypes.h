@@ -74,4 +74,4 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnGameStateChangedSignature, EGameState);
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnPlayerStateChangedSignature, int32, int32);    // int32 KillsNum, int32 DeathsNum
 DECLARE_MULTICAST_DELEGATE_TwoParams(FOnNewRaundSignature, int32, int32);              // int32 CurrentRaund, int32 RaundsNum
 DECLARE_MULTICAST_DELEGATE_ThreeParams(FOnTakeLocalDamageSignature, float, const FVector&,
-                                       UPhysicalMaterial*)    // float DamageAmount, const FVector& HitLocation, UPhysicalMaterial* PhysicalMaterial
+                                       UPhysicalMaterial*);    // float DamageAmount, const FVector& HitLocation, UPhysicalMaterial* PhysicalMaterial

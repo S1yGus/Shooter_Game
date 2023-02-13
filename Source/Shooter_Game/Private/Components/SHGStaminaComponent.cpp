@@ -1,38 +1,21 @@
 // Shooter_Game, All rights reserved.
 
 #include "Components/SHGStaminaComponent.h"
+#include "Player/SHGBaseCharacter.h"
 
 USHGStaminaComponent::USHGStaminaComponent()
 {
     PrimaryComponentTick.bCanEverTick = false;
 }
 
-bool USHGStaminaComponent::Sprint(bool bIsSprinting)
+bool USHGStaminaComponent::CanSprint()
 {
-    if (bIsSprinting)
-    {
-        if (UsingStaminaValidCheck(StaminaSprintCost))
-        {
-            bSprinting = true;
-
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    else
-    {
-        bSprinting = false;
-
-        return true;
-    }
+    return StaminaValidCheck(StaminaSprintCost);
 }
 
 bool USHGStaminaComponent::Jump()
 {
-    return UsingStaminaValidCheck(StaminaJumpCost);
+    return UseStaminaWithValidCheck(StaminaJumpCost);
 }
 
 void USHGStaminaComponent::BeginPlay()
@@ -43,6 +26,9 @@ void USHGStaminaComponent::BeginPlay()
 
     SetStamina(MaxStamina);
     StaminaRecoveryCountdown = StaminaRecoveryDelay;
+
+    FTimerHandle StaminaUpdateTimerHandle;
+    GetWorld()->GetTimerManager().SetTimer(StaminaUpdateTimerHandle, this, &ThisClass::OnStaminaUpdate, StaminaUpdateRate, true);
 }
 
 void USHGStaminaComponent::SetStamina(float NewStamina)
@@ -53,12 +39,11 @@ void USHGStaminaComponent::SetStamina(float NewStamina)
 
     if (IsOutOfStamina())
     {
-        bSprinting = false;
         OnOutOfStamina.Broadcast();
     }
 }
 
-bool USHGStaminaComponent::UsingStaminaValidCheck(float StaminaToUse)
+bool USHGStaminaComponent::StaminaValidCheck(float StaminaToUse)
 {
     if (Stamina - StaminaToUse < 0.0f)
     {
@@ -68,23 +53,30 @@ bool USHGStaminaComponent::UsingStaminaValidCheck(float StaminaToUse)
     }
     else
     {
+        return true;
+    }
+}
+
+bool USHGStaminaComponent::UseStaminaWithValidCheck(float StaminaToUse)
+{
+    if (StaminaValidCheck(StaminaToUse))
+    {
         SetStamina(Stamina - StaminaToUse);
         StaminaRecoveryCountdown = StaminaRecoveryDelay;
-        if (!GetWorld()->GetTimerManager().IsTimerActive(StaminaUpdateTimerHandle))
-        {
-            GetWorld()->GetTimerManager().SetTimer(StaminaUpdateTimerHandle, this, &ThisClass::OnStaminaUpdate, StaminaUpdateRate, true);
-        }
 
         return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
 void USHGStaminaComponent::OnStaminaUpdate()
 {
-    if (bSprinting)
+    if (const auto Owner = GetOwner<ASHGBaseCharacter>(); Owner && Owner->IsSprinting())
     {
-        SetStamina(Stamina - StaminaSprintCost);
-        StaminaRecoveryCountdown = StaminaRecoveryDelay;
+        UseStaminaWithValidCheck(StaminaSprintCost);
     }
     else
     {
@@ -93,12 +85,11 @@ void USHGStaminaComponent::OnStaminaUpdate()
             if (FMath::IsNearlyEqual(Stamina, MaxStamina))
             {
                 Stamina = MaxStamina;
-                GetWorld()->GetTimerManager().ClearTimer(StaminaUpdateTimerHandle);
-
-                return;
             }
-
-            SetStamina(Stamina + StaminaRecoveryModifier);
+            else
+            {
+                SetStamina(Stamina + StaminaRecoveryModifier);
+            }
         }
         else
         {

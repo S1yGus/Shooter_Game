@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "ShooterBaseCharacter.generated.h"
+#include "SHGBaseCharacter.generated.h"
 
 class USHGHealthComponent;
 class USHGStaminaComponent;
@@ -12,14 +12,15 @@ class USHGBaseWeaponComponent;
 class USHGBaseFXComponent;
 
 UCLASS()
-class SHOOTER_GAME_API AShooterBaseCharacter : public ACharacter
+class SHOOTER_GAME_API ASHGBaseCharacter : public ACharacter
 {
     GENERATED_BODY()
 
 public:
-    AShooterBaseCharacter(const FObjectInitializer& ObjectInitializer);
+    ASHGBaseCharacter(const FObjectInitializer& ObjectInitializer);
 
     virtual void BeginPlay() override;
+    virtual void Tick(float DeltaSeconds) override;
     virtual void TurnOff() override;
     virtual void Reset() override;
     virtual void Jump() override;
@@ -27,7 +28,10 @@ public:
     void SetColor(const FLinearColor& Color);
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
-    bool IsSprinting() const;
+    bool IsSprinting() const { return bSprinting; }
+
+    UFUNCTION(BlueprintCallable, Category = "Movement")
+    bool IsZooming() const { return bZooming; }
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     float GetMovementDirection() const;
@@ -36,41 +40,46 @@ public:
     FRotator GetViewDeltaRotator() const;
 
 protected:
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
     USHGHealthComponent* HealthComponent;
 
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
     USHGStaminaComponent* StaminaComponent;
 
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
     USHGBaseWeaponComponent* WeaponComponent;
 
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
     USHGBaseFXComponent* FXComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
-    float LifeSpanOnDeath = 5.0f;
+    float LifeSpanOnDeath = 20.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     FVector2D LandedDamageVelocity{800.0f, 1500.0f};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
-    FVector2D LandedDamageValue{10.0f, 100.0f};
+    FVector2D LandedDamage{10.0f, 100.0f};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Material")
     FName MaterialColorParameterName = "Paint Color";
 
-    bool WantsToSprint = false;
-    bool MovingForward = false;
+    inline bool WantsToSprint() const;
 
     void StartSprint();
     void StopSprint();
 
-    virtual void OnHealthChanged(float Health, float HealthPercent);
     virtual void OnDeath(AController* KillerController, AController* VictimController);
     virtual void OnOutOfStamina();
 
 private:
+    bool bWantsToSprint = false;
+    bool bSprinting = false;
+    bool bZooming = false;
+
+    inline virtual bool IsMovingForward() const;
+
     UFUNCTION()
     void OnGroundLanded(const FHitResult& Hit);
+    void OnZoom(bool bCondition);
 };

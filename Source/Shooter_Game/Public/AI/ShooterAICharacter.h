@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Player/ShooterBaseCharacter.h"
+#include "Player/SHGBaseCharacter.h"
 #include "ShooterAICharacter.generated.h"
 
 class UBehaviorTree;
 class UWidgetComponent;
 
 UCLASS()
-class SHOOTER_GAME_API AShooterAICharacter : public AShooterBaseCharacter
+class SHOOTER_GAME_API AShooterAICharacter : public ASHGBaseCharacter
 {
     GENERATED_BODY()
 
@@ -33,7 +33,7 @@ protected:
 
     FTimerHandle UpdateHealthWidgetVisibilityTimerHandle;
 
-    virtual void OnHealthChanged(float Health, float HealthPercent) override;
+    void OnHealthChanged(float Health, float HealthPercent);
     void UpdateHealthWidget();
 
     virtual void OnDeath(AController* KillerController, AController* VictimController) override;

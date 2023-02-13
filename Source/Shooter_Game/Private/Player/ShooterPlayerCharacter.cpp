@@ -11,6 +11,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SHGGameModeBase.h"
 #include "Settings/SHGGameUserSettings.h"
+#include "Components/SHGStaminaComponent.h"
 
 constexpr static float MouseSensMultiplier = 200.0f;
 
@@ -115,8 +116,6 @@ void AShooterPlayerCharacter::OnDeath(AController* KillerController, AController
 
 void AShooterPlayerCharacter::MoveForward(float Amount)
 {
-    MovingForward = Amount > 0;
-
     if (FMath::IsNearlyZero(Amount))
         return;
 

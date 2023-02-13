@@ -4,7 +4,7 @@
 #include "Weapons/SHGBaseWeaponActor.h"
 #include "Animations/ShooterEquipFinishedAnimNotify.h"
 #include "Animations/ShooterReloadFinishedAnimNotify.h"
-#include "Player/ShooterBaseCharacter.h"
+#include "Player/SHGBaseCharacter.h"
 #include "Animations/AnimUtils.h"
 
 DEFINE_LOG_CATEGORY_STATIC(WeaponComponentLog, All, All);
@@ -77,7 +77,7 @@ void USHGBaseWeaponComponent::Zoom(bool bCondition, bool bForce)
     if (!PC || !PC->PlayerCameraManager)
         return;
 
-    const auto OwnerCharacter = GetOwner<AShooterBaseCharacter>();
+    const auto OwnerCharacter = GetOwner<ASHGBaseCharacter>();
     if (!OwnerCharacter || (OwnerCharacter->IsSprinting() && bCondition))
         return;
 
@@ -92,7 +92,7 @@ void USHGBaseWeaponComponent::Zoom(bool bCondition, bool bForce)
         GetWorld()->GetTimerManager().ClearTimer(ZoomTimerHandle);
         PC->PlayerCameraManager->SetFOV(TargetFOVAngle);
     }
-    else
+    else if (!GetWorld()->GetTimerManager().IsTimerActive(ZoomTimerHandle))
     {
         GetWorld()->GetTimerManager().SetTimer(ZoomTimerHandle, this, &ThisClass::ZoomUpdate, ZoomTimerRate, true);
     }
@@ -209,7 +209,7 @@ bool USHGBaseWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& Data) const
 
 bool USHGBaseWeaponComponent::CanFire() const
 {
-    if (const auto OwnerCharacter = GetOwner<AShooterBaseCharacter>())
+    if (const auto OwnerCharacter = GetOwner<ASHGBaseCharacter>())
     {
         return CurrentWeapon && !bEquipMontageInProgress && !bReloadMontageInProgress && !OwnerCharacter->IsSprinting();
     }

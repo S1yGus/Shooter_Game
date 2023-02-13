@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Player/ShooterBaseCharacter.h"
+#include "Player/SHGBaseCharacter.h"
 #include "SHGSettingsCoreTypes.h"
 #include "ShooterPlayerCharacter.generated.h"
 
@@ -12,7 +12,7 @@ class USpringArmComponent;
 class USphereComponent;
 
 UCLASS()
-class SHOOTER_GAME_API AShooterPlayerCharacter : public AShooterBaseCharacter
+class SHOOTER_GAME_API AShooterPlayerCharacter : public ASHGBaseCharacter
 {
     GENERATED_BODY()
 

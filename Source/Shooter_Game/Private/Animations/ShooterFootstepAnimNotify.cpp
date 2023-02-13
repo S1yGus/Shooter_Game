@@ -1,12 +1,12 @@
 // Shooter_Game, All rights reserved.
 
 #include "Animations/ShooterFootstepAnimNotify.h"
-#include "Player/ShooterBaseCharacter.h"
+#include "Player/SHGBaseCharacter.h"
 #include "Components/SHGBaseFXComponent.h"
 
 void UShooterFootstepAnimNotify::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-    const auto Character = Cast<AShooterBaseCharacter>(MeshComp->GetOwner());
+    const auto Character = Cast<ASHGBaseCharacter>(MeshComp->GetOwner());
     if (!Character)
         return;
 
