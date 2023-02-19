@@ -22,10 +22,7 @@ protected:
     TEnumAsByte<ECollisionChannel> DamageTraceChannel = ECC_Visibility;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
-    TSubclassOf<UCameraShakeBase> ExplosionCameraShakeClass;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
-    float ExplosionCameraShakeRadius = 1000.0f;
+    FExplosionCameraShakeData ExplosionCameraShakeData;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
     TSubclassOf<AActor> SpawningOnHitClass;

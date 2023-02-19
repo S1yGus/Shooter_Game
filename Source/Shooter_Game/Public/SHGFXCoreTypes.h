@@ -42,6 +42,18 @@ struct FImpactFXData
 };
 
 USTRUCT(BlueprintType)
+struct FExplosionCameraShakeData
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    TSubclassOf<UCameraShakeBase> ExplosionCameraShakeClass;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    float ExplosionCameraShakeRadius = 0.0f;
+};
+
+USTRUCT(BlueprintType)
 struct FWeaponFXData
 {
     GENERATED_USTRUCT_BODY()

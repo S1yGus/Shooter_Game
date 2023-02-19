@@ -12,7 +12,6 @@ void ASHGMissileActor::BeginPlay()
 {
     Super::BeginPlay();
 
-    check(ExplosionCameraShakeClass);
     check(DamageTraceChannel != ECollisionChannel::ECC_MAX);
 }
 
@@ -46,5 +45,9 @@ void ASHGMissileActor::OnProjectileHit(UPrimitiveComponent* HitComponent,    //
 
 void ASHGMissileActor::MakeExplosionCameraShake()
 {
-    UGameplayStatics::PlayWorldCameraShake(this, ExplosionCameraShakeClass, GetActorLocation(), InnerRadius, ExplosionCameraShakeRadius);
+    UGameplayStatics::PlayWorldCameraShake(this,                                                  //
+                                           ExplosionCameraShakeData.ExplosionCameraShakeClass,    //
+                                           GetActorLocation(),                                    //
+                                           InnerRadius,                                           //
+                                           ExplosionCameraShakeData.ExplosionCameraShakeRadius);
 }

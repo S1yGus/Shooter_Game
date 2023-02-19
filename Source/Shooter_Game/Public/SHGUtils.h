@@ -9,5 +9,5 @@ public:
     static bool ApplyRadialDamageWithImpulse(const UObject* WorldContextObject, float BaseDamage, float MinimumDamage, float ImpulsePower, const FVector& Origin,
                                              float DamageInnerRadius, float DamageOuterRadius, bool bDoFullDamage, TSubclassOf<UDamageType> DamageTypeClass,
                                              const TArray<AActor*>& IgnoreActors, AActor* DamageCauser, AController* InstigatedByController,
-                                             ECollisionChannel DamagePreventionChannel);
+                                             ECollisionChannel DamagePreventionChannel = ECC_Visibility);
 };
