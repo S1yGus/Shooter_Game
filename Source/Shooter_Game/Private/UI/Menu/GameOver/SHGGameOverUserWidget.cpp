@@ -4,7 +4,7 @@
 #include "UI/Menu/GameOver/SHGPlayerInfoRowUserWidget.h"
 #include "UI/Menu/SHGButtonUserWidget.h"
 #include "Components/VerticalBox.h"
-#include "Player/ShooterPlayerState.h"
+#include "Player/SHGPlayerState.h"
 #include "SHGGameModeBase.h"
 #include "SHGGameInstance.h"
 #include "EngineUtils.h"
@@ -59,7 +59,7 @@ void USHGGameOverUserWidget::UpdatePlayersInfo()
     TArray<AController*> Controllers;
     for (auto* Controller : TActorRange<AController>(GetWorld()))
     {
-        if (!Controller || !Cast<AShooterPlayerState>(Controller->PlayerState))
+        if (!Controller || !Cast<ASHGPlayerState>(Controller->PlayerState))
             continue;
 
         Controllers.Add(Controller);
@@ -68,14 +68,14 @@ void USHGGameOverUserWidget::UpdatePlayersInfo()
     Controllers.Sort(
         [](const AController& Controller1, const AController& Controller2)
         {
-            const auto PlayerState1 = Cast<AShooterPlayerState>(Controller1.PlayerState);
-            const auto PlayerState2 = Cast<AShooterPlayerState>(Controller2.PlayerState);
+            const auto PlayerState1 = Cast<ASHGPlayerState>(Controller1.PlayerState);
+            const auto PlayerState2 = Cast<ASHGPlayerState>(Controller2.PlayerState);
             return PlayerState1->GetKillsNum() > PlayerState2->GetKillsNum();
         });
 
     for (auto* Controller : Controllers)
     {
-        const auto PlayerState = Cast<AShooterPlayerState>(Controller->PlayerState);
+        const auto PlayerState = Cast<ASHGPlayerState>(Controller->PlayerState);
 
         const auto PlayerInfoWidget = CreateWidget<USHGPlayerInfoRowUserWidget>(GetWorld(), PlayersInfoRowWidgetClass);
         if (!PlayerInfoWidget)

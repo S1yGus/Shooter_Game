@@ -3,7 +3,7 @@
 #include "SHGGameModeArena.h"
 #include "Player/ShooterPlayerCharacter.h"
 #include "Player/SHGPlayerController.h"
-#include "Player/ShooterPlayerState.h"
+#include "Player/SHGPlayerState.h"
 #include "Components/SHGRespawnComponent.h"
 #include "Components/SHGAIWeaponComponent.h"
 #include "UI/SHGGameHUD.h"
@@ -19,7 +19,7 @@ ASHGGameModeArena::ASHGGameModeArena()
     DefaultPawnClass = AShooterPlayerCharacter::StaticClass();
     PlayerControllerClass = ASHGPlayerController::StaticClass();
     HUDClass = ASHGGameHUD::StaticClass();
-    PlayerStateClass = AShooterPlayerState::StaticClass();
+    PlayerStateClass = ASHGPlayerState::StaticClass();
 }
 
 void ASHGGameModeArena::StartPlay()
@@ -56,8 +56,8 @@ void ASHGGameModeArena::Killed(AController* KillerController, AController* Victi
     if (!KillerController || !VictimController)
         return;
 
-    const auto KillerPlayerState = Cast<AShooterPlayerState>(KillerController->PlayerState);
-    const auto VictimPlayerState = Cast<AShooterPlayerState>(VictimController->PlayerState);
+    const auto KillerPlayerState = Cast<ASHGPlayerState>(KillerController->PlayerState);
+    const auto VictimPlayerState = Cast<ASHGPlayerState>(VictimController->PlayerState);
     if (!KillerPlayerState || !VictimPlayerState)
         return;
 
@@ -105,7 +105,7 @@ void ASHGGameModeArena::SetTeamsID()
         if (!Controller)
             continue;
 
-        const auto ShooterPlayerState = Cast<AShooterPlayerState>(Controller->PlayerState);
+        const auto ShooterPlayerState = Cast<ASHGPlayerState>(Controller->PlayerState);
         if (!ShooterPlayerState)
             continue;
 
@@ -130,7 +130,7 @@ FLinearColor ASHGGameModeArena::DetermenColorByTeamID(int32 TeamID) const
 
 void ASHGGameModeArena::SetPlayerColor(AController* Controller)
 {
-    const auto ShooterPlayerState = Cast<AShooterPlayerState>(Controller->PlayerState);
+    const auto ShooterPlayerState = Cast<ASHGPlayerState>(Controller->PlayerState);
     const auto ShooterBaseCharacter = Cast<ASHGBaseCharacter>(Controller->GetPawn());
     if (!ShooterPlayerState || !ShooterBaseCharacter)
         return;
@@ -236,7 +236,7 @@ void ASHGGameModeArena::LogGameInfo()
         if (!Controller)
             continue;
 
-        const auto PlayerState = Cast<AShooterPlayerState>(Controller->PlayerState);
+        const auto PlayerState = Cast<ASHGPlayerState>(Controller->PlayerState);
         if (!PlayerState)
             continue;
 

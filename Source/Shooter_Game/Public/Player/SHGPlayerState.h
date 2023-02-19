@@ -5,10 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerState.h"
 #include "SHGBaseCoreTypes.h"
-#include "ShooterPlayerState.generated.h"
+#include "SHGPlayerState.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API AShooterPlayerState : public APlayerState
+class SHOOTER_GAME_API ASHGPlayerState : public APlayerState
 {
     GENERATED_BODY()
 
@@ -17,7 +17,7 @@ public:
 
     int32 GetTeamID() const { return TeamID; }
     void SetTeamID(int32 NewTeamID) { TeamID = NewTeamID; }
-    FLinearColor GetTeamColor() const { return TeamColor; }
+    const FLinearColor& GetTeamColor() const { return TeamColor; }
     void SetTeamColor(const FLinearColor& NewTeamColor) { TeamColor = NewTeamColor; }
 
     int32 GetKillsNum() const { return KillsNum; }

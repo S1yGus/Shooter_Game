@@ -2,7 +2,7 @@
 
 #include "UI/HUD/SHGPlayerStateInfoUserWidget.h"
 #include "Components/TextBlock.h"
-#include "Player/ShooterPlayerState.h"
+#include "Player/SHGPlayerState.h"
 
 void USHGPlayerStateInfoUserWidget::NativeOnInitialized()
 {
@@ -15,7 +15,7 @@ void USHGPlayerStateInfoUserWidget::NativeOnInitialized()
     {
         PC->GetOnNewPawnNotifier().AddUObject(this, &ThisClass::OnNewPawn);
 
-        if (const auto PlayerState = PC->GetPlayerState<AShooterPlayerState>())
+        if (const auto PlayerState = PC->GetPlayerState<ASHGPlayerState>())
         {
             UpdatePlayerStateInfo(PlayerState->GetKillsNum(), PlayerState->GetDeathsNum());
         }
@@ -27,7 +27,7 @@ void USHGPlayerStateInfoUserWidget::OnNewPawn(APawn* NewPawn)
     if (!NewPawn)
         return;
 
-    if (const auto PlayerState = NewPawn->GetController()->GetPlayerState<AShooterPlayerState>())
+    if (const auto PlayerState = NewPawn->GetController()->GetPlayerState<ASHGPlayerState>())
     {
         PlayerState->OnPlayerStateChanged.AddUObject(this, &ThisClass::UpdatePlayerStateInfo);
     }

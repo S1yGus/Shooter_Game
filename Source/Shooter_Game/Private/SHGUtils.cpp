@@ -1,13 +1,13 @@
 #include "SHGUtils.h"
-#include "Player/ShooterPlayerState.h"
+#include "Player/SHGPlayerState.h"
 
 bool SHGUtils::AreEnemies(AController* Controller1, AController* Controller2)
 {
     if (!Controller1 || !Controller2 || Controller1 == Controller2)
         return false;
 
-    const auto ShooterPlayerState1 = Cast<AShooterPlayerState>(Controller1->PlayerState);
-    const auto ShooterPlayerState2 = Cast<AShooterPlayerState>(Controller2->PlayerState);
+    const auto ShooterPlayerState1 = Cast<ASHGPlayerState>(Controller1->PlayerState);
+    const auto ShooterPlayerState2 = Cast<ASHGPlayerState>(Controller2->PlayerState);
 
     return ShooterPlayerState1 && ShooterPlayerState2 && ShooterPlayerState1->GetTeamID() != ShooterPlayerState2->GetTeamID();
 }
