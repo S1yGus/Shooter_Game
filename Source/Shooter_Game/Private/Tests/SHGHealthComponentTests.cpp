@@ -8,7 +8,7 @@
 #include "Misc/AutomationTest.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SHGHealthComponent.h"
-#include "Player/ShooterPlayerCharacter.h"
+#include "Player/SHGPlayerCharacter.h"
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentTests, All, All);
 
@@ -34,7 +34,7 @@ bool FHealthComponentBaseFunctional::RunTest(const FString& Parameters)
         return false;
 
     const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_ShooterPlayerCharacter_Testable.BP_ShooterPlayerCharacter_Testable'"};
-    const auto Player = SpawnBlueprintDeferred<AShooterPlayerCharacter>(World, PlayerTestableBlueprintName);
+    const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
         return false;
 
@@ -127,7 +127,7 @@ bool FHealthComponentAutoHeal::RunTest(const FString& Parameters)
         return false;
 
     const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_ShooterPlayerCharacter_Testable.BP_ShooterPlayerCharacter_Testable'"};
-    const auto Player = SpawnBlueprintDeferred<AShooterPlayerCharacter>(World, PlayerTestableBlueprintName);
+    const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
         return false;
 
@@ -212,7 +212,7 @@ bool FHealthComponentDelegates::RunTest(const FString& Parameters)
         return false;
 
     const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_ShooterPlayerCharacter_Testable.BP_ShooterPlayerCharacter_Testable'"};
-    const auto Player = SpawnBlueprintDeferred<AShooterPlayerCharacter>(World, PlayerTestableBlueprintName);
+    const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
         return false;
 

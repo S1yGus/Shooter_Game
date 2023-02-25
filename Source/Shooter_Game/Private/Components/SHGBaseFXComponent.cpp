@@ -104,7 +104,10 @@ void USHGBaseFXComponent::BeginPlay()
     Super::BeginPlay();
 
     check(DeathSound);
-    check(ImpactIndicatorClass);
+    if (bShowImpactIndicators)
+    {
+        check(ImpactIndicatorClass);
+    }
 }
 
 bool USHGBaseFXComponent::MakeFootstepTrace(const FVector& TraceStart, const FVector& TraceEnd, FHitResult& HitResult, const AActor* Owner)

@@ -1,32 +1,30 @@
 // Shooter_Game, All rights reserved.
 
-#include "Player/ShooterPlayerCharacter.h"
+#include "Player/SHGPlayerCharacter.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/SHGBaseWeaponComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SHGPlayerFXComponent.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "SHGGameModeBase.h"
 #include "Settings/SHGGameUserSettings.h"
-#include "Components/SHGStaminaComponent.h"
 
 constexpr static float MouseSensMultiplier = 200.0f;
 
-AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& ObjectInitializer)
+ASHGPlayerCharacter::ASHGPlayerCharacter(const FObjectInitializer& ObjectInitializer)
     : Super(ObjectInitializer.SetDefaultSubobjectClass<USHGPlayerFXComponent>("FXComponent"))
 {
     SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>("SpringArmComponent");
     SpringArmComponent->SetupAttachment(GetRootComponent());
     SpringArmComponent->bUsePawnControlRotation = true;
-    SpringArmComponent->TargetArmLength = 140.0f;
-    SpringArmComponent->SocketOffset = FVector(0.0f, 55.0f, 80.0f);
+    SpringArmComponent->TargetArmLength = 120.0f;
+    SpringArmComponent->SocketOffset = FVector{0.0f, 60.0f, 65.0f};
 
     CameraComponent = CreateDefaultSubobject<UCameraComponent>("CameraComponent");
     CameraComponent->SetupAttachment(SpringArmComponent);
-    CameraComponent->SetFieldOfView(100);
+    CameraComponent->SetFieldOfView(90.0f);
 
     CameraCollisionComponent = CreateDefaultSubobject<USphereComponent>("CameraCollision");
     CameraCollisionComponent->SetupAttachment(CameraComponent);
@@ -34,7 +32,7 @@ AShooterPlayerCharacter::AShooterPlayerCharacter(const FObjectInitializer& Objec
     CameraCollisionComponent->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 }
 
-void AShooterPlayerCharacter::BeginPlay()
+void ASHGPlayerCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
@@ -44,16 +42,15 @@ void AShooterPlayerCharacter::BeginPlay()
 
     CameraCollisionComponent->OnComponentBeginOverlap.AddDynamic(this, &ThisClass::OnCameraComponentBeginOverlap);
     CameraCollisionComponent->OnComponentEndOverlap.AddDynamic(this, &ThisClass::OnCameraComponentEndOverlap);
-    WeaponComponent->OnZoom.AddUObject(this, &ThisClass::OnZoom);
 
     if (const auto GameUserSettings = USHGGameUserSettings::Get())
     {
-        GameUserSettings->OnSensitivityChanged.AddUObject(this, &ThisClass::OnSensitivityChanged);
         SensitivitySettings = GameUserSettings->GetSensitivitySettings();
+        GameUserSettings->OnSensitivityChanged.AddUObject(this, &ThisClass::OnSensitivityChanged);
     }
 }
 
-void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ASHGPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
     Super::SetupPlayerInputComponent(PlayerInputComponent);
 
@@ -83,98 +80,106 @@ void AShooterPlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerI
     PlayerInputComponent->BindAction<FZoomSignature>("Zoom", IE_Released, WeaponComponent, &USHGBaseWeaponComponent::Zoom, false, false);
 }
 
-void AShooterPlayerCharacter::TurnOff()
+void ASHGPlayerCharacter::TurnOff()
 {
     Super::TurnOff();
 
-    WeaponComponent->Zoom(false);
+    WeaponComponent->Zoom(false, true);
 }
 
-void AShooterPlayerCharacter::Reset()
+void ASHGPlayerCharacter::Reset()
 {
     Super::Reset();
 
-    WeaponComponent->Zoom(false);
+    WeaponComponent->Zoom(false, true);
 }
 
-void AShooterPlayerCharacter::OnDeath(AController* KillerController, AController* VictimController)
+void ASHGPlayerCharacter::OnDeath(AController* KillerController, AController* VictimController)
 {
     Super::OnDeath(KillerController, VictimController);
 
     WeaponComponent->Zoom(false, true);
 
-    if (const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeBase>())
-    {
-        GameMode->SetGameState(EGameState::Spectating);
-    }
-
     if (Controller)
     {
         Controller->ChangeState(NAME_Spectating);
+
+        if (const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeBase>())
+        {
+            GameMode->SetGameState(EGameState::Spectating);
+        }
     }
 }
 
-void AShooterPlayerCharacter::MoveForward(float Amount)
+void ASHGPlayerCharacter::MoveForward(float Amount)
 {
     if (FMath::IsNearlyZero(Amount))
+    {
+        bIsMovingForward = false;
         return;
+    }
+    else if (Amount > 0)
+    {
+        bIsMovingForward = true;
+    }
+    else
+    {
+        bIsMovingForward = false;
+    }
 
-    const auto ControllerForvardVector = UKismetMathLibrary::GetForwardVector(FRotator{0.0f, GetControlRotation().Yaw, 0.0f});
-    AddMovementInput(ControllerForvardVector, Amount);
+    AddMovementInput(FRotator{0.0, GetControlRotation().Yaw, 0.0}.Vector(), Amount);
 }
 
-void AShooterPlayerCharacter::MoveRight(float Amount)
+void ASHGPlayerCharacter::MoveRight(float Amount)
 {
     if (FMath::IsNearlyZero(Amount) || IsSprinting())
         return;
 
-    const auto ControllerRightVector = UKismetMathLibrary::GetRightVector(FRotator{0.0f, GetControlRotation().Yaw, 0.0f});
-    AddMovementInput(ControllerRightVector, Amount);
+    AddMovementInput(FRotationMatrix{FRotator{0.0, GetControlRotation().Yaw, 0.0}}.GetScaledAxis(EAxis::Y), Amount);
 }
 
-void AShooterPlayerCharacter::LookUp(float Amount)
+void ASHGPlayerCharacter::LookUp(float Amount)
 {
-    float MouseYSens = bIsZoomingNow ? SensitivitySettings.MouseAimedYSens : SensitivitySettings.MouseYSens;
+    float MouseYSens = bZooming ? SensitivitySettings.MouseAimedYSens : SensitivitySettings.MouseYSens;
     AddControllerPitchInput(Amount * MouseYSens * MouseSensMultiplier * GetWorld()->GetDeltaSeconds());
 }
 
-void AShooterPlayerCharacter::LookRight(float Amount)
+void ASHGPlayerCharacter::LookRight(float Amount)
 {
-    float MouseXSens = bIsZoomingNow ? SensitivitySettings.MouseAimedXSens : SensitivitySettings.MouseXSens;
+    float MouseXSens = bZooming ? SensitivitySettings.MouseAimedXSens : SensitivitySettings.MouseXSens;
     AddControllerYawInput(Amount * MouseXSens * MouseSensMultiplier * GetWorld()->GetDeltaSeconds());
 }
 
-void AShooterPlayerCharacter::OnZoom(bool bCondition)
-{
-    bIsZoomingNow = bCondition;
-}
-
-void AShooterPlayerCharacter::OnSensitivityChanged(const FSensitivitySettings& NewSensitivitySettings)
+void ASHGPlayerCharacter::OnSensitivityChanged(const FSensitivitySettings& NewSensitivitySettings)
 {
     SensitivitySettings = NewSensitivitySettings;
 }
 
-void AShooterPlayerCharacter::OnCameraComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,    //
-                                                            AActor* OtherActor,                          //
-                                                            UPrimitiveComponent* OtherComp,              //
-                                                            int32 OtherBodyIndex,                        //
-                                                            bool bFromSweep,                             //
-                                                            const FHitResult& SweepResult)
+void ASHGPlayerCharacter::OnCameraComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent,    //
+                                                        AActor* OtherActor,                          //
+                                                        UPrimitiveComponent* OtherComp,              //
+                                                        int32 OtherBodyIndex,                        //
+                                                        bool bFromSweep,                             //
+                                                        const FHitResult& SweepResult)
 {
     CheckCameraCollisionOverlap();
 }
 
-void AShooterPlayerCharacter::OnCameraComponentEndOverlap(UPrimitiveComponent* OverlappedComponent,    //
-                                                          AActor* OtherActor,                          //
-                                                          UPrimitiveComponent* OtherComp,              //
-                                                          int32 OtherBodyIndex)
+void ASHGPlayerCharacter::OnCameraComponentEndOverlap(UPrimitiveComponent* OverlappedComponent,    //
+                                                      AActor* OtherActor,                          //
+                                                      UPrimitiveComponent* OtherComp,              //
+                                                      int32 OtherBodyIndex)
 {
     CheckCameraCollisionOverlap();
 }
 
-void AShooterPlayerCharacter::CheckCameraCollisionOverlap()
+inline bool ASHGPlayerCharacter::IsMovingForward() const
 {
-    const bool IsOverlapping = CameraCollisionComponent->IsOverlappingComponent(GetCapsuleComponent());
+    return bIsMovingForward && Super::IsMovingForward();
+}
 
-    GetMesh()->SetVisibility(!IsOverlapping, true);
+void ASHGPlayerCharacter::CheckCameraCollisionOverlap()
+{
+    const bool bIsOverlapping = CameraCollisionComponent->IsOverlappingComponent(GetCapsuleComponent());
+    GetMesh()->SetVisibility(!bIsOverlapping, true);
 }

@@ -28,7 +28,7 @@ public:
     void SetColor(const FLinearColor& Color);
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
-    bool IsSprinting() const { return bSprinting; }
+    bool IsSprinting() const { return bCurrentSprintState; }
 
     UFUNCTION(BlueprintCallable, Category = "Movement")
     bool IsZooming() const { return bZooming; }
@@ -64,7 +64,10 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Material")
     FName MaterialColorParameterName = "Paint Color";
 
+    bool bZooming = false;
+
     inline bool WantsToSprint() const;
+    inline virtual bool IsMovingForward() const;
 
     void StartSprint();
     void StopSprint();
@@ -74,10 +77,10 @@ protected:
 
 private:
     bool bWantsToSprint = false;
-    bool bSprinting = false;
-    bool bZooming = false;
+    bool bCurrentSprintState = false;
+    bool bLastSprintState = true;
 
-    inline virtual bool IsMovingForward() const;
+    
 
     UFUNCTION()
     void OnGroundLanded(const FHitResult& Hit);

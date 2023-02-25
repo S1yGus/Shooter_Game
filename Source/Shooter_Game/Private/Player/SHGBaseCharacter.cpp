@@ -45,7 +45,14 @@ void ASHGBaseCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    bSprinting = WantsToSprint();
+    bCurrentSprintState = WantsToSprint();
+    if (bCurrentSprintState != bLastSprintState)
+    {
+        WeaponComponent->StopFire();
+        WeaponComponent->Zoom(false);
+
+        bLastSprintState = bCurrentSprintState;
+    }
 }
 
 void ASHGBaseCharacter::TurnOff()
@@ -97,21 +104,16 @@ bool ASHGBaseCharacter::WantsToSprint() const
     return bWantsToSprint && IsMovingForward() && !GetMovementComponent()->IsFalling();
 }
 
+bool ASHGBaseCharacter::IsMovingForward() const
+{
+    return FVector::DotProduct(GetActorForwardVector(), GetVelocity().GetSafeNormal()) > 0.1f;    // Some small number greater than 0 to avoid issues during the sprint.
+}
+
 void ASHGBaseCharacter::StartSprint()
 {
-    bWantsToSprint = true;
-
-    if (WantsToSprint())
+    if (StaminaComponent->CanSprint())
     {
-        if (StaminaComponent->CanSprint())
-        {
-            WeaponComponent->StopFire();
-            WeaponComponent->Zoom(false);
-        }
-        else
-        {
-            StopSprint();
-        }
+        bWantsToSprint = true;
     }
 }
 
@@ -144,11 +146,6 @@ void ASHGBaseCharacter::OnDeath(AController* KillerController, AController* Vict
 void ASHGBaseCharacter::OnOutOfStamina()
 {
     StopSprint();
-}
-
-bool ASHGBaseCharacter::IsMovingForward() const
-{
-    return FVector::DotProduct(GetActorForwardVector(), GetVelocity().GetSafeNormal()) > 0.1f;    // Some small number greater than 0 to avoid issues during the sprint.
 }
 
 void ASHGBaseCharacter::OnGroundLanded(const FHitResult& Hit)

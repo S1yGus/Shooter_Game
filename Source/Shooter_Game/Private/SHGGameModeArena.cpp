@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "SHGGameModeArena.h"
-#include "Player/ShooterPlayerCharacter.h"
+#include "Player/SHGPlayerCharacter.h"
 #include "Player/SHGPlayerController.h"
 #include "Player/SHGPlayerState.h"
 #include "Components/SHGRespawnComponent.h"
@@ -16,7 +16,7 @@ constexpr static int32 MinRaundTimeForRespawn = 1;
 
 ASHGGameModeArena::ASHGGameModeArena()
 {
-    DefaultPawnClass = AShooterPlayerCharacter::StaticClass();
+    DefaultPawnClass = ASHGPlayerCharacter::StaticClass();
     PlayerControllerClass = ASHGPlayerController::StaticClass();
     HUDClass = ASHGGameHUD::StaticClass();
     PlayerStateClass = ASHGPlayerState::StaticClass();

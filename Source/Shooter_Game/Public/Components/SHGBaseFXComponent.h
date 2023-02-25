@@ -27,7 +27,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     bool bShowImpactIndicators = true;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX", Meta = (EditCondition = "ShowImpactIndicators"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX", Meta = (EditCondition = "bShowImpactIndicators"))
     TSubclassOf<ASHGImpactIndicatorActor> ImpactIndicatorClass;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX|Footsteps")
