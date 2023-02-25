@@ -2,11 +2,11 @@
 
 #include "Menu/SHGGameModeMenu.h"
 #include "UI/SHGMenuHUD.h"
-#include "Menu/ShooterMenuPlayerController.h"
+#include "Menu/SHGMenuController.h"
 
 ASHGGameModeMenu::ASHGGameModeMenu()
 {
-    PlayerControllerClass = AShooterMenuPlayerController::StaticClass();
+    PlayerControllerClass = ASHGMenuController::StaticClass();
     HUDClass = ASHGMenuHUD::StaticClass();
 }
 

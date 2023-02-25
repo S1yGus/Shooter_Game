@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "ShooterMenuPlayerController.generated.h"
+#include "SHGMenuController.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API AShooterMenuPlayerController : public APlayerController
+class SHOOTER_GAME_API ASHGMenuController : public APlayerController
 {
     GENERATED_BODY()
 

@@ -8,7 +8,7 @@
 #include "Sound/SoundCue.h"
 #include "SHGUtils.h"
 
-static constexpr float MinimumDamage = 0.0f, InnerRadius = 0.0f;
+constexpr static float MinimumDamage = 0.0f, InnerRadius = 0.0f;
 
 ASHGExplodingObjectActor::ASHGExplodingObjectActor()
 {
