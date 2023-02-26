@@ -4,37 +4,36 @@
 
 #include "CoreMinimal.h"
 #include "Player/SHGBaseCharacter.h"
-#include "ShooterAICharacter.generated.h"
+#include "SHGAICharacter.generated.h"
 
 class UBehaviorTree;
 class UWidgetComponent;
 
 UCLASS()
-class SHOOTER_GAME_API AShooterAICharacter : public ASHGBaseCharacter
+class SHOOTER_GAME_API ASHGAICharacter : public ASHGBaseCharacter
 {
     GENERATED_BODY()
 
 public:
-    AShooterAICharacter(const FObjectInitializer& ObjectInitializer);
+    ASHGAICharacter(const FObjectInitializer& ObjectInitializer);
 
     UBehaviorTree* GetBehaviorTree() { return BehaviorTree; }
 
     virtual void BeginPlay() override;
 
 protected:
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
+    UWidgetComponent* HealthWidgetComponent;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     UBehaviorTree* BehaviorTree;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
-    float DistanceBetweenThreshold = 2500.0f;
+    float HealthWidgetVisibilityDistance = 2500.0f;
 
-    UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-    UWidgetComponent* HealthWidgetComponent;
-
-    FTimerHandle UpdateHealthWidgetVisibilityTimerHandle;
+private:
+    virtual void OnDeath(AController* KillerController, AController* VictimController) override;
 
     void OnHealthChanged(float Health, float HealthPercent);
-    void UpdateHealthWidget();
-
-    virtual void OnDeath(AController* KillerController, AController* VictimController) override;
+    void OnUpdateHealthWidget();
 };

@@ -80,8 +80,6 @@ private:
     bool bCurrentSprintState = false;
     bool bLastSprintState = true;
 
-    
-
     UFUNCTION()
     void OnGroundLanded(const FHitResult& Hit);
     void OnZoom(bool bCondition);

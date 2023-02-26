@@ -46,7 +46,7 @@ protected:
     TArray<TSubclassOf<ASHGBaseWeaponActor>> Weapons;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-    FName WeaponEquipSocketName{NAME_None};
+    FName WeaponEquipSocketName{"WeaponEquipSocket"};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Animation")
     UAnimMontage* EquipAnimMontage = nullptr;

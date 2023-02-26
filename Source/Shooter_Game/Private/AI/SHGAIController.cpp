@@ -1,7 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "AI/SHGAIController.h"
-#include "AI/ShooterAICharacter.h"
+#include "AI/SHGAICharacter.h"
 #include "Components/ShooterAIPerceptionComponent.h"
 #include "Components/SHGRespawnComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -40,7 +40,7 @@ void ASHGAIController::OnPossess(APawn* InPawn)
 {
     Super::OnPossess(InPawn);
 
-    if (const auto AICharacter = Cast<AShooterAICharacter>(InPawn))
+    if (const auto AICharacter = Cast<ASHGAICharacter>(InPawn))
     {
         AICharacter->OnTakeAnyDamage.AddDynamic(this, &ThisClass::OnTakeDamage);
 
