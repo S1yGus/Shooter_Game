@@ -5,7 +5,10 @@
 #include "Components/ShooterAIPerceptionComponent.h"
 #include "Components/SHGRespawnComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "Perception/AISense_Prediction.h"
+
+constexpr static float SensePredictionUpdateTimerRate = 0.1f;
 
 ASHGAIController::ASHGAIController()
 {
@@ -18,22 +21,15 @@ ASHGAIController::ASHGAIController()
     bAllowStrafe = true;
 }
 
-void ASHGAIController::Tick(float DeltaTime)
-{
-    Super::Tick(DeltaTime);
-
-    const auto FocusOnActor = GetFocusOnActor();
-    SetFocus(FocusOnActor);
-
-    UAISense_Prediction::RequestControllerPredictionEvent(this, FocusOnActor, PredictionTime);
-}
-
 void ASHGAIController::BeginPlay()
 {
     Super::BeginPlay();
 
     check(AIPerceptionComponent);
     check(RespawnComponent);
+
+    FTimerHandle SensePredictionUpdateTimerHandle;
+    GetWorldTimerManager().SetTimer(SensePredictionUpdateTimerHandle, this, &ThisClass::OnSensePredictionUpdate, SensePredictionUpdateTimerRate, true);
 }
 
 void ASHGAIController::OnPossess(APawn* InPawn)
@@ -42,27 +38,36 @@ void ASHGAIController::OnPossess(APawn* InPawn)
 
     if (const auto AICharacter = Cast<ASHGAICharacter>(InPawn))
     {
+        RunBehaviorTree(AICharacter->GetBehaviorTree());
+
         AICharacter->OnTakeAnyDamage.AddDynamic(this, &ThisClass::OnTakeDamage);
 
-        RunBehaviorTree(AICharacter->GetBehaviorTree());
+        if (const auto BlackboardComponent = GetBlackboardComponent())
+        {
+            OnEnemyKeyChanged.BindLambda(
+                [&](const UBlackboardComponent& BlackboardComponent, FBlackboard::FKey KeyID)
+                {
+                    FocusOnActor = Cast<AActor>(BlackboardComponent.GetValue<UBlackboardKeyType_Object>(KeyID));
+                    SetFocus(FocusOnActor);
+
+                    return EBlackboardNotificationResult::ContinueObserving;
+                });
+
+            BlackboardComponent->RegisterObserver(BlackboardComponent->GetKeyID(EnemyBlackboardKeyName), this, OnEnemyKeyChanged);
+        }
     }
 }
 
 void ASHGAIController::OnTakeDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
     const auto BlackboardComponent = GetBlackboardComponent();
-    if (!BlackboardComponent || GetFocusOnActor() || !InstigatedBy)
+    if (!BlackboardComponent || BlackboardComponent->GetValueAsObject(EnemyBlackboardKeyName) || !InstigatedBy)
         return;
 
     BlackboardComponent->SetValueAsObject(EnemyBlackboardKeyName, InstigatedBy->GetPawn());
 }
 
-AActor* ASHGAIController::GetFocusOnActor()
+void ASHGAIController::OnSensePredictionUpdate()
 {
-    if (const auto BlackboardComponent = GetBlackboardComponent())
-    {
-        return Cast<AActor>(BlackboardComponent->GetValueAsObject(EnemyBlackboardKeyName));
-    }
-
-    return nullptr;
+    UAISense_Prediction::RequestControllerPredictionEvent(this, FocusOnActor, PredictionTime);
 }
