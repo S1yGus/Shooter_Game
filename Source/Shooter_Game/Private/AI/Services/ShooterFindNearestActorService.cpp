@@ -2,7 +2,7 @@
 
 #include "AI/Services/ShooterFindNearestActorService.h"
 #include "AI/SHGAIController.h"
-#include "Components/ShooterAIPerceptionComponent.h"
+#include "Components/SHGAIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 UShooterFindNearestActorService::UShooterFindNearestActorService()

@@ -54,7 +54,7 @@ protected:
 
     virtual void BeginPlay() override;
 
-    inline AController* GetOwnerPawnController() const;
+    AController* GetOwnerPawnController() const;
 
     void MakeImpactFX(const FHitResult& HitResult, bool bRicochet = false);
 

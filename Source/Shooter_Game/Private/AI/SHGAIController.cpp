@@ -2,7 +2,7 @@
 
 #include "AI/SHGAIController.h"
 #include "AI/SHGAICharacter.h"
-#include "Components/ShooterAIPerceptionComponent.h"
+#include "Components/SHGAIPerceptionComponent.h"
 #include "Components/SHGRespawnComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"

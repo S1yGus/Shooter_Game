@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Perception/AIPerceptionComponent.h"
-#include "ShooterAIPerceptionComponent.generated.h"
+#include "SHGAIPerceptionComponent.generated.h"
 
 UCLASS()
 class SHOOTER_GAME_API USHGAIPerceptionComponent : public UAIPerceptionComponent
