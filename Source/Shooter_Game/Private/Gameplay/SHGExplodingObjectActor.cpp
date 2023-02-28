@@ -8,7 +8,7 @@
 #include "Sound/SoundCue.h"
 #include "SHGUtils.h"
 
-static constexpr float MinimumDamage = 0.0f, InnerRadius = 0.0f;
+constexpr static float MinimumExplosionDamage = 0.0f, InnerExplosionRadius = 0.0f;
 
 ASHGExplodingObjectActor::ASHGExplodingObjectActor()
 {
@@ -57,7 +57,7 @@ void ASHGExplodingObjectActor::MakeImpactFX()
     UGameplayStatics::PlayWorldCameraShake(this,                                                  //
                                            ExplosionCameraShakeData.ExplosionCameraShakeClass,    //
                                            GetActorLocation(),                                    //
-                                           InnerRadius,                                           //
+                                           InnerExplosionRadius,                                  //
                                            ExplosionCameraShakeData.ExplosionCameraShakeRadius);
 
     // Decal
@@ -82,10 +82,10 @@ void ASHGExplodingObjectActor::OnDeath(AController* KillerController, AControlle
 {
     SHGUtils::ApplyRadialDamageWithImpulse(this,                                    //
                                            FMath::RandRange(Damage.X, Damage.Y),    //
-                                           MinimumDamage,                           //
+                                           MinimumExplosionDamage,                  //
                                            ImpulsePower,                            //
                                            GetActorLocation(),                      //
-                                           InnerRadius,                             //
+                                           InnerExplosionRadius,                    //
                                            DamageRadius,                            //
                                            bDoFullDamage,                           //
                                            UDamageType::StaticClass(),              //
