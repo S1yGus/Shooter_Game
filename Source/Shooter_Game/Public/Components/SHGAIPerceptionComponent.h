@@ -18,15 +18,15 @@ public:
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
-    FName LostEnemyKeyName = "LostEnemy";
+    FName EnemyBlackboardKeyName{"Enemy"};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
-    FName EnemyKeyName = "Enemy";
+    FName InspectionStateBlackboardKeyName{"bInspectionState"};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
-    FName NewLocationKeyName = "NewLocation";
+    FName LocationToInspectBlackboardKeyName{"LocationToInspect"};
 
 private:
     UFUNCTION()
-    void CheckForEnemyLost(const FActorPerceptionUpdateInfo& UpdateInfo);
+    void HandleInspectionState(const FActorPerceptionUpdateInfo& UpdateInfo);
 };

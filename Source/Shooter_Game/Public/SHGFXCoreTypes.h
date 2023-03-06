@@ -64,6 +64,9 @@ struct FWeaponFXData
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
     USoundCue* FireSound;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
+    float FireLoudness = 1.0f;
+
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     TSubclassOf<UCameraShakeBase> FireCameraShakeClass;
 };

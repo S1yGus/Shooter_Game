@@ -7,6 +7,7 @@
 #include "Components/SHGBaseFXComponent.h"
 #include "Components/SHGMovementComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/PawnNoiseEmitterComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "SHGGameModeArena.h"
 
@@ -21,6 +22,7 @@ ASHGBaseCharacter::ASHGBaseCharacter(const FObjectInitializer& ObjectInitializer
     StaminaComponent = CreateDefaultSubobject<USHGStaminaComponent>("StaminaComponent");
     WeaponComponent = CreateDefaultSubobject<USHGBaseWeaponComponent>("WeaponComponent");
     FXComponent = CreateDefaultSubobject<USHGBaseFXComponent>("FXComponent");
+    NoiseEmitterComponent = CreateDefaultSubobject<UPawnNoiseEmitterComponent>("NoiseEmitterComponent");
 }
 
 void ASHGBaseCharacter::BeginPlay()

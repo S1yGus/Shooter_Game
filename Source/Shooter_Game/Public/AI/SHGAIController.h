@@ -29,6 +29,9 @@ protected:
     FName EnemyBlackboardKeyName{"Enemy"};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+    FName InspectionStateBlackboardKeyName{"bInspectionState"};
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     float PredictionTime = 0.3f;
 
     virtual void BeginPlay() override;
@@ -37,10 +40,11 @@ protected:
 private:
     FOnBlackboardChangeNotification OnEnemyKeyChanged;
 
-    UPROPERTY()
-    AActor* FocusOnActor;
+    FWeakObjectPtr FocusOnActor;
+
+    void InterruptInspectionState();
+    void RequestPrediction();
 
     UFUNCTION()
     void OnTakeDamage(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-    void OnSensePredictionUpdate();
 };

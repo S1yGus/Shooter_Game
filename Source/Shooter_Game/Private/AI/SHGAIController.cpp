@@ -8,8 +8,6 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "Perception/AISense_Prediction.h"
 
-constexpr static float SensePredictionUpdateTimerRate = 0.1f;
-
 ASHGAIController::ASHGAIController()
 {
     AIPerceptionComponent = CreateDefaultSubobject<USHGAIPerceptionComponent>("PerceptionComponent");
@@ -27,9 +25,6 @@ void ASHGAIController::BeginPlay()
 
     check(AIPerceptionComponent);
     check(RespawnComponent);
-
-    FTimerHandle SensePredictionUpdateTimerHandle;
-    GetWorldTimerManager().SetTimer(SensePredictionUpdateTimerHandle, this, &ThisClass::OnSensePredictionUpdate, SensePredictionUpdateTimerRate, true);
 }
 
 void ASHGAIController::OnPossess(APawn* InPawn)
@@ -47,14 +42,40 @@ void ASHGAIController::OnPossess(APawn* InPawn)
             OnEnemyKeyChanged.BindLambda(
                 [&](const UBlackboardComponent& BlackboardComponent, FBlackboard::FKey KeyID)
                 {
-                    FocusOnActor = Cast<AActor>(BlackboardComponent.GetValue<UBlackboardKeyType_Object>(KeyID));
-                    SetFocus(FocusOnActor);
+                    const auto NewFocusOnActor = Cast<AActor>(BlackboardComponent.GetValue<UBlackboardKeyType_Object>(KeyID));
+                    if (!NewFocusOnActor)    // If lost sight of the focus on actor, then request prediction.
+                    {
+                        RequestPrediction();
+                    }
+                    else
+                    {
+                        InterruptInspectionState();
+                    }
+
+                    SetFocus(NewFocusOnActor);
+                    FocusOnActor = NewFocusOnActor;
 
                     return EBlackboardNotificationResult::ContinueObserving;
                 });
 
             BlackboardComponent->RegisterObserver(BlackboardComponent->GetKeyID(EnemyBlackboardKeyName), this, OnEnemyKeyChanged);
         }
+    }
+}
+
+void ASHGAIController::InterruptInspectionState()
+{
+    if (const auto BlackboardComponent = GetBlackboardComponent(); BlackboardComponent && BlackboardComponent->GetValueAsBool(InspectionStateBlackboardKeyName))
+    {
+        BlackboardComponent->ClearValue(InspectionStateBlackboardKeyName);
+    }
+}
+
+void ASHGAIController::RequestPrediction()
+{
+    if (FocusOnActor.IsValid())
+    {
+        UAISense_Prediction::RequestControllerPredictionEvent(this, Cast<AActor>(FocusOnActor.Get()), PredictionTime);
     }
 }
 
@@ -65,9 +86,4 @@ void ASHGAIController::OnTakeDamage(AActor* DamagedActor, float Damage, const UD
         return;
 
     BlackboardComponent->SetValueAsObject(EnemyBlackboardKeyName, InstigatedBy->GetPawn());
-}
-
-void ASHGAIController::OnSensePredictionUpdate()
-{
-    UAISense_Prediction::RequestControllerPredictionEvent(this, FocusOnActor, PredictionTime);
 }

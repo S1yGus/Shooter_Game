@@ -10,6 +10,7 @@ class USHGHealthComponent;
 class USHGStaminaComponent;
 class USHGBaseWeaponComponent;
 class USHGBaseFXComponent;
+class UPawnNoiseEmitterComponent;
 
 UCLASS()
 class SHOOTER_GAME_API ASHGBaseCharacter : public ACharacter
@@ -51,6 +52,9 @@ protected:
 
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
     USHGBaseFXComponent* FXComponent;
+
+    UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
+    UPawnNoiseEmitterComponent* NoiseEmitterComponent;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     float LifeSpanOnDeath = 20.0f;

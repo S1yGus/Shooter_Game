@@ -4,6 +4,7 @@
 #include "Perception/AIPerceptionSystem.h"
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISense_Prediction.h"
+#include "Perception/AISense_Hearing.h"
 #include "Components/SHGHealthComponent.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -13,7 +14,7 @@ void USHGAIPerceptionComponent::BeginPlay()
 {
     Super::BeginPlay();
 
-    OnTargetPerceptionInfoUpdated.AddDynamic(this, &ThisClass::CheckForEnemyLost);
+    OnTargetPerceptionInfoUpdated.AddDynamic(this, &ThisClass::HandleInspectionState);
 }
 
 AActor* USHGAIPerceptionComponent::GetNearestActor()
@@ -58,29 +59,29 @@ AActor* USHGAIPerceptionComponent::GetNearestActor()
     return NearestActor;
 }
 
-void USHGAIPerceptionComponent::CheckForEnemyLost(const FActorPerceptionUpdateInfo& UpdateInfo)
+void USHGAIPerceptionComponent::HandleInspectionState(const FActorPerceptionUpdateInfo& UpdateInfo)
 {
-    const auto StimulusClass = UAIPerceptionSystem::GetSenseClassForStimulus(this, UpdateInfo.Stimulus);
-    if (StimulusClass != UAISense_Prediction::StaticClass() || UpdateInfo.Stimulus.SensingSucceeded)
+    const auto AIController = GetOwner<AAIController>();
+    if (!AIController)
         return;
 
-    const auto AIController = Cast<AAIController>(GetOwner());
-    const auto Blackboard = AIController->GetBlackboardComponent();
-    if (!AIController || !Blackboard)
+    const auto BlackboardComponent = AIController->GetBlackboardComponent();
+    if (!BlackboardComponent)
         return;
 
-    if (const auto NearestActor = GetNearestActor())    // If we have another nearest actor, then focus on it.
-    {
-        Blackboard->SetValueAsObject(EnemyKeyName, NearestActor);
-    }
-    else
-    {
-        Blackboard->ClearValue(EnemyKeyName);
+    if (BlackboardComponent->GetValueAsObject(EnemyBlackboardKeyName))    // Inspect the location only unless have an enemy.
+        return;
 
-        if (UpdateInfo.Target.IsValid())
+    const auto SenseClass = UAIPerceptionSystem::GetSenseClassForStimulus(this, UpdateInfo.Stimulus);
+    if (SenseClass == UAISense_Prediction::StaticClass()                                                             // If lost sight of an enemy
+        || (SenseClass == UAISense_Hearing::StaticClass() && UpdateInfo.Target.Get() != AIController->GetPawn()))    // or heard something.
+    {
+        if (BlackboardComponent->GetValueAsBool(InspectionStateBlackboardKeyName))
         {
-            Blackboard->SetValueAsObject(LostEnemyKeyName, UpdateInfo.Target.Get());
-            Blackboard->SetValueAsVector(NewLocationKeyName, UpdateInfo.Stimulus.StimulusLocation);
+            BlackboardComponent->ClearValue(InspectionStateBlackboardKeyName);    // Clear the inspection state key to interrupt the current inspection.
         }
+
+        BlackboardComponent->SetValueAsBool(InspectionStateBlackboardKeyName, true);
+        BlackboardComponent->SetValueAsVector(LocationToInspectBlackboardKeyName, UpdateInfo.Stimulus.StimulusLocation);    // Set a new location to inspect.
     }
 }

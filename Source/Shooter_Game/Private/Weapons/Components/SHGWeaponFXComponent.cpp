@@ -29,7 +29,13 @@ void USHGWeaponFXComponent::MakeFireFX(USceneComponent* SceneComponent, const FN
                                                  FRotator::ZeroRotator,            //
                                                  EAttachLocation::SnapToTarget,    //
                                                  true);
+
     UGameplayStatics::SpawnSoundAttached(WeaponFXData->FireSound, SceneComponent, SocketName);
+    if (const auto ComponentOwner = GetOwner())
+    {
+        ComponentOwner->MakeNoise(WeaponFXData->FireLoudness, ComponentOwner->GetOwner<APawn>(), SceneComponent->GetSocketLocation(SocketName));
+    }
+
     MakeCameraShake(WeaponFXData->FireCameraShakeClass);
 }
 
