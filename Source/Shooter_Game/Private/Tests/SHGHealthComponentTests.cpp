@@ -33,7 +33,7 @@ bool FHealthComponentBaseFunctional::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_ShooterPlayerCharacter_Testable.BP_ShooterPlayerCharacter_Testable'"};
+    const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
     const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
         return false;
@@ -126,7 +126,7 @@ bool FHealthComponentAutoHeal::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_ShooterPlayerCharacter_Testable.BP_ShooterPlayerCharacter_Testable'"};
+    const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
     const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
         return false;
@@ -211,7 +211,7 @@ bool FHealthComponentDelegates::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_ShooterPlayerCharacter_Testable.BP_ShooterPlayerCharacter_Testable'"};
+    const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
     const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
         return false;
@@ -235,6 +235,8 @@ bool FHealthComponentDelegates::RunTest(const FString& Parameters)
                                       FString::SanitizeFloat(AutoHealRate),         //
                                       FString::SanitizeFloat(AutoHealDelay),        //
                                       FString::SanitizeFloat(AutoHealModifier)});
+
+    CallFunctionByNameWithParameters(Player, "ClearDamageModifiersMap", {});
 
     Player->FinishSpawning(FTransform::Identity);
 
@@ -273,6 +275,7 @@ bool FHealthComponentDelegates::RunTest(const FString& Parameters)
     AddInfo("OnTakeDamage delegate test. FPointDamageEvent.");
 
     Player->TakeDamage(DamageAmount, FPointDamageEvent{}, nullptr, nullptr);
+
     TestTrueExpr(FMath::IsNearlyEqual(DelegateDamage, DamageAmount));
 
     AddInfo("OnTakeDamage delegate test. FRadialDamageEvent.");
