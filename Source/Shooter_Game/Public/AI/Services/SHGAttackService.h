@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "ShooterAttackService.generated.h"
+#include "SHGAttackService.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API UShooterAttackService : public UBTService
+class SHOOTER_GAME_API USHGAttackService : public UBTService
 {
     GENERATED_BODY()
 
 public:
-    UShooterAttackService();
+    USHGAttackService();
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
