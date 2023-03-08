@@ -305,4 +305,4 @@ bool FHealthComponentDelegates::RunTest(const FString& Parameters)
     return true;
 }
 
-#endif
+#endif    // WITH_AUTOMATION_TESTS

@@ -31,6 +31,13 @@ T* SpawnBlueprintDeferred(UWorld* World, const FString& BlueprintName, const FTr
     return (World && Blueprint) ? World->SpawnActorDeferred<T>(Blueprint->GeneratedClass, Transform) : nullptr;
 }
 
+template <typename T1, typename T2>
+struct TestPayload
+{
+    T1 TestValue;
+    T2 ExpectedValue;
+};
+
 UWorld* GetCurrentWorld();
 
 void CallFunctionByNameWithParameters(UObject* Object, const FString& FuncName, const TArray<FString>& Params);
