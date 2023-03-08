@@ -4,17 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "ShooterNextLocationTaskNode.generated.h"
+#include "SHGNextPatrolLocationTaskNode.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API UShooterNextLocationTaskNode : public UBTTaskNode
+class SHOOTER_GAME_API USHGNextPatrolLocationTaskNode : public UBTTaskNode
 {
     GENERATED_BODY()
 
-    virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
 public:
-    UShooterNextLocationTaskNode();
+    USHGNextPatrolLocationTaskNode();
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
@@ -24,8 +22,11 @@ protected:
     FBlackboardKeySelector NewLocationBlackboardKey;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-    bool SelfCenter = true;
+    bool bSelfCenter = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", Meta = (EditCondition = "!SelfCenter"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", Meta = (EditCondition = "!bSelfCenter"))
     FBlackboardKeySelector TargetActorBlackboardKey;
+
+private:
+    virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };
