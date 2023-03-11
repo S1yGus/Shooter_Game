@@ -24,7 +24,7 @@ protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UWidgetComponent* ImpactWidgetComponent;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Impact")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Impact", Meta = (Units = "s"))
     float LifeSpan = 1.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Impact")

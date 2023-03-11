@@ -19,13 +19,13 @@ struct FAspectRatioData
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VideoSettings")
-    float AspectRatio = 1.7777777f;
+    float AspectRatio;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VideoSettings", Meta = (Units = "deg"))
+    float FOV;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VideoSettings")
-    float FOV = 90.0f;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "VideoSettings")
-    FText DisplayName{FText::FromString("16:9")};
+    FText DisplayName;
 };
 
 USTRUCT(BlueprintType)

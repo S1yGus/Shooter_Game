@@ -28,7 +28,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     UBehaviorTree* BehaviorTree;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI", Meta = (Units = "cm"))
     float HealthWidgetVisibilityDistance = 2500.0f;
 
 private:

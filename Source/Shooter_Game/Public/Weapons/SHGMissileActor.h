@@ -12,7 +12,7 @@ class SHOOTER_GAME_API ASHGMissileActor : public ASHGBaseProjectileActor
     GENERATED_BODY()
 
 protected:
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage", Meta = (ClampMin = "0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage", Meta = (ClampMin = "0", Units = "cm"))
     float DamageRadius = 100.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")

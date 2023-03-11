@@ -26,7 +26,7 @@ protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
     UProjectileMovementComponent* ProjectileMovement;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile", Meta = (Units = "s"))
     float LifeSpan = 60.0f;
 
     virtual void BeginPlay() override;

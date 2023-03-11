@@ -31,7 +31,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     FName InspectionStateBlackboardKeyName{"bInspectionState"};
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", Meta = (Units = "s"))
     float PredictionTime = 0.3f;
 
     virtual void BeginPlay() override;

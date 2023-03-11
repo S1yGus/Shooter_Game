@@ -30,16 +30,16 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
     float MaxYawRecoilMagnitude = 0.5f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil", Meta = (Units = "s"))
     float RecoilTime = 0.1f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
     float RecoilRecoverScale = 4.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil", Meta = (Units = "cm"))
     float RecoilRecoverPitchAdditionalOffset = 1.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Recoil", Meta = (Units = "cm"))
     float RecoilRecoverYawAdditionalOffset = 2.0f;
 
 private:

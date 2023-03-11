@@ -27,7 +27,7 @@ protected:
     TArray<FLevelData> GameLevelsData;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
-    FName MenuLevelName = NAME_None;
+    FName MenuLevelName{NAME_None};
 
     virtual void OnStart() override;
 

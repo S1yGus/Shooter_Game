@@ -29,7 +29,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     FVector2D Damage{0.0f, 0.0f};
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage", Meta = (ClampMin = "0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage", Meta = (ClampMin = "0", Units = "cm"))
     float DamageRadius = 100.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")

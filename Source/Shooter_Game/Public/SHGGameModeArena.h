@@ -43,7 +43,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game")
     FArenaData GameData;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Hints")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Hints", Meta = (Units = "s"))
     float StartupHintDelay = 2.0f;
 
 private:

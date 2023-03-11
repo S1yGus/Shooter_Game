@@ -29,7 +29,7 @@ protected:
     UProjectileMovementComponent* ProjectileMovement;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
-    FVector2D Damage{0.0f, 0.0f};
+    FVector2D Damage;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
     float MinRicochetDamageMultiplier = 0.5f;
@@ -49,7 +49,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     TMap<UPhysicalMaterial*, FImpactFXData> RicochetFXDataMap;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile", Meta = (Units = "s"))
     float LifeSpanTime = 3.0f;
 
     virtual void BeginPlay() override;

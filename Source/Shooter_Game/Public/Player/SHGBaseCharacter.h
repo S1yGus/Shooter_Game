@@ -56,7 +56,7 @@ protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
     UPawnNoiseEmitterComponent* NoiseEmitterComponent;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage", Meta = (Units = "s"))
     float LifeSpanOnDeath = 20.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Damage")

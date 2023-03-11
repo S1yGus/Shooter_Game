@@ -28,10 +28,10 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn")
     bool bRespawnable = true;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn", Meta = (EditCondition = "bRespawnable"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Respawn", Meta = (EditCondition = "bRespawnable", Units = "s"))
     float RespawnTime = 5.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup", Meta = (Units = "deg"))
     float RotationYaw = 1.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")

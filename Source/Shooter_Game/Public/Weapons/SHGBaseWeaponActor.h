@@ -78,7 +78,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FAmmoData DefaultAmmo;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0", Units = "cm"))
     float TraceMaxDistance = 20000.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
@@ -122,7 +122,7 @@ private:
     bool CheckShotDirection(const FHitResult& HitResult) const;
     bool GetViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
     inline FVector GetShotDirectionNormal(const FHitResult& HitResult) const;
-    bool IsClipEmpty() const { return CurrentAmmo.BulletsInClip == 0; }
+    inline bool IsClipEmpty() const { return CurrentAmmo.BulletsInClip == 0; }
     bool IsNumberOfClipsMax() const;
 
     bool MakeTrace(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);

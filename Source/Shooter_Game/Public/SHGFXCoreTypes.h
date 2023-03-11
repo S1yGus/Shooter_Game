@@ -13,13 +13,13 @@ struct FDecalData
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     TArray<UMaterialInterface*> Material;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
-    FVector Size = FVector{1.0f};
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX", Meta = (Units = "cm"))
+    FVector Size{1.0f};
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX", Meta = (Units = "s"))
     float LifeTime = 60.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX", Meta = (Units = "s"))
     float FadeOutTime = 10.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
@@ -49,7 +49,7 @@ struct FExplosionCameraShakeData
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     TSubclassOf<UCameraShakeBase> ExplosionCameraShakeClass;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX", Meta = (Units = "cm"))
     float ExplosionCameraShakeRadius = 0.0f;
 };
 
@@ -64,8 +64,8 @@ struct FWeaponFXData
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
     USoundCue* FireSound;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Sound")
-    float FireLoudness = 1.0f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
+    float FireAILoudness = 1.0f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "FX")
     TSubclassOf<UCameraShakeBase> FireCameraShakeClass;

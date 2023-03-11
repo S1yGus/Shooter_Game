@@ -28,7 +28,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina", Meta = (ClampMin = "0.0"))
     float MaxStamina = 100.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina", Meta = (ClampMin = "0.0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina", Meta = (ClampMin = "0.0", Units = "s"))
     float StaminaUpdateRate = 0.1f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina|Costs", Meta = (ClampMin = "0.0"))
@@ -37,7 +37,7 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina|Costs", Meta = (ClampMin = "0.0"))
     float StaminaSprintCost = 2.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina|Recovery", Meta = (ClampMin = "0.0"))
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina|Recovery", Meta = (ClampMin = "0.0", Units = "s"))
     float StaminaRecoveryDelay = 1.5f;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Stamina|Recovery", Meta = (ClampMin = "0.0"))

@@ -33,7 +33,7 @@ void USHGWeaponFXComponent::MakeFireFX(USceneComponent* SceneComponent, const FN
     UGameplayStatics::SpawnSoundAttached(WeaponFXData->FireSound, SceneComponent, SocketName);
     if (const auto ComponentOwner = GetOwner())
     {
-        ComponentOwner->MakeNoise(WeaponFXData->FireLoudness, ComponentOwner->GetOwner<APawn>(), SceneComponent->GetSocketLocation(SocketName));
+        ComponentOwner->MakeNoise(WeaponFXData->FireAILoudness, ComponentOwner->GetOwner<APawn>(), SceneComponent->GetSocketLocation(SocketName));
     }
 
     MakeCameraShake(WeaponFXData->FireCameraShakeClass);

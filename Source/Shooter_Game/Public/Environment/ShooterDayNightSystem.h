@@ -34,16 +34,16 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "0.0"))
     float Speed = 1.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "0"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "0", Units = "dy"))
     int32 Day = 0;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "0", ClampMax = "23"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "0", ClampMax = "23", Units = "hrs"))
     int32 Hour = 0;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "0", ClampMax = "59"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "0", ClampMax = "59", Units = "min"))
     int32 Minute = 0;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "0", ClampMax = "59"))
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings", Meta = (ClampMin = "0", ClampMax = "59", Units = "s"))
     int32 Second = 0;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Sun")
@@ -67,10 +67,10 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Moon")
     FName PhaseParameterName = "Phase";
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Sun")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Sun", Meta = (Units = "deg"))
     float SunPositionYawOffset = 0.0f;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Moon")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings|Moon", Meta = (Units = "deg"))
     float MoonPositionYawOffset = 0.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Settings")
