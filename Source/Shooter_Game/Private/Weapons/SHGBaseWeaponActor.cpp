@@ -36,7 +36,10 @@ void ASHGBaseWeaponActor::StartFire()
         return;
 
     bOnShotDelay = true;
-    GetWorldTimerManager().SetTimer(ShotDelayTimerHandle, this, &ThisClass::OnReleaseShotDelayFlag, CurrentWeaponStats.TimeBetweenShots);
+    GetWorldTimerManager().SetTimer(ShotDelayTimerHandle,                  //
+                                    this,                                  //
+                                    &ThisClass::OnReleaseShotDelayFlag,    //
+                                    bAlternativeFireMode ? AlternativeWeaponStats.TimeBetweenShots : MainWeaponStats.TimeBetweenShots);
 
     bAlternativeFireMode ? MakeAlternativeShot() : MakeMainShot();
 }
@@ -51,9 +54,9 @@ void ASHGBaseWeaponActor::SwitchFireMode()
         return;
 
     StopFire();
+    StopZoom();
 
     bAlternativeFireMode = !bAlternativeFireMode;
-    CurrentWeaponStats = bAlternativeFireMode ? AlternativeWeaponStats : MainWeaponStats;
     FXComponent->PlaySwitchModeSound(WeaponMesh, WeaponData.ModeSwitcherSocketName);
 }
 
@@ -134,7 +137,6 @@ void ASHGBaseWeaponActor::BeginPlay()
     check(UIData.MainIcon);
 
     CurrentAmmo = DefaultAmmo;
-    CurrentWeaponStats = bAlternativeFireMode ? AlternativeWeaponStats : MainWeaponStats;
 
     SpawnAndAttachFlashlight();
 
@@ -236,7 +238,9 @@ void ASHGBaseWeaponActor::DecreaseAmmo()
 void ASHGBaseWeaponActor::SpawnProjectile(const FVector& Direction)
 {
     const FTransform Transform{FRotator::ZeroRotator, GetMuzzleLocation()};
-    auto Projectile = GetWorld()->SpawnActorDeferred<ASHGBaseProjectileActor>(CurrentWeaponStats.ProjectileClass, Transform);
+    auto Projectile = GetWorld()->SpawnActorDeferred<ASHGBaseProjectileActor>(bAlternativeFireMode ? AlternativeWeaponStats.ProjectileClass    //
+                                                                                                   : MainWeaponStats.ProjectileClass,          //
+                                                                              Transform);
     if (!Projectile)
         return;
 
@@ -293,11 +297,11 @@ FVector ASHGBaseWeaponActor::GetShotDirection(const FVector& Direction) const
     if (!Controller || !Owner)
         return FVector::Zero();
 
-    auto ShotSpread = CurrentWeaponStats.ShotSpread;
+    auto ShotSpread = bAlternativeFireMode ? AlternativeWeaponStats.ShotSpread : MainWeaponStats.ShotSpread;
 
     if (bIsZoomingNow)
     {
-        ShotSpread = CurrentWeaponStats.AimedShotSpread;
+        ShotSpread = bAlternativeFireMode ? AlternativeWeaponStats.AimedShotSpread : MainWeaponStats.AimedShotSpread;
     }
 
     if (!Controller->IsPlayerController())
@@ -367,6 +371,17 @@ void ASHGBaseWeaponActor::SpawnAndAttachFlashlight()
     Flashlight = GetWorld()->SpawnActor<ASHGFlashlightActor>(FlashlightClass);
     check(Flashlight);
     Flashlight->AttachToComponent(WeaponMesh, FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponData.FlashlightSocketName);
+}
+
+void ASHGBaseWeaponActor::StopZoom()
+{
+    if (Owner)
+    {
+        if (const auto WeaponComponent = Owner->FindComponentByClass<USHGBaseWeaponComponent>())
+        {
+            WeaponComponent->Zoom(false);
+        }
+    }
 }
 
 void ASHGBaseWeaponActor::OnReleaseShotDelayFlag()

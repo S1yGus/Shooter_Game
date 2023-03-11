@@ -51,10 +51,10 @@ struct FAmmoData
     bool InfiniteClips = false;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo", Meta = (ClampMin = "0"))
-    int32 BulletsInClip = 0;
+    int32 BulletsInClip;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo", Meta = (EditCondition = "!InfiniteClips", ClampMin = "0"))
-    int32 Clips = 0;
+    int32 Clips;
 };
 
 USTRUCT(BlueprintType)
@@ -63,10 +63,10 @@ struct FWeaponAIStats
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", Meta = (ClampMin = "0.0", Units = "cm"))
-    float MinAttackDistance = 0.0f;
+    float MinAttackDistance;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", Meta = (ClampMin = "0.0", Units = "cm"))
-    float MaxAttackDistance = 0.0f;
+    float MaxAttackDistance;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI", Meta = (ClampMin = "1"))
     int32 Priority = 1;
@@ -83,11 +83,17 @@ struct FWeaponStats
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.01", Units = "s"))
     float TimeBetweenShots = 0.3f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0", Units = "deg"))
-    FVector2D ShotSpread{0.0f, 0.0f};
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
+    bool bCanZoom = false;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom", Meta = (EditCondition = "bCanZoom", Units = "deg"))
+    float ZoomFOVAngle;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0.0", ClampMax = "90.0", Units = "deg"))
-    FVector2D AimedShotSpread{0.0f, 0.0f};
+    FVector2D ShotSpread;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (EditCondition = "bCanZoom", ClampMin = "0.0", ClampMax = "90.0", Units = "deg"))
+    FVector2D AimedShotSpread;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     FWeaponAIStats WeaponAIStats;

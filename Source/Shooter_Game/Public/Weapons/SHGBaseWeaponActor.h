@@ -29,8 +29,8 @@ public:
     virtual void StartFire();
     virtual void StopFire();
 
-    bool CanZoom() const { return bCanZoom; }
-    float GetZoomFOVAngle() const { return ZoomFOVAngle; }
+    bool CanZoom() const { return bAlternativeFireMode ? AlternativeWeaponStats.bCanZoom : MainWeaponStats.bCanZoom; }
+    float GetZoomFOVAngle() const { return bAlternativeFireMode ? AlternativeWeaponStats.ZoomFOVAngle : MainWeaponStats.ZoomFOVAngle; }
 
     void SwitchFireMode();
     void SetFlashlight(bool bCondition);
@@ -81,17 +81,10 @@ protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (ClampMin = "0"))
     float TraceMaxDistance = 20000.0f;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom")
-    bool bCanZoom = true;
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Zoom", Meta = (EditCondition = "CanZoom"))
-    float ZoomFOVAngle = 70.0f;
-
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "UI")
     FWeaponUIData UIData;
 
     bool bAlternativeFireMode = false;
-    FWeaponStats CurrentWeaponStats;
 
     inline AController* GetController() const;
 
@@ -118,7 +111,7 @@ private:
 
     bool bOnShotDelay = false;
     bool bIsZoomingNow = false;
-    float Difficulty = 1.0f;
+    float Difficulty;
 
     inline FVector GetMuzzleLocation() const;
     inline FQuat GetMuzzleQuaternion() const;
@@ -134,6 +127,7 @@ private:
 
     bool MakeTrace(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
     inline void SpawnAndAttachFlashlight();
+    void StopZoom();
 
     void OnReleaseShotDelayFlag();
     void OnZoom(bool bCondition);

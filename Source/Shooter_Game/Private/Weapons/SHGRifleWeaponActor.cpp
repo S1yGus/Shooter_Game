@@ -24,7 +24,11 @@ void ASHGRifleWeaponActor::StopFire()
 
 void ASHGRifleWeaponActor::MakeAlternativeShot()
 {
-    GetWorldTimerManager().SetTimer(ShotTimerHandle, this, &ThisClass::MakeMainShot, CurrentWeaponStats.TimeBetweenShots, true);
+    GetWorldTimerManager().SetTimer(ShotTimerHandle,                                                                                      //
+                                    this,                                                                                                 //
+                                    &ThisClass::MakeMainShot,                                                                             //
+                                    bAlternativeFireMode ? AlternativeWeaponStats.TimeBetweenShots : MainWeaponStats.TimeBetweenShots,    //
+                                    true);
 
     MakeMainShot();
 }
