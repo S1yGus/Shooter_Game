@@ -6,6 +6,8 @@
 #include "Components/SHGBaseWeaponComponent.h"
 #include "SHGAIWeaponComponent.generated.h"
 
+class ASHGBaseWeaponActor;
+
 UCLASS()
 class SHOOTER_GAME_API USHGAIWeaponComponent : public USHGBaseWeaponComponent
 {
@@ -17,8 +19,8 @@ public:
 
     bool CheckWeapon(EWeaponType WeaponType) const;
     bool CheckWeaponAmmo(EWeaponType WeaponType) const;
-    bool CheckCurrentWeapon(EWeaponType WeaponType) const;
 
+    const TMap<EWeaponType, ASHGBaseWeaponActor*>& GetWeaponsMap() const { return WeaponsMap; }
     float GetCurrentMinAttackDistance() const;
     float GetCurrentMaxAttackDistance() const;
 };

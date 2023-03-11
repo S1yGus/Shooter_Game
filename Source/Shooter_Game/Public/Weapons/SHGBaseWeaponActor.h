@@ -42,9 +42,10 @@ public:
     const FWeaponData& GetWeaponData() const { return WeaponData; }
     const FWeaponUIData& GetUIData() const { return UIData; }
     const FAmmoData& GetAmmoData() const { return CurrentAmmo; }
-    float GetOptimalAttackDistance() const { return bHasAlternativeFireMode ? AlternativeWeaponStatsData.OptimalDistance : MainWeaponStatsData.OptimalDistance; }
-    float GetMaxAttackDistance() const { return TraceMaxDistance; }
     int32 GetMaxNumberOfClips() const { return DefaultAmmo.Clips; }
+    float GetMinAttackDistance() const;
+    float GetMaxAttackDistance() const;
+    int32 GetPriority() const;
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
@@ -66,10 +67,10 @@ protected:
     bool bHasAlternativeFireMode = false;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
-    FWeaponStatsData MainWeaponStatsData;
+    FWeaponStats MainWeaponStats;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon", Meta = (EditCondition = "bHasAlternativeFireMode"))
-    FWeaponStatsData AlternativeWeaponStatsData;
+    FWeaponStats AlternativeWeaponStats;
 
     UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Weapon")
     TSubclassOf<ASHGShellBaseActor> BulletShellClass;
@@ -90,7 +91,7 @@ protected:
     FWeaponUIData UIData;
 
     bool bAlternativeFireMode = false;
-    FWeaponStatsData CurrentWeaponStatsData;
+    FWeaponStats CurrentWeaponStats;
 
     inline AController* GetController() const;
 

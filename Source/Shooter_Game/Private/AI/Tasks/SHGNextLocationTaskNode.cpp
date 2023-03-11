@@ -1,16 +1,16 @@
 // Shooter_Game, All rights reserved.
 
-#include "AI/Tasks/SHGNextPatrolLocationTaskNode.h"
+#include "AI/Tasks/SHGNextLocationTaskNode.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "NavigationSystem.h"
 
-USHGNextPatrolLocationTaskNode::USHGNextPatrolLocationTaskNode()
+USHGNextLocationTaskNode::USHGNextLocationTaskNode()
 {
-    NodeName = "Next Patrol Location";
+    NodeName = "Next Location";
 }
 
-EBTNodeResult::Type USHGNextPatrolLocationTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+EBTNodeResult::Type USHGNextLocationTaskNode::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
     const auto AIController = OwnerComp.GetAIOwner();
     const auto BlackboardComponent = OwnerComp.GetBlackboardComponent();
@@ -33,7 +33,7 @@ EBTNodeResult::Type USHGNextPatrolLocationTaskNode::ExecuteTask(UBehaviorTreeCom
     }
 
     FNavLocation NavLocation;
-    if (!NavigationSystem->GetRandomReachablePointInRadius(CenterLocation, PatrolRadius, NavLocation))
+    if (!NavigationSystem->GetRandomReachablePointInRadius(CenterLocation, Radius, NavLocation))
         return EBTNodeResult::Failed;
 
     BlackboardComponent->SetValueAsVector(NewLocationBlackboardKey.SelectedKeyName, NavLocation.Location);

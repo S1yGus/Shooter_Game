@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "SHGNextPatrolLocationTaskNode.generated.h"
+#include "SHGNextLocationTaskNode.generated.h"
 
 UCLASS()
-class SHOOTER_GAME_API USHGNextPatrolLocationTaskNode : public UBTTaskNode
+class SHOOTER_GAME_API USHGNextLocationTaskNode : public UBTTaskNode
 {
     GENERATED_BODY()
 
 public:
-    USHGNextPatrolLocationTaskNode();
+    USHGNextLocationTaskNode();
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
-    float PatrolRadius;
+    float Radius;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
     FBlackboardKeySelector NewLocationBlackboardKey;

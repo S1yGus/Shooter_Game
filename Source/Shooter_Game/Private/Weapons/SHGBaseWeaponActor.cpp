@@ -36,7 +36,7 @@ void ASHGBaseWeaponActor::StartFire()
         return;
 
     bOnShotDelay = true;
-    GetWorldTimerManager().SetTimer(ShotDelayTimerHandle, this, &ThisClass::OnReleaseShotDelayFlag, CurrentWeaponStatsData.TimeBetweenShots);
+    GetWorldTimerManager().SetTimer(ShotDelayTimerHandle, this, &ThisClass::OnReleaseShotDelayFlag, CurrentWeaponStats.TimeBetweenShots);
 
     bAlternativeFireMode ? MakeAlternativeShot() : MakeMainShot();
 }
@@ -53,7 +53,7 @@ void ASHGBaseWeaponActor::SwitchFireMode()
     StopFire();
 
     bAlternativeFireMode = !bAlternativeFireMode;
-    CurrentWeaponStatsData = bAlternativeFireMode ? AlternativeWeaponStatsData : MainWeaponStatsData;
+    CurrentWeaponStats = bAlternativeFireMode ? AlternativeWeaponStats : MainWeaponStats;
     FXComponent->PlaySwitchModeSound(WeaponMesh, WeaponData.ModeSwitcherSocketName);
 }
 
@@ -91,6 +91,21 @@ bool ASHGBaseWeaponActor::TryToAddAmmo(int32 ClipsAmount)
     return true;
 }
 
+float ASHGBaseWeaponActor::GetMinAttackDistance() const
+{
+    return bAlternativeFireMode ? AlternativeWeaponStats.WeaponAIStats.MinAttackDistance : MainWeaponStats.WeaponAIStats.MinAttackDistance;
+}
+
+float ASHGBaseWeaponActor::GetMaxAttackDistance() const
+{
+    return bAlternativeFireMode ? AlternativeWeaponStats.WeaponAIStats.MaxAttackDistance : MainWeaponStats.WeaponAIStats.MaxAttackDistance;
+}
+
+int32 ASHGBaseWeaponActor::GetPriority() const
+{
+    return bAlternativeFireMode ? AlternativeWeaponStats.WeaponAIStats.Priority : MainWeaponStats.WeaponAIStats.Priority;
+}
+
 AController* ASHGBaseWeaponActor::GetController() const
 {
     const auto OwnerPawn = GetOwner<APawn>();
@@ -107,10 +122,10 @@ void ASHGBaseWeaponActor::BeginPlay()
     check(WeaponMesh);
     check(FXComponent);
     check(RecoilComponent);
-    check(MainWeaponStatsData.ProjectileClass);
+    check(MainWeaponStats.ProjectileClass);
     if (bHasAlternativeFireMode)
     {
-        check(AlternativeWeaponStatsData.ProjectileClass);
+        check(AlternativeWeaponStats.ProjectileClass);
     }
     check(FlashlightClass);
     check(WeaponData.ReloadAnimMontage);
@@ -119,7 +134,7 @@ void ASHGBaseWeaponActor::BeginPlay()
     check(UIData.MainIcon);
 
     CurrentAmmo = DefaultAmmo;
-    CurrentWeaponStatsData = bAlternativeFireMode ? AlternativeWeaponStatsData : MainWeaponStatsData;
+    CurrentWeaponStats = bAlternativeFireMode ? AlternativeWeaponStats : MainWeaponStats;
 
     SpawnAndAttachFlashlight();
 
@@ -221,7 +236,7 @@ void ASHGBaseWeaponActor::DecreaseAmmo()
 void ASHGBaseWeaponActor::SpawnProjectile(const FVector& Direction)
 {
     const FTransform Transform{FRotator::ZeroRotator, GetMuzzleLocation()};
-    auto Projectile = GetWorld()->SpawnActorDeferred<ASHGBaseProjectileActor>(CurrentWeaponStatsData.ProjectileClass, Transform);
+    auto Projectile = GetWorld()->SpawnActorDeferred<ASHGBaseProjectileActor>(CurrentWeaponStats.ProjectileClass, Transform);
     if (!Projectile)
         return;
 
@@ -278,11 +293,11 @@ FVector ASHGBaseWeaponActor::GetShotDirection(const FVector& Direction) const
     if (!Controller || !Owner)
         return FVector::Zero();
 
-    auto ShotSpread = CurrentWeaponStatsData.ShotSpread;
+    auto ShotSpread = CurrentWeaponStats.ShotSpread;
 
     if (bIsZoomingNow)
     {
-        ShotSpread = CurrentWeaponStatsData.AimedShotSpread;
+        ShotSpread = CurrentWeaponStats.AimedShotSpread;
     }
 
     if (!Controller->IsPlayerController())

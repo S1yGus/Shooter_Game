@@ -25,7 +25,6 @@ void USHGAIWeaponComponent::NextWeapon()
         return;
 
     int32 NextWeaponIndex = (CurrentWeaponIndex + 1) % static_cast<int32>(EWeaponType::Max);
-
     while (NextWeaponIndex != CurrentWeaponIndex)
     {
         if (WeaponsMap.Contains(static_cast<EWeaponType>(NextWeaponIndex)))
@@ -57,17 +56,12 @@ bool USHGAIWeaponComponent::CheckWeaponAmmo(EWeaponType WeaponType) const
     return !WeaponsMap[WeaponType]->IsAmmoEmpty();
 }
 
-bool USHGAIWeaponComponent::CheckCurrentWeapon(EWeaponType WeaponType) const
-{
-    return CurrentWeapon->GetWeaponData().WeaponType == WeaponType;
-}
-
 float USHGAIWeaponComponent::GetCurrentMinAttackDistance() const
 {
     if (!CurrentWeapon)
         return 0.0f;
 
-    return CurrentWeapon->GetOptimalAttackDistance();
+    return CurrentWeapon->GetMinAttackDistance();
 }
 
 float USHGAIWeaponComponent::GetCurrentMaxAttackDistance() const
