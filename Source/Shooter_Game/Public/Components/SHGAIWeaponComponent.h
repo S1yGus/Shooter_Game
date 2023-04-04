@@ -19,6 +19,7 @@ public:
 
     bool NeedAmmo(EWeaponType WeaponType, bool bHasEnemy = false) const;
     bool IsNoAmmoAtAll() const;
+    bool CheckForWeapon(EWeaponType WeaponType) const;
 
     const TMap<EWeaponType, ASHGBaseWeaponActor*>& GetWeaponsMap() const { return WeaponsMap; }
     float GetCurrentMinAttackDistance() const;

@@ -66,6 +66,11 @@ bool USHGAIWeaponComponent::IsNoAmmoAtAll() const
     return bNoAmmoAtAll;
 }
 
+bool USHGAIWeaponComponent::CheckForWeapon(EWeaponType WeaponType) const
+{
+    return WeaponsMap.Contains(WeaponType);
+}
+
 float USHGAIWeaponComponent::GetCurrentMinAttackDistance() const
 {
     if (!CurrentWeapon)
