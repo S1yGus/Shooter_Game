@@ -35,7 +35,7 @@ EBTNodeResult::Type USHGNextAttackLocationTaskNode::ExecuteTask(UBehaviorTreeCom
 
 void USHGNextAttackLocationTaskNode::HandleQueryResult(TSharedPtr<FEnvQueryResult> Result)
 {
-    if (Result.IsValid() && Result->IsSuccsessful())
+    if (Result.IsValid() && Result->IsSuccsessful() && !Result->Items.IsEmpty())
     {
         if (const auto AIController = Cast<AAIController>(Result->Owner.Get()))
         {

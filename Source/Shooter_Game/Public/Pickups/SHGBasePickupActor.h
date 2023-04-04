@@ -40,14 +40,15 @@ protected:
     virtual void BeginPlay() override;
 
 private:
-    TSet<AActor*> OverlapActors;
+    UPROPERTY()
+    TSet<APawn*> OverlapPawns;
     FTimerHandle RespawnTimerHandle;
 
     virtual void NotifyActorBeginOverlap(AActor* OtherActor) override;
     virtual void NotifyActorEndOverlap(AActor* OtherActor) override;
-    virtual bool TryToGivePickupTo(AActor* Actor);
+    virtual bool TryToGivePickupTo(APawn* Pawn);
 
-    void TryToGivePickupToOverlapActors();
+    void TryToGivePickupToOverlapPawns();
     void PickupWasTaken();
 
     void OnRespawn();

@@ -85,6 +85,11 @@ bool ASHGBaseWeaponActor::IsAmmoEmpty() const
     return !CurrentAmmo.InfiniteClips && CurrentAmmo.Clips == 0 && IsClipEmpty();
 }
 
+bool ASHGBaseWeaponActor::IsNumberOfClipsMax() const
+{
+    return CurrentAmmo.InfiniteClips || (!IsClipEmpty() && CurrentAmmo.Clips == DefaultAmmo.Clips);
+}
+
 bool ASHGBaseWeaponActor::TryToAddAmmo(int32 ClipsAmount)
 {
     if (IsNumberOfClipsMax() || ClipsAmount <= 0)
@@ -349,11 +354,6 @@ bool ASHGBaseWeaponActor::GetViewPoint(FVector& ViewLocation, FRotator& ViewRota
 FVector ASHGBaseWeaponActor::GetShotDirectionNormal(const FHitResult& HitResult) const
 {
     return (HitResult.ImpactPoint - GetMuzzleLocation()).GetSafeNormal();
-}
-
-bool ASHGBaseWeaponActor::IsNumberOfClipsMax() const
-{
-    return CurrentAmmo.InfiniteClips || (!IsClipEmpty() && CurrentAmmo.Clips == DefaultAmmo.Clips);
 }
 
 bool ASHGBaseWeaponActor::MakeTrace(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd)

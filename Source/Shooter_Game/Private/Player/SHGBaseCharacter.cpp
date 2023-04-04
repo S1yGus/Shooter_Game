@@ -85,6 +85,19 @@ void ASHGBaseCharacter::SetColor(const FLinearColor& Color)
     MaterialInstance->SetVectorParameterValue(MaterialColorParameterName, Color);
 }
 
+void ASHGBaseCharacter::StartSprint()
+{
+    if (StaminaComponent->CanSprint())
+    {
+        bWantsToSprint = true;
+    }
+}
+
+void ASHGBaseCharacter::StopSprint()
+{
+    bWantsToSprint = false;
+}
+
 float ASHGBaseCharacter::GetMovementDirection() const
 {
     if (GetVelocity().IsZero())
@@ -109,19 +122,6 @@ bool ASHGBaseCharacter::WantsToSprint() const
 bool ASHGBaseCharacter::IsMovingForward() const
 {
     return FVector::DotProduct(GetActorForwardVector(), GetVelocity().GetSafeNormal()) > 0.1f;    // Some small number greater than 0 to avoid issues during the sprint.
-}
-
-void ASHGBaseCharacter::StartSprint()
-{
-    if (StaminaComponent->CanSprint())
-    {
-        bWantsToSprint = true;
-    }
-}
-
-void ASHGBaseCharacter::StopSprint()
-{
-    bWantsToSprint = false;
 }
 
 void ASHGBaseCharacter::OnDeath(AController* KillerController, AController* VictimController)

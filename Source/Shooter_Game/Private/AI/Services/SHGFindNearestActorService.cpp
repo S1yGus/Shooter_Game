@@ -1,6 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 #include "AI/Services/SHGFindNearestActorService.h"
+#include "AI/SHGAICharacter.h"
 #include "AIController.h"
 #include "Components/SHGAIPerceptionComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -19,7 +20,11 @@ void USHGFindNearestActorService::TickNode(UBehaviorTreeComponent& OwnerComp, ui
     if (!BlackboardComponent || !AIController)
         return;
 
-    if (const auto PerceptionComponent = AIController->FindComponentByClass<USHGAIPerceptionComponent>())
+    const auto AICharacter = Cast<ASHGAICharacter>(AIController->GetPawn());
+    if (!AICharacter)
+        return;
+
+    if (const auto PerceptionComponent = AIController->FindComponentByClass<USHGAIPerceptionComponent>(); PerceptionComponent && !AICharacter->IsSprinting())
     {
         BlackboardComponent->SetValueAsObject(EnemyBlackboardKey.SelectedKeyName, PerceptionComponent->GetNearestActor());
     }

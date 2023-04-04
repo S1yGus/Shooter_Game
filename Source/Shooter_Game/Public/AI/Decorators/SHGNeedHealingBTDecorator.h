@@ -16,10 +16,13 @@ public:
 
 protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", Meta = (ClampMin = "0.0", ClampMax = "1.0"))
-    float HealthPercentThreshold = 0.5f;
+    float HealthThresholdWithEnemy = 0.5f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", Meta = (ClampMin = "0.0", ClampMax = "1.0"))
-    float Probability = 0.9f;
+    float HealthThresholdWithoutEnemy = 0.9f;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+    FBlackboardKeySelector EnemyBlackboardKey;
 
     virtual bool CalculateRawConditionValue(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) const override;
 };

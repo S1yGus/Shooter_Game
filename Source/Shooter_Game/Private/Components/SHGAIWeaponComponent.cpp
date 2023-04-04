@@ -43,17 +43,27 @@ void USHGAIWeaponComponent::NextWeapon()
     }
 }
 
-bool USHGAIWeaponComponent::CheckWeapon(EWeaponType WeaponType) const
-{
-    return WeaponsMap.Contains(WeaponType);
-}
-
-bool USHGAIWeaponComponent::CheckWeaponAmmo(EWeaponType WeaponType) const
+bool USHGAIWeaponComponent::NeedAmmo(EWeaponType WeaponType, bool bHasEnemy) const
 {
     if (!WeaponsMap.Contains(WeaponType))
         return false;
 
-    return !WeaponsMap[WeaponType]->IsAmmoEmpty();
+    return bHasEnemy ? WeaponsMap[WeaponType]->IsAmmoEmpty() : !WeaponsMap[WeaponType]->IsNumberOfClipsMax();
+}
+
+bool USHGAIWeaponComponent::IsNoAmmoAtAll() const
+{
+    bool bNoAmmoAtAll = true;
+    for (const auto& [Type, Weapon] : WeaponsMap)
+    {
+        if (Weapon && !Weapon->IsAmmoEmpty())
+        {
+            bNoAmmoAtAll = false;
+            break;
+        }
+    }
+
+    return bNoAmmoAtAll;
 }
 
 float USHGAIWeaponComponent::GetCurrentMinAttackDistance() const

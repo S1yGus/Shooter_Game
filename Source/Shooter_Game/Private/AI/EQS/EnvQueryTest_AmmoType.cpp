@@ -15,16 +15,13 @@ UEnvQueryTest_AmmoType::UEnvQueryTest_AmmoType(const FObjectInitializer& ObjectI
 
 void UEnvQueryTest_AmmoType::RunTest(FEnvQueryInstance& QueryInstance) const
 {
-    UObject* QueryOwner = QueryInstance.Owner.Get();
-    BoolValue.BindData(QueryOwner, QueryInstance.QueryID);
+    BoolValue.BindData(QueryInstance.Owner.Get(), QueryInstance.QueryID);
 
     for (FEnvQueryInstance::ItemIterator It(this, QueryInstance); It; ++It)
     {
-        AActor* ItemActor = GetItemActor(QueryInstance, It.GetIndex());
-        const auto Pickup = Cast<ASHGAmmoPickupActor>(ItemActor);
-        if (!Pickup)
-            continue;
-
-        It.SetScore(TestPurpose, FilterType, NeededAmmoClass == Pickup->GetWeaponClass(), BoolValue.GetValue());
+        if (const auto Pickup = Cast<ASHGAmmoPickupActor>(GetItemActor(QueryInstance, It.GetIndex())))
+        {
+            It.SetScore(TestPurpose, FilterType, Pickup->GetWeaponClass()->IsChildOf(NeededAmmoClass), BoolValue.GetValue());
+        }
     }
 }

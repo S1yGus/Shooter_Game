@@ -37,6 +37,7 @@ public:
     bool ReloadClip();
 
     bool IsAmmoEmpty() const;
+    bool IsNumberOfClipsMax() const;
     bool TryToAddAmmo(int32 ClipsAmount);
 
     const FWeaponData& GetWeaponData() const { return WeaponData; }
@@ -123,7 +124,6 @@ private:
     bool GetViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
     inline FVector GetShotDirectionNormal(const FHitResult& HitResult) const;
     inline bool IsClipEmpty() const { return CurrentAmmo.BulletsInClip == 0; }
-    bool IsNumberOfClipsMax() const;
 
     bool MakeTrace(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
     inline void SpawnAndAttachFlashlight();

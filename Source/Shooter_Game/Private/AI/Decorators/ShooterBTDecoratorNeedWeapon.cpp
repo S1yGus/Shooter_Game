@@ -34,5 +34,5 @@ bool UShooterBTDecoratorNeedWeapon::CalculateRawConditionValue(UBehaviorTreeComp
     if (!AIWeaponComponent)
         return false;
 
-    return !AIWeaponComponent->CheckWeapon(WeaponType);
+    return !AIWeaponComponent->GetWeaponsMap().Contains(WeaponType);
 }

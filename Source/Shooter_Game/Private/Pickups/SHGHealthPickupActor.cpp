@@ -3,9 +3,9 @@
 #include "Pickups/SHGHealthPickupActor.h"
 #include "Components/SHGHealthComponent.h"
 
-bool ASHGHealthPickupActor::TryToGivePickupTo(AActor* Actor)
+bool ASHGHealthPickupActor::TryToGivePickupTo(APawn* Pawn)
 {
-    const auto HealthComponent = Actor->FindComponentByClass<USHGHealthComponent>();
+    const auto HealthComponent = Pawn->FindComponentByClass<USHGHealthComponent>();
     if (!HealthComponent || HealthComponent->IsDead())
         return false;
 

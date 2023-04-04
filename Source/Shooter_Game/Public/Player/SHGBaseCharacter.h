@@ -28,6 +28,9 @@ public:
 
     void SetColor(const FLinearColor& Color);
 
+    void StartSprint();
+    void StopSprint();
+
     UFUNCTION(BlueprintCallable, Category = "Movement")
     bool IsSprinting() const { return bCurrentSprintState; }
 
@@ -72,9 +75,6 @@ protected:
 
     inline bool WantsToSprint() const;
     inline virtual bool IsMovingForward() const;
-
-    void StartSprint();
-    void StopSprint();
 
     virtual void OnDeath(AController* KillerController, AController* VictimController);
     virtual void OnOutOfStamina();

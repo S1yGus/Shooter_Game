@@ -4,13 +4,13 @@
 #include "Components/SHGHealthComponent.h"
 #include "Components/SHGBaseWeaponComponent.h"
 
-bool ASHGAmmoPickupActor::TryToGivePickupTo(AActor* Actor)
+bool ASHGAmmoPickupActor::TryToGivePickupTo(APawn* Pawn)
 {
-    const auto HealthComponent = Actor->FindComponentByClass<USHGHealthComponent>();
+    const auto HealthComponent = Pawn->FindComponentByClass<USHGHealthComponent>();
     if (!HealthComponent || HealthComponent->IsDead())
         return false;
 
-    const auto WeaponComponent = Actor->FindComponentByClass<USHGBaseWeaponComponent>();
+    const auto WeaponComponent = Pawn->FindComponentByClass<USHGBaseWeaponComponent>();
     if (!WeaponComponent)
         return false;
 

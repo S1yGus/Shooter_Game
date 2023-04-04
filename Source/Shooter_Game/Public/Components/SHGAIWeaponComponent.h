@@ -17,8 +17,8 @@ public:
     virtual void StartFire() override;
     virtual void NextWeapon() override;
 
-    bool CheckWeapon(EWeaponType WeaponType) const;
-    bool CheckWeaponAmmo(EWeaponType WeaponType) const;
+    bool NeedAmmo(EWeaponType WeaponType, bool bHasEnemy = false) const;
+    bool IsNoAmmoAtAll() const;
 
     const TMap<EWeaponType, ASHGBaseWeaponActor*>& GetWeaponsMap() const { return WeaponsMap; }
     float GetCurrentMinAttackDistance() const;

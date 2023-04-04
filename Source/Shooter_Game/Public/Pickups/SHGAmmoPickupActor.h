@@ -24,5 +24,5 @@ protected:
     int32 ClipsAmount = 1;
 
 private:
-    virtual bool TryToGivePickupTo(AActor* Actor) override;
+    virtual bool TryToGivePickupTo(APawn* Pawn) override;
 };

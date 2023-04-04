@@ -23,5 +23,5 @@ protected:
     virtual void BeginPlay() override;
 
 private:
-    virtual bool TryToGivePickupTo(AActor* Actor);
+    virtual bool TryToGivePickupTo(APawn* Pawn);
 };

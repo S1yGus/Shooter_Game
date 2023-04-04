@@ -32,45 +32,60 @@ void ASHGBasePickupActor::BeginPlay()
     check(SphereComponent);
 
     FTimerHandle RotationTimerHandle;
-    GetWorldTimerManager().SetTimer(RotationTimerHandle, this, &ThisClass::OnRotatePickup, RotationTimerRate, true);
+    GetWorldTimerManager().SetTimer(RotationTimerHandle, this, &ThisClass::OnRotatePickup, RotationTimerRate, true);    // Start of rotation.
 }
 
 void ASHGBasePickupActor::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 
-    TryToGivePickupToOverlapActors();
+    TryToGivePickupToOverlapPawns();
 }
 
 void ASHGBasePickupActor::NotifyActorBeginOverlap(AActor* OtherActor)
 {
     Super::NotifyActorBeginOverlap(OtherActor);
 
-    OverlapActors.Add(OtherActor);
+    if (const auto Pawn = Cast<APawn>(OtherActor))
+    {
+        if (TryToGivePickupTo(Pawn))
+        {
+            if (bRespawnable)
+            {
+                PickupWasTaken();
+            }
+            else
+            {
+                Destroy();
+            }
+        }
+        else
+        {
+            OverlapPawns.Add(Pawn);
+        }
+    }
 }
 
 void ASHGBasePickupActor::NotifyActorEndOverlap(AActor* OtherActor)
 {
     Super::NotifyActorEndOverlap(OtherActor);
 
-    OverlapActors.Remove(OtherActor);
+    if (const auto Pawn = Cast<APawn>(OtherActor))
+    {
+        OverlapPawns.Remove(Pawn);
+    }
 }
 
-bool ASHGBasePickupActor::TryToGivePickupTo(AActor* Actor)
+bool ASHGBasePickupActor::TryToGivePickupTo(APawn* Pawn)
 {
     return false;
 }
 
-void ASHGBasePickupActor::TryToGivePickupToOverlapActors()
+void ASHGBasePickupActor::TryToGivePickupToOverlapPawns()
 {
-    for (const auto OverlapActor : OverlapActors)
+    for (const auto OverlapPawn : OverlapPawns)
     {
-        if (!IsValid(OverlapActor))
-        {
-            continue;
-        }
-
-        if (TryToGivePickupTo(OverlapActor))
+        if (IsValid(OverlapPawn) && TryToGivePickupTo(OverlapPawn))
         {
             if (bRespawnable)
             {
