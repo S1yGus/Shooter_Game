@@ -9,7 +9,7 @@
 class USphereComponent;
 class USoundCue;
 
-UCLASS()
+UCLASS(Abstract)
 class SHOOTER_GAME_API ASHGBasePickupActor : public AActor
 {
     GENERATED_BODY()

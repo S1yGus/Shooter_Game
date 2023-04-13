@@ -8,7 +8,7 @@
 
 class ASHGBaseWeaponActor;
 
-UCLASS()
+UCLASS(Abstract)
 class SHOOTER_GAME_API ASHGWeaponPickupActor : public ASHGBasePickupActor
 {
     GENERATED_BODY()

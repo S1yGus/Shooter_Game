@@ -10,6 +10,13 @@
 
 namespace Tests
 {
+#define ENUM_LOOP_START(EnumType, EnumElemName)                                    \
+    for (int32 index = 0; index < StaticEnum<EnumType>()->NumEnums() - 1; ++index) \
+    {                                                                              \
+        const auto EnumElemName = static_cast<EnumType>(index);
+
+#define ENUM_LOOP_END }
+
 class LevelScope
 {
 public:

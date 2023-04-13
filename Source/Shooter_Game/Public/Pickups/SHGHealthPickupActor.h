@@ -6,7 +6,7 @@
 #include "Pickups/SHGBasePickupActor.h"
 #include "SHGHealthPickupActor.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class SHOOTER_GAME_API ASHGHealthPickupActor : public ASHGBasePickupActor
 {
     GENERATED_BODY()

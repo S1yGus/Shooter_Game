@@ -103,7 +103,7 @@ void ASHGBasePickupActor::TryToGivePickupToOverlapPawns()
 
 void ASHGBasePickupActor::PickupWasTaken()
 {
-    SphereComponent->SetVisibility(false, true);
+    GetRootComponent()->SetVisibility(false, true);
     SphereComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     UGameplayStatics::PlaySoundAtLocation(this, TakenPickupSound, GetActorLocation());
 
@@ -112,7 +112,7 @@ void ASHGBasePickupActor::PickupWasTaken()
 
 void ASHGBasePickupActor::OnRespawn()
 {
-    SphereComponent->SetVisibility(true, true);
+    GetRootComponent()->SetVisibility(true, true);
     SphereComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
