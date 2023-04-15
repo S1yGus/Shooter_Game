@@ -32,7 +32,7 @@ protected:
     float RespawnTime = 5.0f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Pickup", Meta = (Units = "deg"))
-    float RotationYaw = 1.0f;
+    FRotator Rotation{FRotator::ZeroRotator};
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Sound")
     USoundCue* TakenPickupSound;

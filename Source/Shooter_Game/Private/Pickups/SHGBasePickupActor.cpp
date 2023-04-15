@@ -31,8 +31,11 @@ void ASHGBasePickupActor::BeginPlay()
 
     check(SphereComponent);
 
-    FTimerHandle RotationTimerHandle;
-    GetWorldTimerManager().SetTimer(RotationTimerHandle, this, &ThisClass::OnRotatePickup, RotationTimerRate, true);    // Start of rotation.
+    if (Rotation != FRotator::ZeroRotator)
+    {
+        FTimerHandle RotationTimerHandle;
+        GetWorldTimerManager().SetTimer(RotationTimerHandle, this, &ThisClass::OnRotatePickup, RotationTimerRate, true);    // Start of rotation.
+    }
 }
 
 void ASHGBasePickupActor::Tick(float DeltaSeconds)
@@ -118,5 +121,5 @@ void ASHGBasePickupActor::OnRespawn()
 
 void ASHGBasePickupActor::OnRotatePickup()
 {
-    AddActorWorldRotation(FRotator{0.0f, RotationYaw, 0.0f});
+    AddActorWorldRotation(Rotation);
 }

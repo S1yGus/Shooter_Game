@@ -12,16 +12,16 @@
 
 using namespace Tests;
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FCppActorCantBeCreated, "Shooter_Game.Pickups.HealthPickup.CppActorCantBeCreated",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthPickupCppActorCantBeCreated, "Shooter_Game.Pickups.HealthPickup.CppActorCantBeCreated",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FBlueprintShouldBeSetupCorrectly, "Shooter_Game.Pickups.HealthPickup.BlueprintShouldBeSetupCorrectly",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthPickupBlueprintShouldBeSetupCorrectly, "Shooter_Game.Pickups.HealthPickup.BlueprintShouldBeSetupCorrectly",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FTryToGivePickupToOverrideFunctionTest, "Shooter_Game.Pickups.HealthPickup.TryToGivePickupToOverrideFunctionTest",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
-bool FCppActorCantBeCreated::RunTest(const FString& Parameters)
+bool FHealthPickupCppActorCantBeCreated::RunTest(const FString& Parameters)
 {
     LevelScope("/Game/Tests/EmptyTestLevel");
 
@@ -29,7 +29,7 @@ bool FCppActorCantBeCreated::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    FString ErrorMsg = FString::Printf(TEXT("SpawnActor failed because class %s is abstract"), *ASHGHealthPickupActor::StaticClass()->GetName());
+    const FString ErrorMsg = FString::Printf(TEXT("SpawnActor failed because class %s is abstract"), *ASHGHealthPickupActor::StaticClass()->GetName());
     AddExpectedError(ErrorMsg, EAutomationExpectedErrorFlags::Exact);
 
     const auto HealthPickup = World->SpawnActor<ASHGHealthPickupActor>(ASHGHealthPickupActor::StaticClass(), FTransform::Identity);
@@ -39,7 +39,7 @@ bool FCppActorCantBeCreated::RunTest(const FString& Parameters)
     return true;
 }
 
-bool FBlueprintShouldBeSetupCorrectly::RunTest(const FString& Parameters)
+bool FHealthPickupBlueprintShouldBeSetupCorrectly::RunTest(const FString& Parameters)
 {
     LevelScope("/Game/Tests/EmptyTestLevel");
 
@@ -80,7 +80,7 @@ bool FTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    FTransform InitTransform{FVector{500.0, 500.0, 0.0}};
+    const FTransform InitTransform{FVector{500.0, 500.0, 0.0}};
     const FString HealthPickupActorBlueprintName{"Blueprint'/Game/Gameplay/Pickups/BP_SHGHealthPickupActor.BP_SHGHealthPickupActor'"};
     const auto HealthPickup = SpawnBlueprint<ASHGHealthPickupActor>(World, HealthPickupActorBlueprintName, InitTransform);
     if (!TestNotNull("HealthPickup must exists.", HealthPickup))
@@ -98,6 +98,8 @@ bool FTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
 
     const FString PawnWithoutHealthComponentBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
     const auto PawnWithoutHealthComponent = SpawnBlueprint<APawn>(World, PawnWithoutHealthComponentBlueprintName, HealthPickup->GetActorTransform());
+    if (!TestNotNull("PawnWithoutHealthComponent must exists.", PawnWithoutHealthComponent))
+        return false;
 
     TestTrueExpr(HealthPickup->CanBeTaken());
     TestTrueExpr(HealthPickup->GetRootComponent()->GetVisibleFlag());
