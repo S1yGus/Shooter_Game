@@ -133,7 +133,8 @@ bool FBasePickupDeferredPickUpTest::RunTest(const FString& Parameters)
     if (!TestNotNull("SimplePawn must exists.", SimplePawn))
         return false;
 
-    TestTrueExpr(IsValid(BasePickup));
+    if (!TestTrue("BasePickup should not be picked up!", IsValid(BasePickup)))
+        return false;
 
     AddInfo("Switch to true return value of the function TryToGivePickupTo.");
 

@@ -8,6 +8,7 @@
 #include "Tests/SHGTestsUtils.h"
 #include "Pickups/SHGHealthPickupActor.h"
 #include "Components/SphereComponent.h"
+#include "Components/SHGHealthComponent.h"
 #include "Player/SHGPlayerCharacter.h"
 
 using namespace Tests;
@@ -81,29 +82,29 @@ bool FTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
         return false;
 
     const FTransform InitTransform{FVector{500.0, 500.0, 0.0}};
-    const FString HealthPickupActorBlueprintName{"Blueprint'/Game/Gameplay/Pickups/BP_SHGHealthPickupActor.BP_SHGHealthPickupActor'"};
-    const auto HealthPickup = SpawnBlueprint<ASHGHealthPickupActor>(World, HealthPickupActorBlueprintName, InitTransform);
+    const FString HealthPickupActorTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGHealthPickupActorTestable.BP_SHGHealthPickupActorTestable'"};
+    const auto HealthPickup = SpawnBlueprint<ASHGHealthPickupActor>(World, HealthPickupActorTestableBlueprintName, InitTransform);
     if (!TestNotNull("HealthPickup must exists.", HealthPickup))
         return false;
 
-    const auto SphereComponent = HealthPickup->FindComponentByClass<USphereComponent>();
-    if (!TestNotNull("SphereComponent must exists.", SphereComponent))
-        return false;
+    const float HealthAmount = 10.0f;
+    const bool bRespawnable = false;
+    const float RespawnTime = 0.0f;
+    CallFunctionByNameWithParameters(HealthPickup,                             //
+                                     "SetPickupData",                          //
+                                     {FString::SanitizeFloat(HealthAmount),    //
+                                      bRespawnable ? "Yes" : "No",             //
+                                      FString::SanitizeFloat(RespawnTime)});
 
     AddInfo("An attempt to heal a pawn without health component.");
-
-    TestTrueExpr(HealthPickup->CanBeTaken());
-    TestTrueExpr(HealthPickup->GetRootComponent()->GetVisibleFlag());
-    TestTrueExpr(SphereComponent->GetCollisionEnabled() == ECollisionEnabled::QueryOnly);
 
     const FString PawnWithoutHealthComponentBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
     const auto PawnWithoutHealthComponent = SpawnBlueprint<APawn>(World, PawnWithoutHealthComponentBlueprintName, HealthPickup->GetActorTransform());
     if (!TestNotNull("PawnWithoutHealthComponent must exists.", PawnWithoutHealthComponent))
         return false;
 
-    TestTrueExpr(HealthPickup->CanBeTaken());
-    TestTrueExpr(HealthPickup->GetRootComponent()->GetVisibleFlag());
-    TestTrueExpr(SphereComponent->GetCollisionEnabled() == ECollisionEnabled::QueryOnly);
+    if (!TestTrue("HealthPickup should not be picked up!", IsValid(HealthPickup)))
+        return false;
 
     AddInfo("An attempt to heal a dead character.");
 
@@ -113,15 +114,15 @@ bool FTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
         return false;
 
     const auto MaxHealth = 100.0f;
-    const FString AutoHeal{"No"};
-    const auto AutoHealThreshold = 100.0f;
-    const auto AutoHealRate = 0.5f;
-    const auto AutoHealDelay = 2.0f;
-    const auto AutoHealModifier = 1.0f;
+    const bool bAutoHeal = false;
+    const auto AutoHealThreshold = 0.0f;
+    const auto AutoHealRate = 0.0f;
+    const auto AutoHealDelay = 0.0f;
+    const auto AutoHealModifier = 0.0f;
     CallFunctionByNameWithParameters(DeadCharacter,                                 //
                                      "SetHealthData",                               //
                                      {FString::SanitizeFloat(MaxHealth),            //
-                                      AutoHeal,                                     //
+                                      bAutoHeal ? "Yes" : "No",                     //
                                       FString::SanitizeFloat(AutoHealThreshold),    //
                                       FString::SanitizeFloat(AutoHealRate),         //
                                       FString::SanitizeFloat(AutoHealDelay),        //
@@ -131,9 +132,8 @@ bool FTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
     DeadCharacter->TakeDamage(MaxHealth, {}, nullptr, nullptr);
     DeadCharacter->SetActorLocation(HealthPickup->GetActorLocation());
 
-    TestTrueExpr(HealthPickup->CanBeTaken());
-    TestTrueExpr(HealthPickup->GetRootComponent()->GetVisibleFlag());
-    TestTrueExpr(SphereComponent->GetCollisionEnabled() == ECollisionEnabled::QueryOnly);
+    if (!TestTrue("HealthPickup should not be picked up!", IsValid(HealthPickup)))
+        return false;
 
     AddInfo("An attempt to heal a wounded character.");
 
@@ -144,19 +144,27 @@ bool FTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
     CallFunctionByNameWithParameters(WoundedCharacter,                              //
                                      "SetHealthData",                               //
                                      {FString::SanitizeFloat(MaxHealth),            //
-                                      AutoHeal,                                     //
+                                      bAutoHeal ? "Yes" : "No",                     //
                                       FString::SanitizeFloat(AutoHealThreshold),    //
                                       FString::SanitizeFloat(AutoHealRate),         //
                                       FString::SanitizeFloat(AutoHealDelay),        //
                                       FString::SanitizeFloat(AutoHealModifier)});
     WoundedCharacter->FinishSpawning(FTransform::Identity);
 
-    WoundedCharacter->TakeDamage(MaxHealth - 1.0f, {}, nullptr, nullptr);
+    const auto HealthComponent = WoundedCharacter->FindComponentByClass<USHGHealthComponent>();
+    if (!TestNotNull("HealthComponent must exists.", HealthComponent))
+        return false;
+
+    const float DamageAmount = 20.0f;
+    WoundedCharacter->TakeDamage(DamageAmount, {}, nullptr, nullptr);
+
+    TestTrueExpr(HealthComponent->GetHealth() == MaxHealth - DamageAmount);
+
     WoundedCharacter->SetActorLocation(HealthPickup->GetActorLocation());
 
-    TestTrueExpr(!HealthPickup->CanBeTaken());
-    TestTrueExpr(!HealthPickup->GetRootComponent()->GetVisibleFlag());
-    TestTrueExpr(SphereComponent->GetCollisionEnabled() == ECollisionEnabled::NoCollision);
+    TestTrueExpr(HealthComponent->GetHealth() == MaxHealth - DamageAmount + HealthAmount);
+    if (!TestTrue("HealthPickup should be picked up!", !IsValid(HealthPickup)))
+        return false;
 
     return true;
 }
