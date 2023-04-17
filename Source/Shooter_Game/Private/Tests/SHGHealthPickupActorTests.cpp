@@ -13,13 +13,18 @@
 
 using namespace Tests;
 
+const static FString HealthPickupActorBlueprintName{"Blueprint'/Game/Gameplay/Pickups/BP_SHGHealthPickupActor.BP_SHGHealthPickupActor'"};
+const static FString HealthPickupActorTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGHealthPickupActorTestable.BP_SHGHealthPickupActorTestable'"};
+const static FString PawnWithoutHealthComponentBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
+const static FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthPickupCppActorCantBeCreated, "Shooter_Game.Pickups.HealthPickup.CppActorCantBeCreated",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthPickupBlueprintShouldBeSetupCorrectly, "Shooter_Game.Pickups.HealthPickup.BlueprintShouldBeSetupCorrectly",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
-IMPLEMENT_SIMPLE_AUTOMATION_TEST(FTryToGivePickupToOverrideFunctionTest, "Shooter_Game.Pickups.HealthPickup.TryToGivePickupToOverrideFunctionTest",
+IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthPickupTryToGivePickupToOverrideFunctionTest, "Shooter_Game.Pickups.HealthPickup.TryToGivePickupToOverrideFunctionTest",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
 bool FHealthPickupCppActorCantBeCreated::RunTest(const FString& Parameters)
@@ -48,7 +53,6 @@ bool FHealthPickupBlueprintShouldBeSetupCorrectly::RunTest(const FString& Parame
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    const FString HealthPickupActorBlueprintName{"Blueprint'/Game/Gameplay/Pickups/BP_SHGHealthPickupActor.BP_SHGHealthPickupActor'"};
     const auto HealthPickup = SpawnBlueprint<ASHGHealthPickupActor>(World, HealthPickupActorBlueprintName);
     if (!TestNotNull("HealthPickup must exists.", HealthPickup))
         return false;
@@ -73,7 +77,7 @@ bool FHealthPickupBlueprintShouldBeSetupCorrectly::RunTest(const FString& Parame
     return true;
 }
 
-bool FTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
+bool FHealthPickupTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
 {
     LevelScope("/Game/Tests/EmptyTestLevel");
 
@@ -82,7 +86,6 @@ bool FTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
         return false;
 
     const FTransform InitTransform{FVector{500.0, 500.0, 0.0}};
-    const FString HealthPickupActorTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGHealthPickupActorTestable.BP_SHGHealthPickupActorTestable'"};
     const auto HealthPickup = SpawnBlueprint<ASHGHealthPickupActor>(World, HealthPickupActorTestableBlueprintName, InitTransform);
     if (!TestNotNull("HealthPickup must exists.", HealthPickup))
         return false;
@@ -98,7 +101,6 @@ bool FTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
 
     AddInfo("An attempt to heal a pawn without health component.");
 
-    const FString PawnWithoutHealthComponentBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
     const auto PawnWithoutHealthComponent = SpawnBlueprint<APawn>(World, PawnWithoutHealthComponentBlueprintName, HealthPickup->GetActorTransform());
     if (!TestNotNull("PawnWithoutHealthComponent must exists.", PawnWithoutHealthComponent))
         return false;
@@ -108,7 +110,6 @@ bool FTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
 
     AddInfo("An attempt to heal a dead character.");
 
-    const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
     const auto DeadCharacter = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
     if (!TestNotNull("DeadCharacter must exists.", DeadCharacter))
         return false;

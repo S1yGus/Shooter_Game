@@ -11,6 +11,9 @@
 
 using namespace Tests;
 
+const static FString SimpleActorBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestActor.BP_SimpleTestActor'"};
+const static FString SimplePawnBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
+
 DEFINE_LOG_CATEGORY_STATIC(BasePickupTestsLog, All, All);
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FBasePickupCppActorCantBeCreated, "Shooter_Game.Pickups.BasePickup.CppActorCantBeCreated",
@@ -55,18 +58,16 @@ bool FBasePickupShouldNotBePpickedUpByNotPawn::RunTest(const FString& Parameters
         return false;
 
     const FTransform InitTransform{FVector{500.0, 500.0, 0.0}};
-    const auto BasePickup = World->SpawnActorDeferred<ASHGBasePickupActorTestable>(ASHGBasePickupActorTestable::StaticClass(), InitTransform);
+    const auto BasePickup = World->SpawnActor<ASHGBasePickupActorTestable>(ASHGBasePickupActorTestable::StaticClass(), InitTransform);
     if (!TestNotNull("BasePickup must exists.", BasePickup))
         return false;
 
     const bool bReturnValue = true;
     const bool bRespawnable = false;
     BasePickup->SetPickupData(bReturnValue, bRespawnable);
-    BasePickup->FinishSpawning(InitTransform);
 
     AddInfo("An attempt to take the pickup by not a pawn.");
 
-    const FString SimpleActorBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestActor.BP_SimpleTestActor'"};
     const auto SimpleActor = SpawnBlueprint<AActor>(World, SimpleActorBlueprintName, BasePickup->GetActorTransform());
     if (!TestNotNull("SimpleActor must exists.", SimpleActor))
         return false;
@@ -85,18 +86,16 @@ bool FBasePickupShouldBePpickedUpByPawn::RunTest(const FString& Parameters)
         return false;
 
     const FTransform InitTransform{FVector{500.0, 500.0, 0.0}};
-    const auto BasePickup = World->SpawnActorDeferred<ASHGBasePickupActorTestable>(ASHGBasePickupActorTestable::StaticClass(), InitTransform);
+    const auto BasePickup = World->SpawnActor<ASHGBasePickupActorTestable>(ASHGBasePickupActorTestable::StaticClass(), InitTransform);
     if (!TestNotNull("BasePickup must exists.", BasePickup))
         return false;
 
     const bool bReturnValue = true;
     const bool bRespawnable = false;
     BasePickup->SetPickupData(bReturnValue, bRespawnable);
-    BasePickup->FinishSpawning(InitTransform);
 
     AddInfo("An attempt to take the pickup by a pawn.");
 
-    const FString SimplePawnBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
     const auto SimplePawn = SpawnBlueprint<APawn>(World, SimplePawnBlueprintName, BasePickup->GetActorTransform());
     if (!TestNotNull("SimplePawn must exists.", SimplePawn))
         return false;
@@ -117,18 +116,16 @@ bool FBasePickupDeferredPickUpTest::RunTest(const FString& Parameters)
     AddInfo("Creating the base pickup with temporary false return value of the function TryToGivePickupTo.");
 
     const FTransform InitTransform{FVector{500.0, 500.0, 0.0}};
-    const auto BasePickup = World->SpawnActorDeferred<ASHGBasePickupActorTestable>(ASHGBasePickupActorTestable::StaticClass(), InitTransform);
+    const auto BasePickup = World->SpawnActor<ASHGBasePickupActorTestable>(ASHGBasePickupActorTestable::StaticClass(), InitTransform);
     if (!TestNotNull("BasePickup must exists.", BasePickup))
         return false;
 
     bool bReturnValue = false;
     const bool bRespawnable = false;
     BasePickup->SetPickupData(bReturnValue, bRespawnable);
-    BasePickup->FinishSpawning(InitTransform);
 
     AddInfo("An attempt to take the pickup by a pawn.");
 
-    const FString SimplePawnBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
     const auto SimplePawn = SpawnBlueprint<APawn>(World, SimplePawnBlueprintName, BasePickup->GetActorTransform());
     if (!TestNotNull("SimplePawn must exists.", SimplePawn))
         return false;
@@ -163,18 +160,16 @@ bool FBasePickupRespawnTest::RunTest(const FString& Parameters)
         return false;
 
     FTransform InitTransform{FVector{500.0, 500.0, 0.0}};
-    const auto NotRespawnableBasePickup = World->SpawnActorDeferred<ASHGBasePickupActorTestable>(ASHGBasePickupActorTestable::StaticClass(), InitTransform);
+    const auto NotRespawnableBasePickup = World->SpawnActor<ASHGBasePickupActorTestable>(ASHGBasePickupActorTestable::StaticClass(), InitTransform);
     if (!TestNotNull("NotRespawnableBasePickup must exists.", NotRespawnableBasePickup))
         return false;
 
     bool bReturnValue = true;
     bool bRespawnable = false;
     NotRespawnableBasePickup->SetPickupData(bReturnValue, bRespawnable);
-    NotRespawnableBasePickup->FinishSpawning(InitTransform);
 
     AddInfo("Picking up the not respawnable base pickup.");
 
-    const FString SimplePawnBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
     auto SimplePawn = SpawnBlueprint<APawn>(World, SimplePawnBlueprintName, NotRespawnableBasePickup->GetActorTransform());
     if (!TestNotNull("SimplePawn must exists.", SimplePawn))
         return false;
@@ -183,14 +178,13 @@ bool FBasePickupRespawnTest::RunTest(const FString& Parameters)
 
     SimplePawn->Destroy();
 
-    const auto RespawnableBasePickup = World->SpawnActorDeferred<ASHGBasePickupActorTestable>(ASHGBasePickupActorTestable::StaticClass(), InitTransform);
+    const auto RespawnableBasePickup = World->SpawnActor<ASHGBasePickupActorTestable>(ASHGBasePickupActorTestable::StaticClass(), InitTransform);
     if (!TestNotNull("RespawnableBasePickup must exists.", RespawnableBasePickup))
         return false;
 
     bRespawnable = true;
     const float RespawnTime = 2.0f;
     RespawnableBasePickup->SetPickupData(bReturnValue, bRespawnable, RespawnTime);
-    RespawnableBasePickup->FinishSpawning(InitTransform);
 
     const auto SphereComponent = RespawnableBasePickup->FindComponentByClass<USphereComponent>();
     if (!TestNotNull("SphereComponent must exists.", SphereComponent))

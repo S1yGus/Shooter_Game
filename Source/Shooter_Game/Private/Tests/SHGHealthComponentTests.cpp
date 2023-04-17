@@ -10,9 +10,11 @@
 #include "Components/SHGHealthComponent.h"
 #include "Player/SHGPlayerCharacter.h"
 
-DEFINE_LOG_CATEGORY_STATIC(HealthComponentTests, All, All);
-
 using namespace Tests;
+
+const static FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
+
+DEFINE_LOG_CATEGORY_STATIC(HealthComponentTests, All, All);
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthComponentBaseFunctional, "Shooter_Game.Components.HealthComponent.BaseFunctional",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
@@ -33,13 +35,8 @@ bool FHealthComponentBaseFunctional::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
     const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
-        return false;
-
-    const auto HealthComponent = Player->FindComponentByClass<USHGHealthComponent>();
-    if (!TestNotNull("HealthComponent must exists.", HealthComponent))
         return false;
 
     const auto FuncName{"SetHealthData"};
@@ -59,6 +56,10 @@ bool FHealthComponentBaseFunctional::RunTest(const FString& Parameters)
                                       FString::SanitizeFloat(AutoHealModifier)});
 
     Player->FinishSpawning(FTransform::Identity);
+
+    const auto HealthComponent = Player->FindComponentByClass<USHGHealthComponent>();
+    if (!TestNotNull("HealthComponent must exists.", HealthComponent))
+        return false;
 
     AddInfo("Initial values. Completely healthy.");
 
@@ -126,13 +127,8 @@ bool FHealthComponentAutoHeal::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
     const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
-        return false;
-
-    const auto HealthComponent = Player->FindComponentByClass<USHGHealthComponent>();
-    if (!TestNotNull("HealthComponent must exists.", HealthComponent))
         return false;
 
     const auto FuncName{"SetHealthData"};
@@ -152,6 +148,10 @@ bool FHealthComponentAutoHeal::RunTest(const FString& Parameters)
                                       FString::SanitizeFloat(AutoHealModifier)});
 
     Player->FinishSpawning(FTransform::Identity);
+
+    const auto HealthComponent = Player->FindComponentByClass<USHGHealthComponent>();
+    if (!TestNotNull("HealthComponent must exists.", HealthComponent))
+        return false;
 
     AddInfo("Initial values. Completely healthy.");
 
@@ -211,13 +211,8 @@ bool FHealthComponentDelegates::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    const FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
     const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
-        return false;
-
-    const auto HealthComponent = Player->FindComponentByClass<USHGHealthComponent>();
-    if (!TestNotNull("HealthComponent must exists.", HealthComponent))
         return false;
 
     const auto FuncName{"SetHealthData"};
@@ -239,6 +234,10 @@ bool FHealthComponentDelegates::RunTest(const FString& Parameters)
     CallFunctionByNameWithParameters(Player, "ClearDamageModifiersMap", {});
 
     Player->FinishSpawning(FTransform::Identity);
+
+    const auto HealthComponent = Player->FindComponentByClass<USHGHealthComponent>();
+    if (!TestNotNull("HealthComponent must exists.", HealthComponent))
+        return false;
 
     AddInfo("Initial values. Completely healthy.");
 

@@ -18,12 +18,14 @@ bool FFormatStringFromIntTest::RunTest(const FString& Parameters)
     AddInfo("FormatStringFromInt test.");
 
     using TestPayloadArray = TArray<TestPayload<TTuple<int32, int32, TCHAR>, FString>>;
-    TestPayloadArray TestPayload{{{42, 6, 'x'}, "xxxx42"},    //
-                                 {{42, 4, ' '}, "  42"},      //
-                                 {{42, 2, ' '}, "42"},        //
-                                 {{42, 1, ' '}, "42"},        //
-                                 {{42, 0, ' '}, "42"},        //
-                                 {{42, -42, ' '}, "42"}};
+    // clang-format off
+    const TestPayloadArray TestPayload{{{42,   6, 'x'}, "xxxx42"},
+                                       {{42,   4, ' '},   "  42"},
+                                       {{42,   2, ' '},     "42"},
+                                       {{42,   1, ' '},     "42"},
+                                       {{42,   0, ' '},     "42"},
+                                       {{42, -42, ' '},     "42"}};
+    // clang-format on
 
     for (const auto& OnePayload : TestPayload)
     {
