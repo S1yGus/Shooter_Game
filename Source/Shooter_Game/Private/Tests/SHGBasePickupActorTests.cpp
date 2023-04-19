@@ -107,7 +107,7 @@ bool FBasePickupShouldBePpickedUpByPawn::RunTest(const FString& Parameters)
 
 bool FBasePickupDeferredPickUpTest::RunTest(const FString& Parameters)
 {
-    LevelScope LevelScope("/Game/Tests/EmptyTestLevel");
+    LevelScope Level("/Game/Tests/EmptyTestLevel");
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -153,7 +153,7 @@ bool FBasePickupDeferredPickUpTest::RunTest(const FString& Parameters)
 
 bool FBasePickupRespawnTest::RunTest(const FString& Parameters)
 {
-    LevelScope LevelScope("/Game/Tests/EmptyTestLevel");
+    LevelScope Level("/Game/Tests/EmptyTestLevel");
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))

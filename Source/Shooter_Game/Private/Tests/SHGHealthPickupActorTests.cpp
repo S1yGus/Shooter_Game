@@ -16,7 +16,7 @@ using namespace Tests;
 const static FString HealthPickupActorBlueprintName{"Blueprint'/Game/Gameplay/Pickups/BP_SHGHealthPickupActor.BP_SHGHealthPickupActor'"};
 const static FString HealthPickupActorTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGHealthPickupActorTestable.BP_SHGHealthPickupActorTestable'"};
 const static FString PawnWithoutHealthComponentBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
-const static FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
+const static FString CharacterTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthPickupCppActorCantBeCreated, "Shooter_Game.Pickups.HealthPickup.CppActorCantBeCreated",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
@@ -110,7 +110,7 @@ bool FHealthPickupTryToGivePickupToOverrideFunctionTest::RunTest(const FString& 
 
     AddInfo("An attempt to heal a dead character.");
 
-    const auto DeadCharacter = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
+    const auto DeadCharacter = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, CharacterTestableBlueprintName);
     if (!TestNotNull("DeadCharacter must exists.", DeadCharacter))
         return false;
 
@@ -138,7 +138,7 @@ bool FHealthPickupTryToGivePickupToOverrideFunctionTest::RunTest(const FString& 
 
     AddInfo("An attempt to heal a wounded character.");
 
-    const auto WoundedCharacter = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
+    const auto WoundedCharacter = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, CharacterTestableBlueprintName);
     if (!TestNotNull("WoundedCharacter must exists.", WoundedCharacter))
         return false;
 
