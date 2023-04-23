@@ -54,11 +54,11 @@ struct FArenaData
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", Meta = (ClampMin = "1", ClampMax = "99"))
     int32 RaundsNum = 5;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", Meta = (ClampMin = "1", Units = "s"))
-    int32 RaundTime = 300;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", Meta = (ClampMin = "1.0", Units = "s"))
+    float RaundTime = 300;
 
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", Meta = (ClampMin = "1", Units = "s"))
-    int32 RespawnTime = 5;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Game", Meta = (ClampMin = "1.0", Units = "s"))
+    float RespawnTime = 5;
 };
 
 // Health

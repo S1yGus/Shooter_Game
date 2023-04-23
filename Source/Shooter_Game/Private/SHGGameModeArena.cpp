@@ -10,9 +10,7 @@
 #include "AIController.h"
 #include "EngineUtils.h"
 
-DEFINE_LOG_CATEGORY_STATIC(GameModeLog, All, All)
-
-constexpr static int32 MinRaundTimeForRespawn = 1;
+DEFINE_LOG_CATEGORY_STATIC(GameModeArenaLog, All, All)
 
 ASHGGameModeArena::ASHGGameModeArena()
 {
@@ -29,47 +27,8 @@ void ASHGGameModeArena::StartPlay()
     SpawnAIControllers();
     SetTeamsID();
     StartRaund();
-
     SetGameState(EGameState::Game);
-
     ShowHint(EHintType::Startup, StartupHintDelay);
-}
-
-UClass* ASHGGameModeArena::GetDefaultPawnClassForController_Implementation(AController* InController)
-{
-    if (InController && InController->IsA<AAIController>())
-        return AIDefaultPawnClass;
-
-    return Super::GetDefaultPawnClassForController_Implementation(InController);
-}
-
-float ASHGGameModeArena::GetCurrentRaundTime() const
-{
-    if (!GetWorldTimerManager().IsTimerActive(RaundTimerHandle))
-        return 0.0f;
-
-    return GetWorldTimerManager().GetTimerRemaining(RaundTimerHandle);
-}
-
-void ASHGGameModeArena::Killed(AController* KillerController, AController* VictimController)
-{
-    if (!KillerController || !VictimController)
-        return;
-
-    const auto KillerPlayerState = Cast<ASHGPlayerState>(KillerController->PlayerState);
-    const auto VictimPlayerState = Cast<ASHGPlayerState>(VictimController->PlayerState);
-    if (!KillerPlayerState || !VictimPlayerState)
-        return;
-
-    KillerPlayerState->AddKill();
-    VictimPlayerState->AddDeath();
-
-    Respawn(VictimController);
-}
-
-void ASHGGameModeArena::RespawnRequest(AController* Controller)
-{
-    ResetOnePlayer(Controller);
 }
 
 bool ASHGGameModeArena::SetPause(APlayerController* PC, FCanUnpause CanUnpauseDelegate)
@@ -94,33 +53,44 @@ bool ASHGGameModeArena::ClearPause()
     return PauseCleared;
 }
 
-void ASHGGameModeArena::SetTeamsID()
+UClass* ASHGGameModeArena::GetDefaultPawnClassForController_Implementation(AController* InController)
 {
-    int32 BotID = 0;
-    int32 TeamID = 0;
+    if (InController && InController->IsA<AAIController>())
+        return AIDefaultPawnClass;
 
-    for (auto It = GetWorld()->GetControllerIterator(); It; ++It)
-    {
-        const auto Controller = It->Get();
-        if (!Controller)
-            continue;
+    return Super::GetDefaultPawnClassForController_Implementation(InController);
+}
 
-        const auto ShooterPlayerState = Cast<ASHGPlayerState>(Controller->PlayerState);
-        if (!ShooterPlayerState)
-            continue;
+float ASHGGameModeArena::GetCurrentRaundTime() const
+{
+    return GetWorldTimerManager().IsTimerActive(RaundTimerHandle) ? GetWorldTimerManager().GetTimerRemaining(RaundTimerHandle) : 0.0f;
+}
 
-        ShooterPlayerState->SetTeamID(TeamID);
-        ShooterPlayerState->SetTeamColor(DetermenColorByTeamID(TeamID));
-        TeamID = (TeamID + 1) % GameData.TeamsNum;
+void ASHGGameModeArena::Killed(AController* KillerController, AController* VictimController)
+{
+    if (!KillerController || !VictimController)
+        return;
 
-        ShooterPlayerState->SetPlayerName(Controller->IsPlayerController() ? "Player" : "Bot_" + FString::FromInt(BotID++));
-    }
+    const auto KillerPlayerState = Cast<ASHGPlayerState>(KillerController->PlayerState);
+    const auto VictimPlayerState = Cast<ASHGPlayerState>(VictimController->PlayerState);
+    if (!KillerPlayerState || !VictimPlayerState)
+        return;
+
+    KillerPlayerState->AddKill();
+    VictimPlayerState->AddDeath();
+
+    Respawn(VictimController);
+}
+
+void ASHGGameModeArena::RespawnRequest(AController* Controller)
+{
+    ResetOnePlayer(Controller);
 }
 
 FLinearColor ASHGGameModeArena::DetermenColorByTeamID(int32 TeamID) const
 {
     FLinearColor TeamColor = GameData.DefaultTeamColor;
-    if (TeamID <= GameData.TeamsColors.Num() - 1)
+    if (TeamID < GameData.TeamsColors.Num())
     {
         TeamColor = GameData.TeamsColors[TeamID];
     }
@@ -128,39 +98,69 @@ FLinearColor ASHGGameModeArena::DetermenColorByTeamID(int32 TeamID) const
     return TeamColor;
 }
 
-void ASHGGameModeArena::SetPlayerColor(AController* Controller)
+void ASHGGameModeArena::StopAllFire()
 {
-    const auto ShooterPlayerState = Cast<ASHGPlayerState>(Controller->PlayerState);
-    const auto ShooterBaseCharacter = Cast<ASHGBaseCharacter>(Controller->GetPawn());
-    if (!ShooterPlayerState || !ShooterBaseCharacter)
-        return;
-
-    ShooterBaseCharacter->SetColor(DetermenColorByTeamID(ShooterPlayerState->GetTeamID()));
+    for (const auto Pawn : TActorRange<APawn>(GetWorld()))
+    {
+        if (const auto WeaponComponent = Pawn->FindComponentByClass<USHGBaseWeaponComponent>())
+        {
+            WeaponComponent->StopFire();
+            WeaponComponent->Zoom(false);
+        }
+    }
 }
 
 void ASHGGameModeArena::SpawnAIControllers()
 {
     FActorSpawnParameters SpawnInfo;
     SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
-
     for (int32 i = 0; i < GameData.PlayersNum - 1; ++i)
     {
-        const auto AIController = GetWorld()->SpawnActor<AAIController>(AIControllerClass, SpawnInfo);
+        GetWorld()->SpawnActor<AAIController>(AIControllerClass, SpawnInfo);
     }
+}
+
+void ASHGGameModeArena::SetTeamsID()
+{
+    int32 BotID = 0;
+    int32 TeamID = 0;
+
+    for (const auto Controller : TActorRange<AController>(GetWorld()))
+    {
+        if (!Controller)
+            continue;
+
+        const auto SHGPlayerState = Cast<ASHGPlayerState>(Controller->PlayerState);
+        if (!SHGPlayerState)
+            continue;
+
+        SHGPlayerState->SetTeamID(TeamID);
+        SHGPlayerState->SetTeamColor(DetermenColorByTeamID(TeamID));
+        TeamID = (TeamID + 1) % GameData.TeamsNum;
+        SHGPlayerState->SetPlayerName(Controller->IsPlayerController() ? "Player" : "Bot_" + FString::FromInt(BotID++));
+    }
+}
+
+void ASHGGameModeArena::SetPlayerColor(AController* Controller)
+{
+    const auto SHGPlayerState = Cast<ASHGPlayerState>(Controller->PlayerState);
+    const auto SHGBaseCharacter = Cast<ASHGBaseCharacter>(Controller->GetPawn());
+    if (!SHGPlayerState || !SHGBaseCharacter)
+        return;
+
+    SHGBaseCharacter->SetColor(SHGPlayerState->GetTeamColor());
 }
 
 void ASHGGameModeArena::StartRaund()
 {
     ResetPlayers();
-
     GetWorldTimerManager().SetTimer(RaundTimerHandle, this, &ThisClass::EndRaund, GameData.RaundTime);
-
     OnNewRaund.Broadcast(CurrentRaund, GameData.RaundsNum);
 }
 
 void ASHGGameModeArena::EndRaund()
 {
-    if (CurrentRaund + 1 <= GameData.RaundsNum)
+    if (CurrentRaund != GameData.RaundsNum)
     {
         ++CurrentRaund;
         StartRaund();
@@ -173,28 +173,28 @@ void ASHGGameModeArena::EndRaund()
 
 void ASHGGameModeArena::ResetPlayers()
 {
-    for (auto It = GetWorld()->GetControllerIterator(); It; ++It)
+    for (const auto Controller : TActorRange<AController>(GetWorld()))
     {
-        ResetOnePlayer(It->Get());
+        ResetOnePlayer(Controller);
     }
 }
 
 void ASHGGameModeArena::ResetOnePlayer(AController* Controller)
 {
-    if (!Controller)
-        return;
-
-    if (const auto Pawn = Controller->GetPawn())
+    if (Controller)
     {
-        Pawn->Reset();
-    }
+        if (const auto Pawn = Controller->GetPawn())
+        {
+            Pawn->Reset();
+        }
 
-    RestartPlayer(Controller);
-    SetPlayerColor(Controller);
+        RestartPlayer(Controller);
+        SetPlayerColor(Controller);
 
-    if (Controller->IsPlayerController())
-    {
-        SetGameState(EGameState::Game);
+        if (Controller->IsPlayerController())
+        {
+            SetGameState(EGameState::Game);
+        }
     }
 }
 
@@ -230,9 +230,8 @@ void ASHGGameModeArena::GameOver()
 
 void ASHGGameModeArena::LogGameInfo()
 {
-    for (auto It = GetWorld()->GetControllerIterator(); It; ++It)
+    for (const auto Controller : TActorRange<AController>(GetWorld()))
     {
-        const auto Controller = It->Get();
         if (!Controller)
             continue;
 
@@ -241,18 +240,5 @@ void ASHGGameModeArena::LogGameInfo()
             continue;
 
         PlayerState->LogInfo();
-    }
-}
-
-void ASHGGameModeArena::StopAllFire()
-{
-    for (const auto Pawn : TActorRange<APawn>(GetWorld()))
-    {
-        const auto WeaponComponent = Pawn->FindComponentByClass<USHGBaseWeaponComponent>();
-        if (!WeaponComponent)
-            continue;
-
-        WeaponComponent->StopFire();
-        WeaponComponent->Zoom(false);
     }
 }

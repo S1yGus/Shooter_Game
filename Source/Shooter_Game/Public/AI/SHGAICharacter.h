@@ -20,6 +20,7 @@ public:
     UBehaviorTree* GetBehaviorTree() { return BehaviorTree; }
 
     virtual void BeginPlay() override;
+    virtual void TurnOff() override;
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")
@@ -32,6 +33,8 @@ protected:
     float HealthWidgetVisibilityDistance = 2500.0f;
 
 private:
+    inline void StopBehaviorTree();
+
     virtual void OnDeath(AController* KillerController, AController* VictimController) override;
 
     void OnHealthChanged(float Health, float HealthPercent);

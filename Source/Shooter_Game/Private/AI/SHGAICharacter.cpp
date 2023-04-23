@@ -47,6 +47,28 @@ void ASHGAICharacter::BeginPlay()
                                     true);
 }
 
+void ASHGAICharacter::TurnOff()
+{
+    Super::TurnOff();
+
+    StopBehaviorTree();
+}
+
+void ASHGAICharacter::StopBehaviorTree()
+{
+    if (const auto AIController = Cast<AAIController>(Controller); AIController && AIController->BrainComponent)
+    {
+        AIController->BrainComponent->Cleanup();
+    }
+}
+
+void ASHGAICharacter::OnDeath(AController* KillerController, AController* VictimController)
+{
+    Super::OnDeath(KillerController, VictimController);
+
+    StopBehaviorTree();
+}
+
 void ASHGAICharacter::OnHealthChanged(float Health, float HealthPercent)
 {
     if (const auto HealthWidget = Cast<USHGAIHealthBarUserWidget>(HealthWidgetComponent->GetUserWidgetObject()))
@@ -79,15 +101,5 @@ void ASHGAICharacter::OnUpdateHealthWidget()
         NewRotation.Yaw += 180.0f;     // To flip to face the player.
         NewRotation.Pitch *= -1.0f;    // To invert pitch.
         HealthWidgetComponent->SetWorldRotation(NewRotation);
-    }
-}
-
-void ASHGAICharacter::OnDeath(AController* KillerController, AController* VictimController)
-{
-    Super::OnDeath(KillerController, VictimController);
-
-    if (const auto AIController = Cast<AAIController>(Controller); AIController && AIController->BrainComponent)
-    {
-        AIController->BrainComponent->Cleanup();
     }
 }

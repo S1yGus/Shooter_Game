@@ -64,8 +64,6 @@ int32 Tests::GetAxisBindingIndexByName(UInputComponent* InputComponent, const FS
     return INDEX_NONE;
 }
 
-#endif    // WITH_AUTOMATION_TESTS
-
 Tests::FUntilLatentCommand::FUntilLatentCommand(TFunction<void()> InCallback, TFunction<void()> InTimeoutCallback, float InTimeout)
     : Callback(MoveTemp(InCallback)), TimeoutCallback(MoveTemp(InTimeoutCallback)), Timeout(InTimeout)
 {
@@ -85,3 +83,5 @@ bool Tests::FUntilLatentCommand::Update()
 
     return false;
 }
+
+#endif    // WITH_AUTOMATION_TESTS
