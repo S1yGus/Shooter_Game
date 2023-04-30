@@ -5,7 +5,7 @@
 #include "Tests/SHGHealthPickupActorTests.h"
 #include "CoreMinimal.h"
 #include "Misc/AutomationTest.h"
-#include "Tests/SHGTestsUtils.h"
+#include "Tests/Utils/SHGTestsUtils.h"
 #include "Pickups/SHGHealthPickupActor.h"
 #include "Components/SphereComponent.h"
 #include "Components/SHGHealthComponent.h"
@@ -64,12 +64,14 @@ bool FHealthPickupBlueprintShouldBeSetupCorrectly::RunTest(const FString& Parame
     TestTrueExpr(SphereComponent->GetScaledSphereRadius() > 0.0f);
     TestTrueExpr(SphereComponent->GetCollisionEnabled() == ECollisionEnabled::QueryOnly);
 
-    ENUM_LOOP_START(ECollisionChannel, Elem)
-    if (Elem != ECollisionChannel::ECC_OverlapAll_Deprecated)
-    {
-        TestTrueExpr(SphereComponent->GetCollisionResponseToChannel(Elem) == ECollisionResponse::ECR_Overlap);
-    }
-    ENUM_LOOP_END
+    ForEach<ECollisionChannel>(
+        [&](ECollisionChannel Elem)
+        {
+            if (Elem != ECollisionChannel::ECC_OverlapAll_Deprecated)
+            {
+                TestTrueExpr(SphereComponent->GetCollisionResponseToChannel(Elem) == ECollisionResponse::ECR_Overlap);
+            }
+        });
 
     TestTrueExpr(HealthPickup->GetRootComponent() == SphereComponent);
     TestTrueExpr(HealthPickup->PrimaryActorTick.bCanEverTick);

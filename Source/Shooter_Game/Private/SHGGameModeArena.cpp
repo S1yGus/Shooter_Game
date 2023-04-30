@@ -10,7 +10,7 @@
 #include "AIController.h"
 #include "EngineUtils.h"
 
-DEFINE_LOG_CATEGORY_STATIC(GameModeArenaLog, All, All)
+DEFINE_LOG_CATEGORY_STATIC(LogGameModeArena, All, All)
 
 ASHGGameModeArena::ASHGGameModeArena()
 {

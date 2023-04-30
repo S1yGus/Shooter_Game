@@ -7,15 +7,28 @@
 #include "CoreMinimal.h"
 #include "Tests/AutomationCommon.h"
 #include "Engine/Blueprint.h"
+#include "Tests/Utils/InputRecordingTypes.h"
 
 namespace Tests
 {
+#define NO_VALUE -1.0f
+
 #define ENUM_LOOP_START(EnumType, EnumElemName)                                    \
     for (int32 index = 0; index < StaticEnum<EnumType>()->NumEnums() - 1; ++index) \
     {                                                                              \
-        const auto EnumElemName = static_cast<EnumType>(index);
+        const auto EnumElemName = static_cast<EnumType>(StaticEnum<EnumType>()->GetValueByIndex(index));
 
 #define ENUM_LOOP_END }
+
+template <typename EnumType, typename FunctionType>
+void ForEach(FunctionType&& Function)
+{
+    const auto Enum = StaticEnum<EnumType>();
+    for (int32 i = 0; i != Enum->NumEnums() - 1; ++i)
+    {
+        Function(static_cast<EnumType>(Enum->GetValueByIndex(i)));
+    }
+}
 
 class LevelScope
 {
@@ -49,9 +62,9 @@ UWorld* GetCurrentWorld();
 
 void CallFunctionByNameWithParameters(UObject* Object, const FString& FuncName, const TArray<FString>& Params);
 
-int32 GetActionBindingIndexByName(UInputComponent* InputComponent, const FString& ActionName, EInputEvent InputEvent);
+int32 GetActionBindingIndexByName(const UInputComponent* InputComponent, const FString& ActionName, EInputEvent InputEvent);
 
-int32 GetAxisBindingIndexByName(UInputComponent* InputComponent, const FString& AxisName);
+int32 GetAxisBindingIndexByName(const UInputComponent* InputComponent, const FString& AxisName);
 
 class FUntilLatentCommand : public IAutomationLatentCommand
 {
@@ -64,6 +77,23 @@ private:
     TFunction<void()> Callback;
     TFunction<void()> TimeoutCallback;
     float Timeout;
+};
+
+class FSimulateMovmentLatentCommand : public IAutomationLatentCommand
+{
+public:
+    FSimulateMovmentLatentCommand(const UWorld* InWorld, const UInputComponent* InInputComponent, const TArray<FBindingsData>& InBindings);
+    virtual ~FSimulateMovmentLatentCommand() override;
+
+    virtual bool Update() override;
+
+private:
+    const UWorld* World;
+    const UInputComponent* InputComponent;
+    const TArray<FBindingsData> Bindings;
+    int32 Index = 0;
+    float WorldStartTime = NO_VALUE;
+    float OldFPS = NO_VALUE;
 };
 }    // namespace Tests
 

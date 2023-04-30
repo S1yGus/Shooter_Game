@@ -4,7 +4,7 @@
 
 #include "Tests/SHGHealthComponentTests.h"
 #include "CoreMinimal.h"
-#include "Tests/SHGTestsUtils.h"
+#include "Tests/Utils/SHGTestsUtils.h"
 #include "Misc/AutomationTest.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SHGHealthComponent.h"

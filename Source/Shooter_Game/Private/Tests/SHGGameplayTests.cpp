@@ -4,11 +4,17 @@
 
 #include "Tests/SHGGameplayTests.h"
 #include "CoreMinimal.h"
-#include "Tests/SHGTestsUtils.h"
+#include "Tests/Utils/SHGTestsUtils.h"
 #include "Misc/AutomationTest.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/Character.h"
 #include "Pickups/SHGBasePickupActor.h"
+#include "Tests/Utils/InputRecordingTypes.h"
+#include "Tests/Utils/JsonUtils.h"
+#include "Dom/JsonObject.h"
+#include "JsonObjectConverter.h"
+#include "Serialization/JsonWriter.h"
+#include "Serialization/JsonReader.h"
 
 using namespace Tests;
 
@@ -20,6 +26,9 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPickupCantBeTakenOnJumpIfTooHigh, "Shooter_Gam
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAllPickupsAreTakenOnMovement, "Shooter_Game.Gameplay.AllPickupsAreTakenOnMovement",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
+
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(FAllPickupsAreTakenOnRecordingMovement, "Shooter_Game.Gameplay.AllPickupsAreTakenOnRecordingMovement",
+                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::LowPriority);
 
 DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(FJumpLatentComand, ACharacter*, Character);
 bool FJumpLatentComand::Update()
@@ -107,7 +116,7 @@ bool FAllPickupsAreTakenOnMovement::RunTest(const FString& Parameters)
         return false;
 
     const auto InputComponent = Player->InputComponent;
-    if (!TestNotNull("InputComponent must exists.", InputComponent.Get()))
+    if (!TestNotNull("Player inputComponent must exists.", InputComponent.Get()))
         return false;
 
     TArray<AActor*> PickupActors;
@@ -146,6 +155,91 @@ bool FAllPickupsAreTakenOnMovement::RunTest(const FString& Parameters)
             TestTrueExpr(PickupActors.IsEmpty());
         },
         2.0f));
+
+    return true;
+}
+
+void FAllPickupsAreTakenOnRecordingMovement::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
+{
+    struct FTestData
+    {
+        FString Name;
+        FRecMovementTestData RecMovementTestData;
+    };
+
+    const TArray<FTestData> TestData = {{"PickupTestLevel4", {"/Game/Tests/PickupTestLevel4", 10, "TestInput_PickupTestLevel4.json"}},
+                                        {"PickupTestLevel5", {"/Game/Tests/PickupTestLevel5", 6, "TestInput_PickupTestLevel5.json"}}};
+
+    for (const auto& OneTestData : TestData)
+    {
+        TSharedPtr<FJsonObject> JsonObject = FJsonObjectConverter::UStructToJsonObject(OneTestData.RecMovementTestData);
+        if (!JsonObject.IsValid())
+            continue;
+
+        FString Cmd;
+        TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&Cmd);
+        if (!FJsonSerializer::Serialize(JsonObject.ToSharedRef(), JsonWriter))
+            continue;
+
+        if (!JsonWriter->Close())
+            continue;
+
+        OutTestCommands.Add(Cmd);
+        OutBeautifiedNames.Add(OneTestData.Name);
+    }
+}
+
+bool FAllPickupsAreTakenOnRecordingMovement::RunTest(const FString& Parameters)
+{
+    TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(Parameters);
+    TSharedPtr<FJsonObject> JsonObject;
+    if (!FJsonSerializer::Deserialize(JsonReader, JsonObject))
+        return false;
+
+    FRecMovementTestData RecMovementTestData;
+    if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &RecMovementTestData))
+        return false;
+
+    LevelScope Level(RecMovementTestData.LevelPath);
+
+    const auto World = GetCurrentWorld();
+    if (!TestNotNull("World must exists.", World))
+        return false;
+
+    const auto Player = UGameplayStatics::GetPlayerCharacter(World, 0);
+    if (!TestNotNull("Player must exists.", Player))
+        return false;
+
+    const auto Controller = UGameplayStatics::GetPlayerController(World, 0);
+    if (!TestNotNull("Player controller must exists.", Controller))
+        return false;
+
+    FInputData InputData;
+    const FString FileName = FPaths::GameSourceDir().Append("/Shooter_Game/Public/Tests/Data/").Append(RecMovementTestData.RecInputFileName);
+    if (!JsonUtils::ReadInputData(FileName, InputData) || InputData.Bindings.IsEmpty())
+        return false;
+
+    Player->SetActorTransform(InputData.InitialTransform);
+    Controller->SetControlRotation(InputData.InitialTransform.Rotator());
+
+    const auto InputComponent = Player->InputComponent;
+    if (!TestNotNull("Player inputComponent must exists.", InputComponent.Get()))
+        return false;
+
+    TArray<AActor*> PickupActors;
+    UGameplayStatics::GetAllActorsOfClass(World, ASHGBasePickupActor::StaticClass(), PickupActors);
+    TestTrueExpr(PickupActors.Num() == RecMovementTestData.PickupsAmount);
+
+    ADD_LATENT_AUTOMATION_COMMAND(FSimulateMovmentLatentCommand(World, InputComponent, InputData.Bindings))
+    ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
+        [=]()
+        {
+            TArray<AActor*> PickupActors;
+            UGameplayStatics::GetAllActorsOfClass(World, ASHGBasePickupActor::StaticClass(), PickupActors);
+            TestTrueExpr(PickupActors.IsEmpty());
+
+            return true;
+        }));
 
     return true;
 }

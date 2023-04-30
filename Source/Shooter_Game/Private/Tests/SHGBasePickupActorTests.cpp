@@ -5,7 +5,7 @@
 #include "Tests/SHGBasePickupActorTests.h"
 #include "CoreMinimal.h"
 #include "Misc/AutomationTest.h"
-#include "Tests/SHGTestsUtils.h"
+#include "Tests/Utils/SHGTestsUtils.h"
 #include "Tests/SHGBasePickupActorTestable.h"
 #include "Components/SphereComponent.h"
 

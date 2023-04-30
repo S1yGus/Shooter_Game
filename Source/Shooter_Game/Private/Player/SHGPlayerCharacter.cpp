@@ -173,7 +173,7 @@ void ASHGPlayerCharacter::OnCameraComponentEndOverlap(UPrimitiveComponent* Overl
     CheckCameraCollisionOverlap();
 }
 
-inline bool ASHGPlayerCharacter::IsMovingForward() const
+bool ASHGPlayerCharacter::IsMovingForward() const
 {
     return bIsMovingForward && Super::IsMovingForward();
 }
