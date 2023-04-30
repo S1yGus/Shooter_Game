@@ -30,6 +30,9 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAllPickupsAreTakenOnMovement, "Shooter_Game.Ga
 IMPLEMENT_COMPLEX_AUTOMATION_TEST(FAllPickupsAreTakenOnRecordingMovement, "Shooter_Game.Gameplay.AllPickupsAreTakenOnRecordingMovement",
                                   EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::LowPriority);
 
+IMPLEMENT_COMPLEX_AUTOMATION_TEST(FAllMapsShouldBeLoaded, "Shooter_Game.Gameplay.AllMapsShouldBeLoaded",
+                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
+
 DEFINE_LATENT_AUTOMATION_COMMAND_ONE_PARAMETER(FJumpLatentComand, ACharacter*, Character);
 bool FJumpLatentComand::Update()
 {
@@ -240,6 +243,30 @@ bool FAllPickupsAreTakenOnRecordingMovement::RunTest(const FString& Parameters)
 
             return true;
         }));
+
+    return true;
+}
+
+void FAllMapsShouldBeLoaded::GetTests(TArray<FString>& OutBeautifiedNames, TArray<FString>& OutTestCommands) const
+{
+    struct FTestData
+    {
+        FString Name;
+        FString LevelPath;
+    };
+
+    const TArray<FTestData> TestData = {{"MenuLevel", "/Game/Levels/MenuLevel"}, {"SandboxLevel", "/Game/Levels/SandboxLevel"}};
+
+    for (const auto& OneTestData : TestData)
+    {
+        OutBeautifiedNames.Add(OneTestData.Name);
+        OutTestCommands.Add(OneTestData.LevelPath);
+    }
+}
+
+bool FAllMapsShouldBeLoaded::RunTest(const FString& Parameters)
+{
+    LevelScope Level(Parameters);
 
     return true;
 }
