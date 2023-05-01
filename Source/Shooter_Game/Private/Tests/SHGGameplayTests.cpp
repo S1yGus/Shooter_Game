@@ -11,10 +11,7 @@
 #include "Pickups/SHGBasePickupActor.h"
 #include "Tests/Utils/InputRecordingTypes.h"
 #include "Tests/Utils/JsonUtils.h"
-#include "Dom/JsonObject.h"
 #include "JsonObjectConverter.h"
-#include "Serialization/JsonWriter.h"
-#include "Serialization/JsonReader.h"
 
 using namespace Tests;
 
@@ -173,34 +170,21 @@ void FAllPickupsAreTakenOnRecordingMovement::GetTests(TArray<FString>& OutBeauti
     const TArray<FTestData> TestData = {{"PickupTestLevel4", {"/Game/Tests/PickupTestLevel4", 10, "TestInput_PickupTestLevel4.json"}},
                                         {"PickupTestLevel5", {"/Game/Tests/PickupTestLevel5", 6, "TestInput_PickupTestLevel5.json"}}};
 
-    for (const auto& OneTestData : TestData)
+    for (const auto& [Name, RecMovementTestData] : TestData)
     {
-        TSharedPtr<FJsonObject> JsonObject = FJsonObjectConverter::UStructToJsonObject(OneTestData.RecMovementTestData);
-        if (!JsonObject.IsValid())
-            continue;
-
         FString Cmd;
-        TSharedRef<TJsonWriter<>> JsonWriter = TJsonWriterFactory<>::Create(&Cmd);
-        if (!FJsonSerializer::Serialize(JsonObject.ToSharedRef(), JsonWriter))
-            continue;
-
-        if (!JsonWriter->Close())
+        if (!FJsonObjectConverter::UStructToJsonObjectString(RecMovementTestData, Cmd))
             continue;
 
         OutTestCommands.Add(Cmd);
-        OutBeautifiedNames.Add(OneTestData.Name);
+        OutBeautifiedNames.Add(Name);
     }
 }
 
 bool FAllPickupsAreTakenOnRecordingMovement::RunTest(const FString& Parameters)
 {
-    TSharedRef<TJsonReader<>> JsonReader = TJsonReaderFactory<>::Create(Parameters);
-    TSharedPtr<FJsonObject> JsonObject;
-    if (!FJsonSerializer::Deserialize(JsonReader, JsonObject))
-        return false;
-
     FRecMovementTestData RecMovementTestData;
-    if (!FJsonObjectConverter::JsonObjectToUStruct(JsonObject.ToSharedRef(), &RecMovementTestData))
+    if (!FJsonObjectConverter::JsonObjectStringToUStruct(Parameters, &RecMovementTestData))
         return false;
 
     LevelScope Level(RecMovementTestData.LevelPath);
@@ -219,7 +203,7 @@ bool FAllPickupsAreTakenOnRecordingMovement::RunTest(const FString& Parameters)
 
     FInputData InputData;
     const FString FileName = FPaths::GameSourceDir().Append("/Shooter_Game/Public/Tests/Data/").Append(RecMovementTestData.RecInputFileName);
-    if (!JsonUtils::ReadInputData(FileName, InputData) || InputData.Bindings.IsEmpty())
+    if (!JsonUtils::ReadUStructFromFile(FileName, InputData) || InputData.Bindings.IsEmpty())
         return false;
 
     Player->SetActorTransform(InputData.InitialTransform);
@@ -257,10 +241,10 @@ void FAllMapsShouldBeLoaded::GetTests(TArray<FString>& OutBeautifiedNames, TArra
 
     const TArray<FTestData> TestData = {{"MenuLevel", "/Game/Levels/MenuLevel"}, {"SandboxLevel", "/Game/Levels/SandboxLevel"}};
 
-    for (const auto& OneTestData : TestData)
+    for (const auto& [Name, LevelPath] : TestData)
     {
-        OutBeautifiedNames.Add(OneTestData.Name);
-        OutTestCommands.Add(OneTestData.LevelPath);
+        OutBeautifiedNames.Add(Name);
+        OutTestCommands.Add(LevelPath);
     }
 }
 

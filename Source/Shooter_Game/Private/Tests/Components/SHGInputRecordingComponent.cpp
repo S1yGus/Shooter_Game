@@ -46,7 +46,7 @@ void USHGInputRecordingComponent::EndPlay(const EEndPlayReason::Type EndPlayReas
 {
     Super::EndPlay(EndPlayReason);
 
-    JsonUtils::WriteInputData(GenerateFileName(), InputData);
+    JsonUtils::WriteUStructToFile(GenerateFileName(), InputData);
 
     GEngine->GetGameUserSettings()->SetFrameRateLimit(OldFPS);
     GEngine->GetGameUserSettings()->ApplyNonResolutionSettings();
