@@ -5,6 +5,7 @@
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISense_Prediction.h"
 #include "Perception/AISense_Hearing.h"
+#include "Perception/AISense_Touch.h"
 #include "Components/SHGHealthComponent.h"
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -69,18 +70,13 @@ void USHGAIPerceptionComponent::HandleInspectionState(const FActorPerceptionUpda
     if (!BlackboardComponent)
         return;
 
-    if (BlackboardComponent->GetValueAsObject(EnemyBlackboardKeyName))    // Inspect the location only unless have an enemy.
-        return;
-
     const auto SenseClass = UAIPerceptionSystem::GetSenseClassForStimulus(this, UpdateInfo.Stimulus);
-    if (SenseClass == UAISense_Prediction::StaticClass()                                                             // If lost sight of an enemy
-        || (SenseClass == UAISense_Hearing::StaticClass() && UpdateInfo.Target.Get() != AIController->GetPawn()))    // or heard something.
+    if ((SenseClass == UAISense_Hearing::StaticClass() && UpdateInfo.Target.Get() != AIController->GetPawn())    // If heard something,
+        || SenseClass == UAISense_Prediction::StaticClass()                                                      // or lost sight of the enemy,
+        || SenseClass == UAISense_Touch::StaticClass())                                                          // or felt the touch.
     {
-        if (BlackboardComponent->GetValueAsBool(InspectionStateBlackboardKeyName))
-        {
-            BlackboardComponent->ClearValue(InspectionStateBlackboardKeyName);    // Clear the inspection state key to interrupt the current inspection.
-        }
 
+        BlackboardComponent->ClearValue(InspectionStateBlackboardKeyName);    // Clear the inspection state key to interrupt the current inspection.
         BlackboardComponent->SetValueAsBool(InspectionStateBlackboardKeyName, true);
         BlackboardComponent->SetValueAsVector(LocationToInspectBlackboardKeyName, UpdateInfo.Stimulus.StimulusLocation);    // Set a new location to inspect.
     }

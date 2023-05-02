@@ -39,4 +39,6 @@ private:
 
     void OnHealthChanged(float Health, float HealthPercent);
     void OnUpdateHealthWidget();
+    UFUNCTION()
+    void OnCapsuleComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 };

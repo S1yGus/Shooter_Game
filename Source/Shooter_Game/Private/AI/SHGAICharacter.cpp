@@ -6,8 +6,10 @@
 #include "Components/WidgetComponent.h"
 #include "Components/SHGAIWeaponComponent.h"
 #include "Components/SHGHealthComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "BrainComponent.h"
 #include "UI/Gameplay/SHGAIHealthBarUserWidget.h"
+#include "Perception/AISense_Touch.h"
 
 constexpr static float HealthWidgetVisibilityUpdateTimerRate = 0.05f;
 
@@ -35,9 +37,12 @@ void ASHGAICharacter::BeginPlay()
 
     check(HealthWidgetComponent);
     check(GetCharacterMovement());
+    check(GetCapsuleComponent());
 
     HealthComponent->OnHealthChanged.AddUObject(this, &ThisClass::OnHealthChanged);
     OnHealthChanged(HealthComponent->GetHealth(), HealthComponent->GetHealthPercent());    // To initialize the value of the health widget.
+
+    GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ThisClass::OnCapsuleComponentHit);
 
     FTimerHandle UpdateHealthWidgetVisibilityTimerHandle;
     GetWorldTimerManager().SetTimer(UpdateHealthWidgetVisibilityTimerHandle,    //
@@ -101,5 +106,14 @@ void ASHGAICharacter::OnUpdateHealthWidget()
         NewRotation.Yaw += 180.0f;     // To flip to face the player.
         NewRotation.Pitch *= -1.0f;    // To invert pitch.
         HealthWidgetComponent->SetWorldRotation(NewRotation);
+    }
+}
+
+void ASHGAICharacter::OnCapsuleComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse,
+                                            const FHitResult& Hit)
+{
+    if (OtherActor->IsA(APawn::StaticClass()))
+    {
+        UAISense_Touch::ReportTouchEvent(this, this, OtherActor, OtherActor->GetActorLocation());
     }
 }

@@ -18,9 +18,6 @@ public:
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
-    FName EnemyBlackboardKeyName{"Enemy"};
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
     FName InspectionStateBlackboardKeyName{"bInspectionState"};
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "AI")
