@@ -16,7 +16,7 @@ class SHOOTER_GAME_API ASHGAIController : public AAIController
     GENERATED_BODY()
 
 public:
-    ASHGAIController();
+    ASHGAIController(const FObjectInitializer& ObjectInitializer = FObjectInitializer::Get());
 
 protected:
     UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly, Category = "Components")

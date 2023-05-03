@@ -8,8 +8,10 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_Object.h"
 #include "Perception/AISense_Prediction.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Navigation/CrowdFollowingComponent.h"
 
-ASHGAIController::ASHGAIController()
+ASHGAIController::ASHGAIController(const FObjectInitializer& ObjectInitializer)
+    : Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
     AIPerceptionComponent = CreateDefaultSubobject<USHGAIPerceptionComponent>("PerceptionComponent");
     SetPerceptionComponent(*AIPerceptionComponent);
@@ -55,7 +57,8 @@ void ASHGAIController::OnPossess(APawn* InPawn)
 
                     SetFocus(NewFocusOnActor);
 
-                    // If AI character see a target in the process of picking a pickup, then this is maybe not it's main target and FocusOnActor variable shouldn't be overwrite.
+                    // If AI character see a target in the process of picking a pickup, then this is maybe not it's main target and FocusOnActor variable shouldn't be
+                    // overwrite.
                     if (!BlackboardComponent.GetValueAsObject(TargetPickupBlackboardKeyName))
                     {
                         FocusOnActor = NewFocusOnActor;
