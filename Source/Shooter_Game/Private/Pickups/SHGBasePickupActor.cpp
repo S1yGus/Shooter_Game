@@ -7,7 +7,7 @@
 
 constexpr static float RotationTimerRate = 0.015f;
 
-DEFINE_LOG_CATEGORY_STATIC(PickupLog, All, All);
+DEFINE_LOG_CATEGORY_STATIC(LogBasePickup, All, All);
 
 ASHGBasePickupActor::ASHGBasePickupActor()
 {
