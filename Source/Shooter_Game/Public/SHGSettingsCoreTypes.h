@@ -107,8 +107,6 @@ struct FSettingsData
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Settings")
     TArray<class USHGSetting*> Settings;
-
-    bool operator==(const FSettingsData& Data) const { return Type == Data.Type; }
 };
 
 using HintsStatus = TMap<EHintType, bool>;

@@ -55,14 +55,14 @@ void USHGOptionsMenuUserWidget::BackToRootMenu()
 void USHGOptionsMenuUserWidget::FillOptionsButtonsBox()
 {
     const auto GameUserSettings = USHGGameUserSettings::Get();
-    if (!GameUserSettings || GameUserSettings->GetSettings().Num() == 0)
+    if (!GameUserSettings || GameUserSettings->GetSettingsData().Num() == 0)
         return;
 
     OptionsButtonsBox->ClearChildren();
     OptionsWidgetSwitcher->ClearChildren();
 
     int32 WidgetID = 0;
-    for (const auto& SettingsData : GameUserSettings->GetSettings())
+    for (const auto& SettingsData : GameUserSettings->GetSettingsData())
     {
         const auto OptionsWidget = CreateWidget<USHGOptionsUserWidget>(GetWorld(), OptionsWidgetClass);
         check(OptionsWidget);

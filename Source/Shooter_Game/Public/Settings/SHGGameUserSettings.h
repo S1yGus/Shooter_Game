@@ -30,7 +30,7 @@ public:
 
     static USHGGameUserSettings* Get();
 
-    inline const TArray<FSettingsData>& GetSettings() const { return Settings; }
+    const TArray<FSettingsData>& GetSettingsData() const { return SettingsData; }
     const FAspectRatioData& GetAspectRatio() const;
     const FSensitivitySettings& GetSensitivitySettings() const;
     const TMap<EHintType, bool>& GetHintsStatus() const;
@@ -45,7 +45,7 @@ public:
 
 private:
     UPROPERTY()
-    TArray<FSettingsData> Settings;
+    TArray<FSettingsData> SettingsData;
     UPROPERTY()
     USHGIntSetting* ResolutionSetting;
 
@@ -73,7 +73,7 @@ private:
     T* CreateSetting(const FText& Name, TArray<USHGSetting*>& AddTo)
     {
         T* Setting = NewObject<T>();
-        checkf(Setting->IsA(USHGSetting::StaticClass()), TEXT("T must be based on USHGSetting"));
+        checkf(Setting->IsA(USHGSetting::StaticClass()), TEXT("Type must be based on USHGSetting"));
         Setting->SetName(Name);
         AddTo.Add(Setting);
 

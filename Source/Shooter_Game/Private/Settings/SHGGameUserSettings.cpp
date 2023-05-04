@@ -72,13 +72,6 @@ static bool operator==(const FCultureData& Data, const FString& Str)
 
 USHGGameUserSettings::USHGGameUserSettings()
 {
-    const auto EnumClass = StaticEnum<ESettingType>();
-    check(EnumClass);
-    for (int32 i = 0; i < EnumClass->NumEnums() - 1; ++i)
-    {
-        Settings.Add({static_cast<ESettingType>(i)});
-    }
-
     InitVideoSettings();
     InitSoundSettings();
     InitControlSettings();
@@ -148,11 +141,10 @@ void USHGGameUserSettings::SaveSettings()
 
 void USHGGameUserSettings::InitVideoSettings()
 {
-    const auto VideoSettingsData = Settings.FindByKey(FSettingsData{ESettingType::Video});
-    check(VideoSettingsData);
+    auto& VideoSettings = SettingsData[SettingsData.Emplace(ESettingType::Video)].Settings;
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("ScreenMode_Loc", "Screen mode"), FullscreenOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("ScreenMode_Loc", "Screen mode"), FullscreenOptions, VideoSettings);
         Setting->AddGetter(
             [&]()
             {
@@ -168,7 +160,7 @@ void USHGGameUserSettings::InitVideoSettings()
     }
 
     {
-        ResolutionSetting = CreateIntSetting(LOCTEXT("Resolution_Loc", "Resolution"), GetScreenResolutions(), VideoSettingsData->Settings);
+        ResolutionSetting = CreateIntSetting(LOCTEXT("Resolution_Loc", "Resolution"), GetScreenResolutions(), VideoSettings);
         ResolutionSetting->AddGetter(
             [&]() -> int32
             {
@@ -195,7 +187,7 @@ void USHGGameUserSettings::InitVideoSettings()
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("VSync_Loc", "V-Sync"), VSyncOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("VSync_Loc", "V-Sync"), VSyncOptions, VideoSettings);
         Setting->AddGetter(
             [&]()
             {
@@ -210,7 +202,7 @@ void USHGGameUserSettings::InitVideoSettings()
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("FramerateLimit_Loc", "Framerate limit"), FramerateOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("FramerateLimit_Loc", "Framerate limit"), FramerateOptions, VideoSettings);
         Setting->AddGetter(
             [&]()
             {
@@ -233,7 +225,7 @@ void USHGGameUserSettings::InitVideoSettings()
             AspectRatioOptions.Add(Data.DisplayName);
         }
 
-        auto Setting = CreateIntSetting(LOCTEXT("AspectRatio_Loc", "Aspect ratio"), AspectRatioOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("AspectRatio_Loc", "Aspect ratio"), AspectRatioOptions, VideoSettings);
         Setting->AddGetter(
             [&, AspectRatioOptions]() -> int32
             {
@@ -252,63 +244,62 @@ void USHGGameUserSettings::InitVideoSettings()
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("ViewDistanceQuality_Loc", "View distance"), GraphicsQualityOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("ViewDistanceQuality_Loc", "View distance"), GraphicsQualityOptions, VideoSettings);
         BIND_VIDEO_SETTING(ViewDistanceQuality);
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("AntiAliasingQuality_Loc", "Anti aliasing"), GraphicsQualityOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("AntiAliasingQuality_Loc", "Anti aliasing"), GraphicsQualityOptions, VideoSettings);
         BIND_VIDEO_SETTING(AntiAliasingQuality);
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("PostProcessingQuality_Loc", "Post processing"), GraphicsQualityOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("PostProcessingQuality_Loc", "Post processing"), GraphicsQualityOptions, VideoSettings);
         BIND_VIDEO_SETTING(PostProcessingQuality);
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("ShadowsQuality_Loc", "Shadows"), GraphicsQualityOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("ShadowsQuality_Loc", "Shadows"), GraphicsQualityOptions, VideoSettings);
         BIND_VIDEO_SETTING(ShadowQuality);
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("GlobalIlluminationQuality_Loc", "Global illumination"), GraphicsQualityOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("GlobalIlluminationQuality_Loc", "Global illumination"), GraphicsQualityOptions, VideoSettings);
         BIND_VIDEO_SETTING(GlobalIlluminationQuality);
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("ReflectionsQuality_Loc", "Reflections"), GraphicsQualityOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("ReflectionsQuality_Loc", "Reflections"), GraphicsQualityOptions, VideoSettings);
         BIND_VIDEO_SETTING(ReflectionQuality);
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("TexturesQuality_Loc", "Textures"), GraphicsQualityOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("TexturesQuality_Loc", "Textures"), GraphicsQualityOptions, VideoSettings);
         BIND_VIDEO_SETTING(TextureQuality);
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("VisualEffectsQuality_Loc", "Visual effects"), GraphicsQualityOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("VisualEffectsQuality_Loc", "Visual effects"), GraphicsQualityOptions, VideoSettings);
         BIND_VIDEO_SETTING(VisualEffectQuality);
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("FoliageQuality_Loc", "Foliage"), GraphicsQualityOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("FoliageQuality_Loc", "Foliage"), GraphicsQualityOptions, VideoSettings);
         BIND_VIDEO_SETTING(FoliageQuality);
     }
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("ShadingQuality_Loc", "Shading"), GraphicsQualityOptions, VideoSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("ShadingQuality_Loc", "Shading"), GraphicsQualityOptions, VideoSettings);
         BIND_VIDEO_SETTING(ShadingQuality);
     }
 }
 
 void USHGGameUserSettings::InitSoundSettings()
 {
-    const auto SoundSettingsData = Settings.FindByKey(FSettingsData{ESettingType::Sound});
-    check(SoundSettingsData);
+    auto& SoundSettings = SettingsData[SettingsData.Emplace(ESettingType::Sound)].Settings;
 
     {
-        auto Setting = CreateIntSetting(LOCTEXT("SoundQuality_Loc", "Sound quality"), SoundQualityOptions, SoundSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("SoundQuality_Loc", "Sound quality"), SoundQualityOptions, SoundSettings);
         Setting->AddGetter(
             [&]()
             {
@@ -322,33 +313,32 @@ void USHGGameUserSettings::InitSoundSettings()
     }
 
     {
-        auto Setting = CreateFloatSetting(LOCTEXT("MasterVolume_Loc", "Master"), SoundSettingsData->Settings);
+        auto Setting = CreateFloatSetting(LOCTEXT("MasterVolume_Loc", "Master"), SoundSettings);
         BIND_SOUND_SETTING(SCMasterName, MasterVolume);
     }
 
     {
-        auto Setting = CreateFloatSetting(LOCTEXT("UIVolume_Loc", "Interface"), SoundSettingsData->Settings);
+        auto Setting = CreateFloatSetting(LOCTEXT("UIVolume_Loc", "Interface"), SoundSettings);
         BIND_SOUND_SETTING(SCUIName, UIVolume);
     }
 
     {
-        auto Setting = CreateFloatSetting(LOCTEXT("FXVolume_Loc", "Effects"), SoundSettingsData->Settings);
+        auto Setting = CreateFloatSetting(LOCTEXT("FXVolume_Loc", "Effects"), SoundSettings);
         BIND_SOUND_SETTING(SCFXName, FXVolume);
     }
 
     {
-        auto Setting = CreateFloatSetting(LOCTEXT("MusicVolume_Loc", "Music"), SoundSettingsData->Settings);
+        auto Setting = CreateFloatSetting(LOCTEXT("MusicVolume_Loc", "Music"), SoundSettings);
         BIND_SOUND_SETTING(SCMusicName, MusicVolume);
     }
 }
 
 void USHGGameUserSettings::InitControlSettings()
 {
-    const auto ControlSettingsData = Settings.FindByKey(FSettingsData{ESettingType::Control});
-    check(ControlSettingsData);
+    auto& ControlSettings = SettingsData[SettingsData.Emplace(ESettingType::Control)].Settings;
 
     {
-        auto Setting = CreateBoolSetting(LOCTEXT("InvertMouseY_Loc", "Invert Y"), ControlSettingsData->Settings);
+        auto Setting = CreateBoolSetting(LOCTEXT("InvertMouseY_Loc", "Invert Y"), ControlSettings);
         Setting->AddGetter(
             [&]()
             {
@@ -370,30 +360,29 @@ void USHGGameUserSettings::InitControlSettings()
     }
 
     {
-        auto Setting = CreateFloatSetting(LOCTEXT("MouseXSens_Loc", "X sensitivity"), ControlSettingsData->Settings);
+        auto Setting = CreateFloatSetting(LOCTEXT("MouseXSens_Loc", "X sensitivity"), ControlSettings);
         BIND_CONTROL_SETTINGS(MouseXSens);
     }
 
     {
-        auto Setting = CreateFloatSetting(LOCTEXT("MouseYSens_Loc", "Y sensitivity"), ControlSettingsData->Settings);
+        auto Setting = CreateFloatSetting(LOCTEXT("MouseYSens_Loc", "Y sensitivity"), ControlSettings);
         BIND_CONTROL_SETTINGS(MouseYSens);
     }
 
     {
-        auto Setting = CreateFloatSetting(LOCTEXT("MouseAimedXSens_Loc", "Aimed X sens."), ControlSettingsData->Settings);
+        auto Setting = CreateFloatSetting(LOCTEXT("MouseAimedXSens_Loc", "Aimed X sens."), ControlSettings);
         BIND_CONTROL_SETTINGS(MouseAimedXSens);
     }
 
     {
-        auto Setting = CreateFloatSetting(LOCTEXT("MouseAimedYSens_Loc", "Aimed Y sens."), ControlSettingsData->Settings);
+        auto Setting = CreateFloatSetting(LOCTEXT("MouseAimedYSens_Loc", "Aimed Y sens."), ControlSettings);
         BIND_CONTROL_SETTINGS(MouseAimedYSens);
     }
 }
 
 void USHGGameUserSettings::InitGameSettings()
 {
-    const auto GameSettingsData = Settings.FindByKey(FSettingsData{ESettingType::Game});
-    check(GameSettingsData);
+    auto& GameSettings = SettingsData[SettingsData.Emplace(ESettingType::Game)].Settings;
 
     {
         TArray<FText> LanguageOptions;
@@ -402,7 +391,7 @@ void USHGGameUserSettings::InitGameSettings()
             LanguageOptions.Add(Culture.CultureName);
         }
 
-        auto Setting = CreateIntSetting(LOCTEXT("Language_Loc", "Language"), LanguageOptions, GameSettingsData->Settings);
+        auto Setting = CreateIntSetting(LOCTEXT("Language_Loc", "Language"), LanguageOptions, GameSettings);
         Setting->AddGetter(
             []()
             {
@@ -416,7 +405,7 @@ void USHGGameUserSettings::InitGameSettings()
     }
 
     {
-        auto Setting = CreateActionSetting(LOCTEXT("ResetHints_Loc", "Reset hints"), LOCTEXT("ResetHintsButton_Loc", "RESET"), GameSettingsData->Settings);
+        auto Setting = CreateActionSetting(LOCTEXT("ResetHints_Loc", "Reset hints"), LOCTEXT("ResetHintsButton_Loc", "RESET"), GameSettings);
         Setting->AddActionFunc(
             [&]()
             {
