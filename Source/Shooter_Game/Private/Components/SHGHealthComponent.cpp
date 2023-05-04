@@ -102,7 +102,10 @@ void USHGHealthComponent::OnTakePointDamage(AActor* DamagedActor,               
 
     CurrentDamageModifier = DamageModifiersMap.Contains(PhysicalMaterial) ? DamageModifiersMap[PhysicalMaterial] : 1.0f;
 
-    OnTakeLocalDamage.Broadcast(Damage * CurrentDamageModifier, HitLocation, PhysicalMaterial);
+    if (InstigatedBy && InstigatedBy->IsA(APlayerController::StaticClass()))
+    {
+        OnTakeLocalDamage.Broadcast(Damage * CurrentDamageModifier, HitLocation, PhysicalMaterial);
+    }
 }
 
 void USHGHealthComponent::OnTakeRadialDamage(AActor* DamagedActor,             //
@@ -116,7 +119,10 @@ void USHGHealthComponent::OnTakeRadialDamage(AActor* DamagedActor,             /
     if (IsDead() || Damage <= 0.0f)
         return;
 
-    OnTakeLocalDamage.Broadcast(Damage, HitInfo.Location, nullptr);
+    if (InstigatedBy && InstigatedBy->IsA(APlayerController::StaticClass()))
+    {
+        OnTakeLocalDamage.Broadcast(Damage, HitInfo.Location, nullptr);
+    }
 }
 
 void USHGHealthComponent::OnAutoHeal()
