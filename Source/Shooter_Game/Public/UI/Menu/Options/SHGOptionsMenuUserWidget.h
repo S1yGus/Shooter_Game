@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "UI/SHGAnimatedUserWidget.h"
 #include "SHGBaseCoreTypes.h"
+#include "SHGSettingsCoreTypes.h"
 #include "SHGOptionsMenuUserWidget.generated.h"
 
 class USHGButtonUserWidget;
@@ -46,7 +47,9 @@ private:
     int8 WidgetIDToSet = 0;
 
     inline void BackToRootMenu();
-    void FillOptionsButtonsBox();
+    void FillWidget();
+    void FillButtonsBox(ESettingType SettingType, int32 ButtonsAmount);
+    void FillWidgetSwitcher(const TArray<USHGSetting*>& Settings);
     void SelectOptionsCategory();
 
     void OnPressedEscape();
