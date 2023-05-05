@@ -23,73 +23,81 @@ void USHGOptionsMenuUserWidget::NativeOnInitialized()
 
     BackButton->OnClickedButton.AddUObject(this, &ThisClass::OnClickedBackButton);
 
-    if (const auto GameUserSettings = USHGGameUserSettings::Get())
+    if (auto* GameUserSettings = USHGGameUserSettings::Get())
     {
         GameUserSettings->OnResolutionChanged.AddUObject(this, &ThisClass::OnResolutionChanged);
     }
 
-    if (const auto PC = GetOwningPlayer<ASHGPlayerController>())
+    if (auto* PC = GetOwningPlayer<ASHGPlayerController>())
     {
         PC->OnPressedEsc.AddUObject(this, &ThisClass::OnPressedEscape);
     }
 
-    if (const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeBase>())
+    if (auto* GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeBase>())
     {
         GameMode->OnGameStateChanged.AddUObject(this, &ThisClass::OnGameStateChanged);
     }
 
-    FillOptionsButtonsBox();
+    OptionsButtonsBox->ClearChildren();
+    OptionsWidgetSwitcher->ClearChildren();
+
+    FillWidget();
 }
 
 void USHGOptionsMenuUserWidget::BackToRootMenu()
 {
-    if (const auto PC = GetOwningPlayer())
+    if (const APlayerController* PC = GetOwningPlayer())
     {
-        if (const auto HUD = PC->GetHUD<ASHGBaseHUD>())
+        if (auto* HUD = PC->GetHUD<ASHGBaseHUD>())
         {
             HUD->BackToRootMenu();
         }
     }
 }
 
-void USHGOptionsMenuUserWidget::FillOptionsButtonsBox()
+void USHGOptionsMenuUserWidget::FillWidget()
 {
-    const auto GameUserSettings = USHGGameUserSettings::Get();
-    if (!GameUserSettings || GameUserSettings->GetSettingsData().Num() == 0)
+    const auto* GameUserSettings = USHGGameUserSettings::Get();
+    if (!GameUserSettings || GameUserSettings->GetSettingsData().IsEmpty())
         return;
 
-    OptionsButtonsBox->ClearChildren();
-    OptionsWidgetSwitcher->ClearChildren();
-
-    int32 WidgetID = 0;
-    for (const auto& SettingsData : GameUserSettings->GetSettingsData())
+    for (const auto& [Type, Settings] : GameUserSettings->GetSettingsData())
     {
-        const auto OptionsWidget = CreateWidget<USHGOptionsUserWidget>(GetWorld(), OptionsWidgetClass);
-        check(OptionsWidget);
-        OptionsWidget->Init(SettingsData.Settings);
-        OptionsWidgetSwitcher->AddChild(OptionsWidget);
-
-        const auto OptionsCategoryButton = CreateWidget<USHGOptionsButtonUserWidget>(GetWorld(), OptionsButtonClass);
-        check(OptionsCategoryButton);
-        OptionsCategoryButton->Init(UEnum::GetDisplayValueAsText(SettingsData.Type), WidgetID++);
-        OptionsCategoryButton->OnClickedOptionsButton.AddUObject(this, &ThisClass::OnSelectedOptionsCategory);
-        OptionsButtonsBox->AddChild(OptionsCategoryButton);
+        FillButtonsBox(Type, GameUserSettings->GetSettingsData().Num());
+        FillWidgetSwitcher(Settings);
     }
 
     SelectOptionsCategory();
+}
+
+void USHGOptionsMenuUserWidget::FillButtonsBox(ESettingType SettingType, int32 ButtonsAmount)
+{
+    auto* OptionsCategoryButton = CreateWidget<USHGOptionsButtonUserWidget>(GetWorld(), OptionsButtonClass);
+    check(OptionsCategoryButton);
+    static int32 WidgetID = 0;
+    OptionsCategoryButton->Init(UEnum::GetDisplayValueAsText(SettingType), WidgetID++ % ButtonsAmount);
+    OptionsCategoryButton->OnClickedOptionsButton.AddUObject(this, &ThisClass::OnSelectedOptionsCategory);
+    OptionsButtonsBox->AddChild(OptionsCategoryButton);
+}
+
+void USHGOptionsMenuUserWidget::FillWidgetSwitcher(const TArray<USHGSetting*>& Settings)
+{
+    auto* OptionsWidget = CreateWidget<USHGOptionsUserWidget>(GetWorld(), OptionsWidgetClass);
+    check(OptionsWidget);
+    OptionsWidget->Init(Settings);
+    OptionsWidgetSwitcher->AddChild(OptionsWidget);
 }
 
 void USHGOptionsMenuUserWidget::SelectOptionsCategory()
 {
     OptionsWidgetSwitcher->SetActiveWidgetIndex(WidgetIDToSet);
 
-    for (const auto& Widget : OptionsButtonsBox->GetAllChildren())
+    for (auto* Widget : OptionsButtonsBox->GetAllChildren())
     {
-        const auto OptionsButton = Cast<USHGOptionsButtonUserWidget>(Widget);
-        if (!OptionsButton)
-            continue;
-
-        OptionsButton->SetSelected(OptionsButton->GetWidgetID() == WidgetIDToSet);
+        if (auto* OptionsButton = Cast<USHGOptionsButtonUserWidget>(Widget))
+        {
+            OptionsButton->SetSelected(OptionsButton->GetWidgetID() == WidgetIDToSet);
+        }
     }
 }
 
@@ -125,9 +133,9 @@ void USHGOptionsMenuUserWidget::OnGameStateChanged(EGameState GameState)
     if (GameState != EGameState::Options)
         return;
 
-    for (const auto Widget : OptionsWidgetSwitcher->GetAllChildren())
+    for (auto* Widget : OptionsWidgetSwitcher->GetAllChildren())
     {
-        if (const auto OptionsWidget = Cast<USHGOptionsUserWidget>(Widget))
+        if (auto* OptionsWidget = Cast<USHGOptionsUserWidget>(Widget))
         {
             OptionsWidget->UpdateOptions();
         }
@@ -140,7 +148,7 @@ void USHGOptionsMenuUserWidget::OnAnimationFinished_Implementation(const UWidget
 
     if (Animation == FadeoutAnimation)
     {
-        const auto GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeBase>();
+        auto* GameMode = GetWorld()->GetAuthGameMode<ASHGGameModeBase>();
         if (!GameMode)
             return;
 
