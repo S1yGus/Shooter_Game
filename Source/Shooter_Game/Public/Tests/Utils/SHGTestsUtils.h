@@ -62,9 +62,11 @@ UWorld* GetCurrentWorld();
 
 void CallFunctionByNameWithParameters(UObject* Object, const FString& FuncName, const TArray<FString>& Params);
 
-int32 GetActionBindingIndexByName(const UInputComponent* InputComponent, const FString& ActionName, EInputEvent InputEvent);
+int32 GetActionBindingIndexByName(const UInputComponent* InputComponent, const FName& ActionName, EInputEvent InputEvent);
 
-int32 GetAxisBindingIndexByName(const UInputComponent* InputComponent, const FString& AxisName);
+int32 GetAxisBindingIndexByName(const UInputComponent* InputComponent, const FName& AxisName);
+
+void DoInputAction(const UInputComponent* InputComponent, const FName& ActionName, EInputEvent InputEvent, const FKey& Key);
 
 class FUntilLatentCommand : public IAutomationLatentCommand
 {
