@@ -30,26 +30,26 @@ bool FGameCanBePaused::RunTest(const FString& Parameters)
     TestTrueExpr(!PC->IsPaused());
     TestTrueExpr(!PC->bShowMouseCursor);
 
-    ADD_LATENT_AUTOMATION_COMMAND(FWaitLatentCommand(0.66f));
-    ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
+    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
             DoInputAction(PC->InputComponent, "Esc", EInputEvent::IE_Pressed, EKeys::P);
             return true;
-        }));
+        },
+        0.66f));
     ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
         [=]()
         {
             TestTrueExpr(PC->IsPaused());
             return true;
         }));
-    ADD_LATENT_AUTOMATION_COMMAND(FWaitLatentCommand(0.51f));
-    ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
+    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
             TestTrueExpr(PC->bShowMouseCursor);
             return true;
-        }));
+        },
+        0.51f));
 
     return true;
 }
@@ -69,28 +69,25 @@ bool FGameCanBeUnpaused::RunTest(const FString& Parameters)
     TestTrueExpr(!PC->IsPaused());
     TestTrueExpr(!PC->bShowMouseCursor);
 
-    ADD_LATENT_AUTOMATION_COMMAND(FWaitLatentCommand(0.66f));
-    ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
+    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
             DoInputAction(PC->InputComponent, "Esc", EInputEvent::IE_Pressed, EKeys::P);
-            return true;
-        }));
-    ADD_LATENT_AUTOMATION_COMMAND(FWaitLatentCommand(0.82f));
-    ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
+        },
+        0.66f));
+    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
             DoInputAction(PC->InputComponent, "Esc", EInputEvent::IE_Pressed, EKeys::P);
-            return true;
-        }));
-    ADD_LATENT_AUTOMATION_COMMAND(FWaitLatentCommand(0.31f));
-    ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
+        },
+        0.82f));
+    ADD_LATENT_AUTOMATION_COMMAND(FDelayedFunctionLatentCommand(
         [=]()
         {
             TestTrueExpr(!PC->IsPaused());
             TestTrueExpr(!PC->bShowMouseCursor);
-            return true;
-        }));
+        },
+        0.31f));
 
     return true;
 }
