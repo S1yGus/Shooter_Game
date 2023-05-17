@@ -2,7 +2,7 @@
 
 #if WITH_AUTOMATION_TESTS
 
-#include "Tests/SHGPlayerControllerTests.h"
+#include "Tests/SHGSettingsTests.h"
 #include "CoreMinimal.h"
 #include "Tests/Utils/SHGTestsUtils.h"
 #include "Misc/AutomationTest.h"

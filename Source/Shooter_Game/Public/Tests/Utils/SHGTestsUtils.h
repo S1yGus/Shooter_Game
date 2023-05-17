@@ -8,6 +8,8 @@
 #include "Tests/AutomationCommon.h"
 #include "Engine/Blueprint.h"
 #include "Tests/Utils/InputRecordingTypes.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
+#include "Blueprint/WidgetTree.h"
 
 namespace Tests
 {
@@ -20,42 +22,11 @@ namespace Tests
 
 #define ENUM_LOOP_END }
 
-template <typename EnumType, typename FunctionType>
-void ForEach(FunctionType&& Function)
-{
-    const auto Enum = StaticEnum<EnumType>();
-    for (int32 i = 0; i != Enum->NumEnums() - 1; ++i)
-    {
-        Function(static_cast<EnumType>(Enum->GetValueByIndex(i)));
-    }
-}
-
 class LevelScope
 {
 public:
     LevelScope(const FString& LevelName) { AutomationOpenMap(LevelName); }
     ~LevelScope() { ADD_LATENT_AUTOMATION_COMMAND(FExitGameCommand); }
-};
-
-template <class T>
-T* SpawnBlueprint(UWorld* World, const FString& BlueprintName, const FTransform& Transform = FTransform::Identity)
-{
-    const auto Blueprint = LoadObject<UBlueprint>(nullptr, *BlueprintName);
-    return (World && Blueprint) ? World->SpawnActor<T>(Blueprint->GeneratedClass, Transform) : nullptr;
-}
-
-template <class T>
-T* SpawnBlueprintDeferred(UWorld* World, const FString& BlueprintName, const FTransform& Transform = FTransform::Identity)
-{
-    const auto Blueprint = LoadObject<UBlueprint>(nullptr, *BlueprintName);
-    return (World && Blueprint) ? World->SpawnActorDeferred<T>(Blueprint->GeneratedClass, Transform) : nullptr;
-}
-
-template <typename T1, typename T2>
-struct TestPayload
-{
-    T1 TestValue;
-    T2 ExpectedValue;
 };
 
 UWorld* GetCurrentWorld();
@@ -96,6 +67,64 @@ private:
     int32 Index = 0;
     float WorldStartTime = NO_VALUE;
     float OldFPS = NO_VALUE;
+};
+
+template <typename EnumType, typename FunctionType>
+void ForEach(FunctionType&& Function)
+{
+    const auto Enum = StaticEnum<EnumType>();
+    for (int32 i = 0; i != Enum->NumEnums() - 1; ++i)
+    {
+        Function(static_cast<EnumType>(Enum->GetValueByIndex(i)));
+    }
+}
+
+template <class T>
+T* SpawnBlueprint(UWorld* World, const FString& BlueprintName, const FTransform& Transform = FTransform::Identity)
+{
+    const auto Blueprint = LoadObject<UBlueprint>(nullptr, *BlueprintName);
+    return (World && Blueprint) ? World->SpawnActor<T>(Blueprint->GeneratedClass, Transform) : nullptr;
+}
+
+template <class T>
+T* SpawnBlueprintDeferred(UWorld* World, const FString& BlueprintName, const FTransform& Transform = FTransform::Identity)
+{
+    const auto Blueprint = LoadObject<UBlueprint>(nullptr, *BlueprintName);
+    return (World && Blueprint) ? World->SpawnActorDeferred<T>(Blueprint->GeneratedClass, Transform) : nullptr;
+}
+
+template <class T>
+T* FindWidgetByClass()
+{
+    TArray<UUserWidget*> Widgets;
+    UWidgetBlueprintLibrary::GetAllWidgetsOfClass(Tests::GetCurrentWorld(), Widgets, T::StaticClass(), false);
+    return !Widgets.IsEmpty() ? Cast<T>(Widgets[0]) : nullptr;
+}
+
+template <class T>
+T* FindWidgetByName(UUserWidget* UserWidget, const FName& WidgetName)
+{
+    if (!UserWidget)
+        return nullptr;
+
+    UWidget* FoundWidget = nullptr;
+    UserWidget->WidgetTree->ForEachWidget(
+        [&](UWidget* Widget)
+        {
+            if (Widget->GetFName().IsEqual(WidgetName))
+            {
+                FoundWidget = Widget;
+            }
+        });
+
+    return Cast<T>(FoundWidget);
+}
+
+template <typename T1, typename T2>
+struct TestPayload
+{
+    T1 TestValue;
+    T2 ExpectedValue;
 };
 }    // namespace Tests
 
