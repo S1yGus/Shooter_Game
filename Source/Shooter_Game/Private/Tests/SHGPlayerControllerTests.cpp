@@ -34,7 +34,6 @@ bool FGameCanBePaused::RunTest(const FString& Parameters)
         [=]()
         {
             DoInputAction(PC->InputComponent, "Esc", EInputEvent::IE_Pressed, EKeys::P);
-            return true;
         },
         0.66f));
     ADD_LATENT_AUTOMATION_COMMAND(FFunctionLatentCommand(
@@ -47,7 +46,6 @@ bool FGameCanBePaused::RunTest(const FString& Parameters)
         [=]()
         {
             TestTrueExpr(PC->bShowMouseCursor);
-            return true;
         },
         0.51f));
 

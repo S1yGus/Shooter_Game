@@ -13,6 +13,7 @@ class USHGOptionsUserWidget;
 class USHGOptionsButtonUserWidget;
 class UWidgetSwitcher;
 class UVerticalBox;
+class USHGSetting;
 
 UCLASS()
 class SHOOTER_GAME_API USHGOptionsMenuUserWidget : public USHGAnimatedUserWidget
