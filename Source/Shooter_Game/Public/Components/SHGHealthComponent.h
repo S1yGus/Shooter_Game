@@ -66,7 +66,7 @@ private:
     void OnTakePointDamage(AActor* DamagedActor, float Damage, AController* InstigatedBy, FVector HitLocation, UPrimitiveComponent* FHitComponent, FName BoneName,
                            FVector ShotFromDirection, const UDamageType* DamageType, AActor* DamageCauser);
     UFUNCTION()
-    void OnTakeRadialDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, FVector Origin, FHitResult HitInfo, AController* InstigatedBy,
+    void OnTakeRadialDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageType, FVector Origin, const FHitResult& HitInfo, AController* InstigatedBy,
                             AActor* DamageCauser);
     void OnAutoHeal();
 
