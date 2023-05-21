@@ -112,7 +112,7 @@ void USHGHealthComponent::OnTakeRadialDamage(AActor* DamagedActor,             /
                                              float Damage,                     //
                                              const UDamageType* DamageType,    //
                                              FVector Origin,                   //
-                                             FHitResult HitInfo,               //
+                                             const FHitResult& HitInfo,        //
                                              AController* InstigatedBy,        //
                                              AActor* DamageCauser)
 {
