@@ -5,10 +5,10 @@
 
 void ASHGGameMode::ShowHint(EHintType HintType, float Delay)
 {
-    if (!HintsStatusMap.Contains(HintType))
+    if (!HintsStatusMapCached.Contains(HintType))
         return;
 
-    if (!HintsStatusMap[HintType])
+    if (!HintsStatusMapCached[HintType])
         return;
 
     if (!HintsMap.Contains(HintType))
@@ -30,11 +30,11 @@ void ASHGGameMode::ShowHint(EHintType HintType, float Delay)
         ShowPopUpHint(HintsMap[HintType]);
     }
 
-    HintsStatusMap[HintType] = false;
+    HintsStatusMapCached[HintType] = false;
 
     if (const auto GameUserSettings = USHGGameUserSettings::Get())
     {
-        GameUserSettings->SetHintsStatus(HintsStatusMap);
+        GameUserSettings->SetHintsStatus(HintsStatusMapCached);
     }
 }
 
@@ -44,7 +44,7 @@ void ASHGGameMode::StartPlay()
 
     if (const auto GameUserSettings = USHGGameUserSettings::Get())
     {
-        HintsStatusMap = GameUserSettings->GetHintsStatus();
+        HintsStatusMapCached = GameUserSettings->GetHintsStatus();
         GameUserSettings->OnHintsStatusChanged.AddUObject(this, &ThisClass::OnHintsStatusChanged);
     }
 }
@@ -63,5 +63,5 @@ void ASHGGameMode::ShowPopUpHint(const FHintData& HintData)
 
 void ASHGGameMode::OnHintsStatusChanged(const TMap<EHintType, bool>& NewHintsStatus)
 {
-    HintsStatusMap = NewHintsStatus;
+    HintsStatusMapCached = NewHintsStatus;
 }
