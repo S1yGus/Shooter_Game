@@ -27,7 +27,7 @@ protected:
 
 private:
     FTimerHandle DelayHintTimerHandle;
-    TMap<EHintType, bool> HintsStatusMap;
+    TMap<EHintType, bool> HintsStatusMapCached;
 
     void ShowPopUpHint(const FHintData& HintData);
 
