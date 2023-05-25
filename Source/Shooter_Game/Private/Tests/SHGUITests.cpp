@@ -24,6 +24,9 @@
 
 using namespace Tests;
 
+static const char* SandboxLevelName{"/Game/Levels/SandboxLevel"};
+static const char* MenuLevelName{"/Game/Levels/MenuLevel"};
+
 static void SetComboBoxNextOption(ESettingType SettingType, uint8 WidgetNumber)
 {
     auto* OptionsMenuUserWidget = FindWidgetByClass<USHGOptionsMenuUserWidget>();
@@ -142,7 +145,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FCheckBoxSettingCanBeApplied, "Shooter_Game.UI.
 
 bool FPauseMenuShouldBeVisibleOnGamePaused::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     const UWorld* World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -176,7 +179,7 @@ bool FPauseMenuShouldBeVisibleOnGamePaused::RunTest(const FString& Parameters)
 
 bool FPauseMenuShouldBeCollapsedOnGameUnpaused::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     const UWorld* World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -216,7 +219,7 @@ bool FPauseMenuShouldBeCollapsedOnGameUnpaused::RunTest(const FString& Parameter
 
 bool FPauseMenuShouldBeCollapsedWhenClickedResumeButton::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     const UWorld* World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -260,7 +263,7 @@ bool FPauseMenuShouldBeCollapsedWhenClickedResumeButton::RunTest(const FString& 
 
 bool FOptionsMenuShouldBeVisibleWhenClickedOptionsButton::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     const UWorld* World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -308,7 +311,7 @@ bool FOptionsMenuShouldBeVisibleWhenClickedOptionsButton::RunTest(const FString&
 
 bool FMenuLevelShouldBeLoadedWhenClickedMenuButton::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     const UWorld* World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -352,7 +355,7 @@ bool FMenuLevelShouldBeLoadedWhenClickedMenuButton::RunTest(const FString& Param
 
 bool FGameLevelShouldBeLoadedWhenClickedNewGameButton::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/MenuLevel");
+    const LevelScope Level(MenuLevelName);
 
     auto* MainMenuUserWidget = FindWidgetByClass<USHGMenuUserWidget>();
     if (!TestNotNull("MainMenuUserWidget must exists.", MainMenuUserWidget))
@@ -382,7 +385,7 @@ bool FGameLevelShouldBeLoadedWhenClickedNewGameButton::RunTest(const FString& Pa
 
 bool FOptionsMenuShouldBeVisibleWhenClickedOptionsButtonInMainMenu::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/MenuLevel");
+    const LevelScope Level(MenuLevelName);
 
     auto* MainMenuUserWidget = FindWidgetByClass<USHGMenuUserWidget>();
     if (!TestNotNull("MainMenuUserWidget must exists.", MainMenuUserWidget))
@@ -416,7 +419,7 @@ bool FOptionsMenuShouldBeVisibleWhenClickedOptionsButtonInMainMenu::RunTest(cons
 
 bool FOptionsWidgetShouldBeChangedWhenClickedOptionsButtons::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     const UWorld* World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -481,7 +484,7 @@ bool FOptionsWidgetShouldBeChangedWhenClickedOptionsButtons::RunTest(const FStri
 
 bool FAllSettingsShouldExist::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     const UWorld* World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -514,7 +517,7 @@ bool FAllSettingsShouldExist::RunTest(const FString& Parameters)
 
 bool FComboBoxSettingCanBeApplied::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     auto* GameUserSettings = USHGGameUserSettings::Get();
     if (!TestNotNull("GameUserSettings should exists", GameUserSettings))
@@ -542,6 +545,7 @@ bool FComboBoxSettingCanBeApplied::RunTest(const FString& Parameters)
             TestTrueExpr(AntiAliasingQualityAfter != AntiAliasingQualityBefore);
 
             GameUserSettings->SetAntiAliasingQuality(AntiAliasingQualityBefore);
+            GameUserSettings->ApplyNonResolutionSettings();
             return true;
         }));
 
@@ -550,7 +554,7 @@ bool FComboBoxSettingCanBeApplied::RunTest(const FString& Parameters)
 
 bool FSliderSettingCanBeApplied::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     auto* GameUserSettings = USHGGameUserSettings::Get();
     if (!TestNotNull("GameUserSettings should exists", GameUserSettings))
@@ -587,7 +591,7 @@ bool FSliderSettingCanBeApplied::RunTest(const FString& Parameters)
 
 bool FCheckBoxSettingCanBeApplied::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     auto* GameUserSettings = USHGGameUserSettings::Get();
     if (!TestNotNull("GameUserSettings should exists", GameUserSettings))

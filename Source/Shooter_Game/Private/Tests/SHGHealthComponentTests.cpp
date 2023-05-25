@@ -12,7 +12,8 @@
 
 using namespace Tests;
 
-const static FString PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
+static const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
+static const char* PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentTests, All, All);
 
@@ -27,7 +28,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthComponentDelegates, "Shooter_Game.Compon
 
 bool FHealthComponentBaseFunctional::RunTest(const FString& Parameters)
 {
-    LevelScope("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     AddInfo("The health component base functional.");
 
@@ -119,7 +120,7 @@ bool FHealthComponentBaseFunctional::RunTest(const FString& Parameters)
 
 bool FHealthComponentAutoHeal::RunTest(const FString& Parameters)
 {
-    const auto Level = LevelScope("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     AddInfo("The health component auto heal tests.");
 
@@ -203,7 +204,7 @@ bool FHealthComponentAutoHeal::RunTest(const FString& Parameters)
 
 bool FHealthComponentDelegates::RunTest(const FString& Parameters)
 {
-    LevelScope("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     AddInfo("The health component base functional.");
 

@@ -13,10 +13,11 @@
 
 using namespace Tests;
 
-const static FString HealthPickupActorBlueprintName{"Blueprint'/Game/Gameplay/Pickups/BP_SHGHealthPickupActor.BP_SHGHealthPickupActor'"};
-const static FString HealthPickupActorTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGHealthPickupActorTestable.BP_SHGHealthPickupActorTestable'"};
-const static FString PawnWithoutHealthComponentBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
-const static FString CharacterTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
+static const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
+static const char* HealthPickupActorBlueprintName{"Blueprint'/Game/Gameplay/Pickups/BP_SHGHealthPickupActor.BP_SHGHealthPickupActor'"};
+static const char* HealthPickupActorTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGHealthPickupActorTestable.BP_SHGHealthPickupActorTestable'"};
+static const char* PawnWithoutHealthComponentBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
+static const char* CharacterTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthPickupCppActorCantBeCreated, "Shooter_Game.Pickups.HealthPickup.CppActorCantBeCreated",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
@@ -29,7 +30,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthPickupTryToGivePickupToOverrideFunctionT
 
 bool FHealthPickupCppActorCantBeCreated::RunTest(const FString& Parameters)
 {
-    LevelScope("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -47,7 +48,7 @@ bool FHealthPickupCppActorCantBeCreated::RunTest(const FString& Parameters)
 
 bool FHealthPickupBlueprintShouldBeSetupCorrectly::RunTest(const FString& Parameters)
 {
-    LevelScope("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -81,7 +82,7 @@ bool FHealthPickupBlueprintShouldBeSetupCorrectly::RunTest(const FString& Parame
 
 bool FHealthPickupTryToGivePickupToOverrideFunctionTest::RunTest(const FString& Parameters)
 {
-    LevelScope("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))

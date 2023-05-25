@@ -47,7 +47,7 @@ bool FJumpLatentComand::Update()
 
 bool FPickupCanBeTakenOnJump::RunTest(const FString& Parameters)
 {
-    LevelScope Level("/Game/Tests/PickupTestLevel1");
+    const LevelScope Level("/Game/Tests/PickupTestLevel1");
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -76,7 +76,7 @@ bool FPickupCanBeTakenOnJump::RunTest(const FString& Parameters)
 
 bool FPickupCantBeTakenOnJumpIfTooHigh::RunTest(const FString& Parameters)
 {
-    LevelScope Level("/Game/Tests/PickupTestLevel2");
+    const LevelScope Level("/Game/Tests/PickupTestLevel2");
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -105,7 +105,7 @@ bool FPickupCantBeTakenOnJumpIfTooHigh::RunTest(const FString& Parameters)
 
 bool FAllPickupsAreTakenOnMovement::RunTest(const FString& Parameters)
 {
-    LevelScope Level("/Game/Tests/PickupTestLevel3");
+    const LevelScope Level("/Game/Tests/PickupTestLevel3");
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -187,7 +187,7 @@ bool FAllPickupsAreTakenOnRecordingMovement::RunTest(const FString& Parameters)
     if (!FJsonObjectConverter::JsonObjectStringToUStruct(Parameters, &RecMovementTestData))
         return false;
 
-    LevelScope Level(RecMovementTestData.LevelPath);
+    const LevelScope Level(RecMovementTestData.LevelPath);
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -239,7 +239,9 @@ void FAllMapsShouldBeLoaded::GetTests(TArray<FString>& OutBeautifiedNames, TArra
         FString LevelPath;
     };
 
-    const TArray<FTestData> TestData = {{"MenuLevel", "/Game/Levels/MenuLevel"}, {"SandboxLevel", "/Game/Levels/SandboxLevel"}};
+    const TArray<FTestData> TestData = {{"MenuLevel", "/Game/Levels/MenuLevel"},          //
+                                        {"SandboxLevel", "/Game/Levels/SandboxLevel"},    //
+                                        {"ArenaLevel", "/Game/Levels/ArenaLevel"}};
 
     for (const auto& [Name, LevelPath] : TestData)
     {
@@ -250,7 +252,7 @@ void FAllMapsShouldBeLoaded::GetTests(TArray<FString>& OutBeautifiedNames, TArra
 
 bool FAllMapsShouldBeLoaded::RunTest(const FString& Parameters)
 {
-    LevelScope Level(Parameters);
+    const LevelScope Level(Parameters);
 
     return true;
 }
