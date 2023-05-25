@@ -10,6 +10,7 @@
 #include "Tests/Utils/InputRecordingTypes.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Blueprint/WidgetTree.h"
+#include "AutomationBlueprintFunctionLibrary.h"
 
 namespace Tests
 {
@@ -67,6 +68,44 @@ private:
     int32 Index = 0;
     float WorldStartTime = NO_VALUE;
     float OldFPS = NO_VALUE;
+};
+
+class FTakeScreenshotLatentCommand : public IAutomationLatentCommand
+{
+public:
+    FTakeScreenshotLatentCommand(const FString& InScreenshotName, const FAutomationScreenshotOptions& InOptions);
+
+    virtual ~FTakeScreenshotLatentCommand() override;
+
+protected:
+    const FString ScreenshotName;
+    const FAutomationScreenshotOptions Options;
+    bool bScreenshotTaken{false};
+    bool bScreenshotTakenAndCompared{false};
+
+    virtual void OnScreenshotTakenAndCompared();
+};
+
+class FTakeGameScreenshotLatentCommand : public FTakeScreenshotLatentCommand
+{
+public:
+    FTakeGameScreenshotLatentCommand(const FString& InScreenshotName, const FAutomationScreenshotOptions& InOptions);
+
+    virtual bool Update() override;
+};
+
+class FTakeUIScreenshotLatentCommand : public FTakeScreenshotLatentCommand
+{
+public:
+    FTakeUIScreenshotLatentCommand(const FString& InScreenshotName, const FAutomationScreenshotOptions& InOptions);
+
+    virtual bool Update() override;
+
+private:
+    bool bVisualizeBufferSetupDone{false};
+
+    virtual void OnScreenshotTakenAndCompared() override;
+    void SetBufferVisualization(const FName& VisualizeBuffer);
 };
 
 template <typename EnumType, typename FunctionType>

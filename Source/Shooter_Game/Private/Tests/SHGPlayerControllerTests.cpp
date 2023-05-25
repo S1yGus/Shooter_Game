@@ -9,6 +9,8 @@
 
 using namespace Tests;
 
+static const char* SandboxLevelName{"/Game/Levels/SandboxLevel"};
+
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameCanBePaused, "Shooter_Game.PlayerController.GameCanBePaused",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
 
@@ -17,7 +19,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameCanBeUnpaused, "Shooter_Game.PlayerControl
 
 bool FGameCanBePaused::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     const UWorld* World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -54,7 +56,7 @@ bool FGameCanBePaused::RunTest(const FString& Parameters)
 
 bool FGameCanBeUnpaused::RunTest(const FString& Parameters)
 {
-    const LevelScope Level("/Game/Levels/SandboxLevel");
+    const LevelScope Level(SandboxLevelName);
 
     const UWorld* World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))

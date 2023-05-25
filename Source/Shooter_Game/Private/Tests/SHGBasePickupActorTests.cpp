@@ -11,8 +11,9 @@
 
 using namespace Tests;
 
-const static FString SimpleActorBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestActor.BP_SimpleTestActor'"};
-const static FString SimplePawnBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
+static const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
+static const char* SimpleActorBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestActor.BP_SimpleTestActor'"};
+static const char* SimplePawnBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
 
 DEFINE_LOG_CATEGORY_STATIC(BasePickupTestsLog, All, All);
 
@@ -33,7 +34,7 @@ IMPLEMENT_SIMPLE_AUTOMATION_TEST(FBasePickupRespawnTest, "Shooter_Game.Pickups.B
 
 bool FBasePickupCppActorCantBeCreated::RunTest(const FString& Parameters)
 {
-    LevelScope("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -51,7 +52,7 @@ bool FBasePickupCppActorCantBeCreated::RunTest(const FString& Parameters)
 
 bool FBasePickupShouldNotBePpickedUpByNotPawn::RunTest(const FString& Parameters)
 {
-    LevelScope("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -79,7 +80,7 @@ bool FBasePickupShouldNotBePpickedUpByNotPawn::RunTest(const FString& Parameters
 
 bool FBasePickupShouldBePpickedUpByPawn::RunTest(const FString& Parameters)
 {
-    LevelScope("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -107,7 +108,7 @@ bool FBasePickupShouldBePpickedUpByPawn::RunTest(const FString& Parameters)
 
 bool FBasePickupDeferredPickUpTest::RunTest(const FString& Parameters)
 {
-    LevelScope Level("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
@@ -153,7 +154,7 @@ bool FBasePickupDeferredPickUpTest::RunTest(const FString& Parameters)
 
 bool FBasePickupRespawnTest::RunTest(const FString& Parameters)
 {
-    LevelScope Level("/Game/Tests/EmptyTestLevel");
+    const LevelScope Level(EmptyTestLevellName);
 
     const auto World = GetCurrentWorld();
     if (!TestNotNull("World must exists.", World))
