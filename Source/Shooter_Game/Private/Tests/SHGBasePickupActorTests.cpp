@@ -11,9 +11,12 @@
 
 using namespace Tests;
 
+namespace
+{
 static const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
 static const char* SimpleActorBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestActor.BP_SimpleTestActor'"};
 static const char* SimplePawnBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
+}    // namespace
 
 DEFINE_LOG_CATEGORY_STATIC(BasePickupTestsLog, All, All);
 
@@ -40,7 +43,7 @@ bool FBasePickupCppActorCantBeCreated::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    FString ErrorMsg = FString::Printf(TEXT("SpawnActor failed because class %s is abstract"), *ASHGBasePickupActor::StaticClass()->GetName());
+    const FString ErrorMsg = FString::Printf(TEXT("SpawnActor failed because class %s is abstract"), *ASHGBasePickupActor::StaticClass()->GetName());
     AddExpectedError(ErrorMsg, EAutomationExpectedErrorFlags::Exact);
 
     const auto HealthPickup = World->SpawnActor<ASHGBasePickupActor>(ASHGBasePickupActor::StaticClass(), FTransform::Identity);

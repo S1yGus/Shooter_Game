@@ -7,6 +7,14 @@
 #include "GameFramework/GameUserSettings.h"
 #include "BufferVisualizationData.h"
 
+void Tests::SpecCloseLevel(const UWorld* World)
+{
+    if (APlayerController* PC = World ? World->GetFirstPlayerController() : nullptr)
+    {
+        PC->ConsoleCommand(TEXT("Exit"), true);
+    }
+}
+
 UWorld* Tests::GetCurrentWorld()
 {
     if (!GEngine)

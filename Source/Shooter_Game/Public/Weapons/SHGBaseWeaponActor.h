@@ -15,7 +15,7 @@ class ASHGBaseProjectileActor;
 class ASHGShellBaseActor;
 class ASHGFlashlightActor;
 
-UCLASS()
+UCLASS(Abstract)
 class SHOOTER_GAME_API ASHGBaseWeaponActor : public AActor
 {
     GENERATED_BODY()
