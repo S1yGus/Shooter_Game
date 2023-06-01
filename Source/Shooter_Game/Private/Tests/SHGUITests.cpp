@@ -26,8 +26,8 @@ using namespace Tests;
 
 namespace
 {
-static const char* SandboxLevelName{"/Game/Levels/SandboxLevel"};
-static const char* MenuLevelName{"/Game/Levels/MenuLevel"};
+const char* SandboxLevelName{"/Game/Levels/SandboxLevel"};
+const char* MenuLevelName{"/Game/Levels/MenuLevel"};
 }    // namespace
 
 static void SetComboBoxNextOption(ESettingType SettingType, uint8 WidgetNumber)

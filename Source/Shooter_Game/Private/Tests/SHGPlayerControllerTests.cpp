@@ -11,7 +11,7 @@ using namespace Tests;
 
 namespace
 {
-static const char* SandboxLevelName{"/Game/Levels/SandboxLevel"};
+const char* SandboxLevelName{"/Game/Levels/SandboxLevel"};
 }    // namespace
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FGameCanBePaused, "Shooter_Game.PlayerController.GameCanBePaused",
