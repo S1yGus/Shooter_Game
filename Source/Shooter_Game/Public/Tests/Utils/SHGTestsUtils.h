@@ -30,6 +30,8 @@ public:
     ~LevelScope() { ADD_LATENT_AUTOMATION_COMMAND(FExitGameCommand); }
 };
 
+void SpecCloseLevel(const UWorld* World);
+
 UWorld* GetCurrentWorld();
 
 void CallFunctionByNameWithParameters(UObject* Object, const FString& FuncName, const TArray<FString>& Params);
@@ -157,6 +159,24 @@ T* FindWidgetByName(UUserWidget* UserWidget, const FName& WidgetName)
         });
 
     return Cast<T>(FoundWidget);
+}
+
+template <typename PropertyClass, typename ObjectClass>
+PropertyClass GetPropertyValueByName(ObjectClass* Object, const FString& PropertyName)
+{
+    if (Object)
+    {
+        for (TFieldIterator<FProperty> PropIt(Object->StaticClass()); PropIt; ++PropIt)
+        {
+            const FProperty* Property = *PropIt;
+            if (Property && Property->GetName().Equals(PropertyName))
+            {
+                return *Property->ContainerPtrToValuePtr<PropertyClass>(Object);
+            }
+        }
+    }
+
+    return PropertyClass();
 }
 
 template <typename T1, typename T2>

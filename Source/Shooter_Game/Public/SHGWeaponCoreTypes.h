@@ -48,13 +48,21 @@ struct FAmmoData
     GENERATED_USTRUCT_BODY()
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo")
-    bool InfiniteClips = false;
+    bool InfiniteClips;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo", Meta = (ClampMin = "0"))
     int32 BulletsInClip;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Ammo", Meta = (EditCondition = "!InfiniteClips", ClampMin = "0"))
     int32 Clips;
+
+    FString ToString() const
+    {
+        return FString::Printf(TEXT("(InfiniteClips=%i,BulletsInClip=%i,Clips=%i)"),    //
+                               InfiniteClips,                                           //
+                               BulletsInClip,                                           //
+                               Clips);
+    }
 };
 
 USTRUCT(BlueprintType)

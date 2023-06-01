@@ -13,11 +13,14 @@
 
 using namespace Tests;
 
+namespace
+{
 static const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
 static const char* HealthPickupActorBlueprintName{"Blueprint'/Game/Gameplay/Pickups/BP_SHGHealthPickupActor.BP_SHGHealthPickupActor'"};
 static const char* HealthPickupActorTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGHealthPickupActorTestable.BP_SHGHealthPickupActorTestable'"};
 static const char* PawnWithoutHealthComponentBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
 static const char* CharacterTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
+}    // namespace
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthPickupCppActorCantBeCreated, "Shooter_Game.Pickups.HealthPickup.CppActorCantBeCreated",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);

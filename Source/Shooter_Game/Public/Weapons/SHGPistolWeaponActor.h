@@ -6,7 +6,7 @@
 #include "Weapons/SHGBaseWeaponActor.h"
 #include "SHGPistolWeaponActor.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class SHOOTER_GAME_API ASHGPistolWeaponActor : public ASHGBaseWeaponActor
 {
     GENERATED_BODY()
