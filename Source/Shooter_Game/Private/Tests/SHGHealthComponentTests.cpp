@@ -14,8 +14,8 @@ using namespace Tests;
 
 namespace
 {
-static const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
-static const char* PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
+const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
+const char* PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
 }    // namespace
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentTests, All, All);

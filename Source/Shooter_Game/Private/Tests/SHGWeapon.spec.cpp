@@ -21,12 +21,12 @@ using namespace Tests;
 
 namespace
 {
-static const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
-static const char* PistolBlueprintName{"Blueprint'/Game/Gameplay/Weapons/BP_SHGPistolWeaponActor.BP_SHGPistolWeaponActor'"};
-static const char* RifleBlueprintName{"Blueprint'/Game/Gameplay/Weapons/BP_SHGRifleWeaponActor.BP_SHGRifleWeaponActor'"};
-static const char* ShotgunBlueprintName{"Blueprint'/Game/Gameplay/Weapons/BP_SHGShotgunWeaponActor.BP_SHGShotgunWeaponActor'"};
-static const char* LauncherBlueprintName{"Blueprint'/Game/Gameplay/Weapons/BP_SHGLauncherWeaponActor.BP_SHGLauncherWeaponActor'"};
-static const char* PlayerCharacterTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
+const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
+const char* PistolBlueprintName{"Blueprint'/Game/Gameplay/Weapons/BP_SHGPistolWeaponActor.BP_SHGPistolWeaponActor'"};
+const char* RifleBlueprintName{"Blueprint'/Game/Gameplay/Weapons/BP_SHGRifleWeaponActor.BP_SHGRifleWeaponActor'"};
+const char* ShotgunBlueprintName{"Blueprint'/Game/Gameplay/Weapons/BP_SHGShotgunWeaponActor.BP_SHGShotgunWeaponActor'"};
+const char* LauncherBlueprintName{"Blueprint'/Game/Gameplay/Weapons/BP_SHGLauncherWeaponActor.BP_SHGLauncherWeaponActor'"};
+const char* PlayerCharacterTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
 }    // namespace
 
 BEGIN_DEFINE_SPEC(FWeapon, "Shooter_Game.Weapon", EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority)
