@@ -6,21 +6,13 @@
 #include "CoreMinimal.h"
 #include "Misc/AutomationTest.h"
 #include "Tests/Utils/SHGTestsUtils.h"
+#include "Tests/SHGTestConstants.h"
 #include "Pickups/SHGHealthPickupActor.h"
 #include "Components/SphereComponent.h"
 #include "Components/SHGHealthComponent.h"
 #include "Player/SHGPlayerCharacter.h"
 
 using namespace Tests;
-
-namespace
-{
-static const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
-static const char* HealthPickupActorBlueprintName{"Blueprint'/Game/Gameplay/Pickups/BP_SHGHealthPickupActor.BP_SHGHealthPickupActor'"};
-static const char* HealthPickupActorTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGHealthPickupActorTestable.BP_SHGHealthPickupActorTestable'"};
-static const char* PawnWithoutHealthComponentBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
-static const char* CharacterTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
-}    // namespace
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FHealthPickupCppActorCantBeCreated, "Shooter_Game.Pickups.HealthPickup.CppActorCantBeCreated",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
@@ -116,7 +108,7 @@ bool FHealthPickupTryToGivePickupToOverrideFunctionTest::RunTest(const FString& 
 
     AddInfo("An attempt to heal a dead character.");
 
-    const auto DeadCharacter = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, CharacterTestableBlueprintName);
+    const auto DeadCharacter = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerCharacterTestableBlueprintName);
     if (!TestNotNull("DeadCharacter must exists.", DeadCharacter))
         return false;
 
@@ -144,7 +136,7 @@ bool FHealthPickupTryToGivePickupToOverrideFunctionTest::RunTest(const FString& 
 
     AddInfo("An attempt to heal a wounded character.");
 
-    const auto WoundedCharacter = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, CharacterTestableBlueprintName);
+    const auto WoundedCharacter = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerCharacterTestableBlueprintName);
     if (!TestNotNull("WoundedCharacter must exists.", WoundedCharacter))
         return false;
 

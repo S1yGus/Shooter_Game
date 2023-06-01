@@ -5,6 +5,7 @@
 #include "Tests/SHGUITests.h"
 #include "CoreMinimal.h"
 #include "Tests/Utils/SHGTestsUtils.h"
+#include "Tests/SHGTestConstants.h"
 #include "Misc/AutomationTest.h"
 #include "UI/Menu/SHGPauseUserWidget.h"
 #include "UI/Menu/SHGButtonUserWidget.h"
@@ -23,12 +24,6 @@
 #include "Kismet/GameplayStatics.h"
 
 using namespace Tests;
-
-namespace
-{
-static const char* SandboxLevelName{"/Game/Levels/SandboxLevel"};
-static const char* MenuLevelName{"/Game/Levels/MenuLevel"};
-}    // namespace
 
 static void SetComboBoxNextOption(ESettingType SettingType, uint8 WidgetNumber)
 {

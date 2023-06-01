@@ -5,16 +5,12 @@
 #include "Tests/SHGScreenshotsTests.h"
 #include "CoreMinimal.h"
 #include "Tests/Utils/SHGTestsUtils.h"
+#include "Tests/SHGTestConstants.h"
 #include "Misc/AutomationTest.h"
 #include "Camera/CameraActor.h"
 #include "Player/SHGPlayerCharacter.h"
 
 using namespace Tests;
-
-namespace
-{
-static const char* SandboxLevelName{"/Game/Levels/SandboxLevel"};
-}    // namespace
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FRenderingShouldBeCorrect, "Shooter_Game.Screenshots.RenderingShouldBeCorrect",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::MediumPriority |

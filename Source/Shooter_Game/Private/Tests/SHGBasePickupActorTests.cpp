@@ -6,19 +6,13 @@
 #include "CoreMinimal.h"
 #include "Misc/AutomationTest.h"
 #include "Tests/Utils/SHGTestsUtils.h"
+#include "Tests/SHGTestConstants.h"
 #include "Tests/SHGBasePickupActorTestable.h"
 #include "Components/SphereComponent.h"
 
 using namespace Tests;
 
-namespace
-{
-static const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
-static const char* SimpleActorBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestActor.BP_SimpleTestActor'"};
-static const char* SimplePawnBlueprintName{"Blueprint'/Game/Tests/BP_SimpleTestPawn.BP_SimpleTestPawn'"};
-}    // namespace
-
-DEFINE_LOG_CATEGORY_STATIC(BasePickupTestsLog, All, All);
+DEFINE_LOG_CATEGORY_STATIC(LogBasePickupTests, All, All);
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FBasePickupCppActorCantBeCreated, "Shooter_Game.Pickups.BasePickup.CppActorCantBeCreated",
                                  EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
@@ -147,7 +141,7 @@ bool FBasePickupDeferredPickUpTest::RunTest(const FString& Parameters)
         {
             if (IsValid(BasePickup))
             {
-                UE_LOG(BasePickupTestsLog, Error, TEXT("The base pickup must be taken!"));
+                UE_LOG(LogBasePickupTests, Error, TEXT("The base pickup must be taken!"));
             }
         },
         World->GetDeltaSeconds()));
@@ -219,7 +213,7 @@ bool FBasePickupRespawnTest::RunTest(const FString& Parameters)
                 || !RespawnableBasePickup->GetRootComponent()->GetVisibleFlag()    //
                 || SphereComponent->GetCollisionEnabled() != ECollisionEnabled::QueryOnly)
             {
-                UE_LOG(BasePickupTestsLog, Error, TEXT("The base pickup should be respawned!"));
+                UE_LOG(LogBasePickupTests, Error, TEXT("The base pickup should be respawned!"));
             }
         },
         RespawnTime));

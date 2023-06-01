@@ -5,18 +5,13 @@
 #include "Tests/SHGHealthComponentTests.h"
 #include "CoreMinimal.h"
 #include "Tests/Utils/SHGTestsUtils.h"
+#include "Tests/SHGTestConstants.h"
 #include "Misc/AutomationTest.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/SHGHealthComponent.h"
 #include "Player/SHGPlayerCharacter.h"
 
 using namespace Tests;
-
-namespace
-{
-static const char* EmptyTestLevellName{"/Game/Tests/EmptyTestLevel"};
-static const char* PlayerTestableBlueprintName{"Blueprint'/Game/Tests/BP_SHGPlayerCharacterTestable.BP_SHGPlayerCharacterTestable'"};
-}    // namespace
 
 DEFINE_LOG_CATEGORY_STATIC(HealthComponentTests, All, All);
 
@@ -39,7 +34,7 @@ bool FHealthComponentBaseFunctional::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
+    const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerCharacterTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
         return false;
 
@@ -131,7 +126,7 @@ bool FHealthComponentAutoHeal::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
+    const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerCharacterTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
         return false;
 
@@ -215,7 +210,7 @@ bool FHealthComponentDelegates::RunTest(const FString& Parameters)
     if (!TestNotNull("World must exists.", World))
         return false;
 
-    const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerTestableBlueprintName);
+    const auto Player = SpawnBlueprintDeferred<ASHGPlayerCharacter>(World, PlayerCharacterTestableBlueprintName);
     if (!TestNotNull("Player must exists.", Player))
         return false;
 

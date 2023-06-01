@@ -16,13 +16,13 @@
 using namespace Tests;
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPickupCanBeTakenOnJump, "Shooter_Game.Gameplay.PickupCanBeTakenOnJump",
-                                 EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
+                                 EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::MediumPriority);
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FPickupCantBeTakenOnJumpIfTooHigh, "Shooter_Game.Gameplay.PickupCantBeTakenOnJumpIfTooHigh",
-                                 EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
+                                 EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::MediumPriority);
 
 IMPLEMENT_SIMPLE_AUTOMATION_TEST(FAllPickupsAreTakenOnMovement, "Shooter_Game.Gameplay.AllPickupsAreTakenOnMovement",
-                                 EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::HighPriority);
+                                 EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::LowPriority);
 
 IMPLEMENT_COMPLEX_AUTOMATION_TEST(FAllPickupsAreTakenOnRecordingMovement, "Shooter_Game.Gameplay.AllPickupsAreTakenOnRecordingMovement",
                                   EAutomationTestFlags::ApplicationContextMask | EAutomationTestFlags::ProductFilter | EAutomationTestFlags::LowPriority);
