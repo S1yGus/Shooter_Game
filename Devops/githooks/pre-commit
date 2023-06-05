@@ -1,0 +1,6 @@
+#!/bin/sh
+
+for file in `git diff --staged --name-only | grep -i -E '\.(cpp|h|cs)$'`;
+do 	clang-format -i ${file}
+	git add ${file};
+done
