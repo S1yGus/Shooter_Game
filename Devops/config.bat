@@ -9,7 +9,7 @@ rem Editor path
 set EditorPath=%EnginePath%\Engine\Binaries\Win64\UnrealEditor.exe
 
 rem Project params
-set ProjectRoot=%~dp0..
+set ProjectRoot=C:\Unreal Projects\Shooter_Game
 set ProjectPureName=Shooter_Game
 set ProjectName=%ProjectPureName%.uproject
 set ProjectPath=%ProjectRoot%\%ProjectName%
@@ -29,4 +29,5 @@ rem Tests
 set TestOutputLogPath=%ProjectRoot%\Build\Tests\Tests.log
 set ReportOutputPath=%ProjectRoot%\Build\Tests
 set UEAutomationContentPath=%EnginePath%\Engine\Content\Automation
-set TestNames=Shooter_Game
+set OpenCPPCoveragePath=C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe
+set TestNames=Shooter_Game.Utils
