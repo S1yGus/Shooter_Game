@@ -33,8 +33,8 @@ bool FRenderingShouldBeCorrect::RunTest(const FString& Parameters)
         return false;
 
     auto* Camera = World->SpawnActor<ACameraActor>(ACameraActor::StaticClass(), FTransform{
-                                                                                    FRotator{0.0, -119.9, 0.0},
-                                                                                    FVector{80.0f, -1270.0f, 190.0f},
+                                                                                    FRotator{-30.0, -140.0, 0.0},
+                                                                                    FVector{233.0, -1465.0, 350.0},
                                                                                 });
     if (!TestNotNull("Camera must exists.", Camera))
         return false;
@@ -42,6 +42,7 @@ bool FRenderingShouldBeCorrect::RunTest(const FString& Parameters)
     PC->SetViewTarget(Camera);
 
     auto Options = UAutomationBlueprintFunctionLibrary::GetDefaultScreenshotOptionsForGameplay();
+    Options.Delay = 1.0f;
     ADD_LATENT_AUTOMATION_COMMAND(FTakeGameScreenshotLatentCommand("RenderingScreenshot", Options));
 
     return true;
