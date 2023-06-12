@@ -1,0 +1,6 @@
+[submodule "Devops/docs/Doxygen_Flat_Design"]
+	path = Devops/docs/Doxygen_Flat_Design
+	url = https://github.com/S1yGus/Doxygen_Flat_Design.git
+[submodule "Devops/docs/Unreal_Engine_Doxygen_Filter"]
+	path = Devops/docs/Unreal_Engine_Doxygen_Filter
+	url = https://github.com/S1yGus/Unreal_Engine_Doxygen_Filter.git
