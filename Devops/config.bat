@@ -17,7 +17,7 @@ set ProjectPath=%ProjectRoot%\%ProjectName%
 rem Build params
 set RunUATPath=%EnginePath%\Engine\Build\BatchFiles\RunUAT.bat
 set Platform=Win64
-set Configuration=Shipping
+set Configuration=Development
 set ArchivePath=%ProjectRoot%\Build
 
 rem Other params
@@ -30,4 +30,4 @@ set TestOutputLogPath=%ProjectRoot%\Build\Tests\Tests.log
 set ReportOutputPath=%ProjectRoot%\Build\Tests
 set UEAutomationContentPath=%EnginePath%\Engine\Content\Automation
 set OpenCPPCoveragePath=C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe
-set TestNames=Shooter_Game.Utils
+set TestNames=Shooter_Game

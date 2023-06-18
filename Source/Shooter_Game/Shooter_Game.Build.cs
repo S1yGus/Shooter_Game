@@ -1,6 +1,7 @@
 // Shooter_Game, All rights reserved.
 
 using UnrealBuildTool;
+using System.Linq;
 
 public class Shooter_Game : ModuleRules
 {
@@ -8,6 +9,11 @@ public class Shooter_Game : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
         CppStandard = CppStandardVersion.Cpp20;
+
+        if (Target.ProjectDefinitions.Contains("UNOPTIMIZED_CODE"))
+        {
+            OptimizeCode = CodeOptimization.Never;
+        }
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Niagara", "PhysicsCore", "GameplayTasks", "NavigationSystem",
                                                             "GameplayCameras", "Slate", "SlateCore", "Json", "JsonUtilities", "FunctionalTesting" });
