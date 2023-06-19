@@ -1,0 +1,127 @@
+def ColorFromBuildResult(result){
+    if("${result}" == 'SUCCESS') return '#18A558'
+    if("${result}" == 'ABORTED') return '#6e6e6e'
+    if("${result}" == 'UNSTABLE') return '#fcba03'
+    return '#FF0000'
+}
+
+pipeline {
+    agent {
+        node {
+            label 'UnrealNode'
+            customWorkspace "$BUILD_DIR"
+        }
+    }
+
+    environment {
+        /* SLACK_CHANNEL_NAME = ''
+
+        GIT_CREDENTIALS_ID = ''
+        GIT_PROJECT_URL = 'https://github.com/S1yGus/Shooter_Game.git'
+        BRANCH_NAME = 'main'
+        GIT_CLONE_TIMEOUT_MIN = 60
+
+        PROJECT_NAME = 'Shooter_Game'
+        RUNUAT_PATH = ''
+        PROJECT_PATH = "$BUILD_DIR\\$PROJECT_NAME.uproject"
+        PLATFORM = 'Win64'
+        CONFIGURATION = 'Development'
+        TEST_EXTRA_CMD = 'SetPriority High;'
+
+        EDITOR_PATH = ''
+        TEST_NAMES = 'Shooter_Game'
+        TEST_OUTPUT_LOG_PATH = "$BUILD_DIR\\Build\\Tests\\Tests.log"
+        REPORT_OUTPUT_PATH = "$BUILD_DIR\\Build\\Tests"
+        OPEN_CPP_COVERAGE_PATH = '' 
+
+        UNOPTIMIZED_BUILD = 'true' */
+
+        UNOPTIMIZED_CODE_FALSE_LINE = 'public bool UnoptimizedCode = false;'
+        UNOPTIMIZED_CODE_TRUE_LINE = 'public bool UnoptimizedCode = true;'
+        EDITOR_TARGET_CS = "$BUILD_DIR\\Source\\${PROJECT_NAME}Editor.Target.cs"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                slackSend channel: "$SLACK_CHANNEL_NAME", 
+                    color: "$currentBuild.previousBuild" == 'null' ? '#18A558' : ColorFromBuildResult("$currentBuild.previousBuild.result"), 
+                    message:"Build started: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+
+                checkout scmGit(branches: [[name: "$BRANCH_NAME"]], 
+                    extensions: [
+                    [$class: 'CleanBeforeCheckout'],
+                    [$class: 'CloneOption', timeout: "$GIT_CLONE_TIMEOUT_MIN"],
+                    [$class: 'CheckoutOption', timeout: "$GIT_CLONE_TIMEOUT_MIN"]
+                    ], 
+                    userRemoteConfigs: [[credentialsId: "$GIT_CREDENTIALS_ID", url: "$GIT_PROJECT_URL"]])
+            }
+        }
+        stage('Set unoptimized build') {
+            when {
+                environment ignoreCase: true, name: 'UNOPTIMIZED_BUILD', value: 'true'
+            }
+            steps {
+                bat '''
+                    powershell -Command "(gc '%EDITOR_TARGET_CS%') -replace '%UNOPTIMIZED_CODE_FALSE_LINE%', '%UNOPTIMIZED_CODE_TRUE_LINE%' | Out-File '%EDITOR_TARGET_CS%'"
+                    '''
+            }
+        }
+        stage('Build') {
+            steps {
+                bat '''
+                    "%RUNUAT_PATH%" BuildCookRun ^
+                    -project="%PROJECT_PATH%" ^
+                    -platform="%PLATFORM%" ^
+                    -clientconfig="%CONFIGURATION%" ^
+                    -build -cook -ubtargs="-UnoptimizedCode"
+                    '''
+            }
+        }
+        stage('Test') {
+            steps {
+                bat '''
+                    set TEST_RUNNER="%EDITOR_PATH%" "%PROJECT_PATH%" -ExecCmds="Automation %TEST_EXTRA_CMD%RunTests %TEST_NAMES%;Quit" -log -abslog="%TEST_OUTPUT_LOG_PATH%" -nosplash -ReportOutputPath="%REPORT_OUTPUT_PATH%"
+
+                    "%OPEN_CPP_COVERAGE_PATH%" --modules "%BUILD_DIR%" --sources "%BUILD_DIR%\\Source" --excluded_sources "%BUILD_DIR%\\Source\\%PROJECT_NAME%\\Public\\Tests" --excluded_sources "%BUILD_DIR%\\Source\\%PROJECT_NAME%\\Private\\Tests" ^
+                    --export_type cobertura:"%BUILD_DIR%\\Build\\Tests\\Coverage\\Coverage.xml" -- %TEST_RUNNER%
+
+                    if errorlevel 255 echo WARNING: Some tests failed, error code: %errorlevel% & exit /b 0
+                    '''
+            }
+        }
+        stage('Unset unoptimized build') {
+            when {
+                environment ignoreCase: true, name: 'UNOPTIMIZED_BUILD', value: 'true'
+            }
+            steps {
+                bat '''
+                    powershell -Command "(gc '%EDITOR_TARGET_CS%') -replace '%UNOPTIMIZED_CODE_TRUE_LINE%', '%UNOPTIMIZED_CODE_FALSE_LINE%' | Out-File '%EDITOR_TARGET_CS%'"
+                    '''
+            }
+        }
+        stage('Publish test results') {
+            environment {
+                CONVERTER_PATH = "$BUILD_DIR\\Devops\\tests\\ue_report_to_junit.py"
+                JSON_TESTS_PATH = "$REPORT_OUTPUT_PATH\\index.json"
+                JUNIT_TESTS_PATH = "$REPORT_OUTPUT_PATH\\index.xml"
+            }
+            steps {
+                bat '''
+                    "%CONVERTER_PATH%" -ue_report_path="%JSON_TESTS_PATH%" -junit_xml_path="%JUNIT_TESTS_PATH%"
+                    '''
+
+                junit 'Build\\Tests\\*.xml'
+                cobertura coberturaReportFile: 'Build\\Tests\\Coverage\\*.xml', onlyStable: false
+            }
+        }
+    }
+
+    post {
+        always {
+        slackSend channel: "$SLACK_CHANNEL_NAME", 
+            color: ColorFromBuildResult("$currentBuild.currentResult"), 
+            message:"Build $currentBuild.currentResult: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        }
+    }
+}

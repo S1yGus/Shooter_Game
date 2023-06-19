@@ -30,4 +30,4 @@ set TestOutputLogPath=%ProjectRoot%\Build\Tests\Tests.log
 set ReportOutputPath=%ProjectRoot%\Build\Tests
 set UEAutomationContentPath=%EnginePath%\Engine\Content\Automation
 set OpenCPPCoveragePath=C:\Program Files\OpenCppCoverage\OpenCppCoverage.exe
-set TestNames=Shooter_Game.Utils
+set TestNames=Shooter_Game
