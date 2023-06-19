@@ -1,0 +1,71 @@
+def ColorFromBuildResult(result){
+    if("${result}" == 'SUCCESS') return '#18A558'
+    if("${result}" == 'ABORTED') return '#6e6e6e'
+    if("${result}" == 'UNSTABLE') return '#fcba03'
+    return '#FF0000'
+}
+
+pipeline {
+    agent {
+        node {
+            label ''
+            customWorkspace "$BUILD_DIR"
+        }
+    }
+
+    /*environment {
+        SLACK_CHANNEL_NAME = ''
+
+        GIT_CREDENTIALS_ID = ''
+        GIT_PROJECT_URL = 'https://github.com/S1yGus/Shooter_Game.git'
+        BRANCH = 'main'
+        GIT_CLONE_TIMEOUT_MIN = 60
+
+        DOXYGEN_PATH = 'doxygen'
+    }*/
+
+    stages {
+        stage('Checkout') {
+            steps {
+                slackSend channel: "$SLACK_CHANNEL_NAME", 
+                    color: "$currentBuild.previousBuild" == 'null' ? '#18A558' : ColorFromBuildResult("$currentBuild.previousBuild.result"), 
+                    message:"Build started: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+
+                checkout scmGit(branches: [[name: "$BRANCH"]], 
+                    extensions: [
+                    [$class: 'CleanBeforeCheckout'],
+                    [$class: 'CloneOption', timeout: "$GIT_CLONE_TIMEOUT_MIN"],
+                    [$class: 'CheckoutOption', timeout: "$GIT_CLONE_TIMEOUT_MIN"],
+                    [$class: 'SubmoduleOption', disableSubmodules: false, recursiveSubmodules: true],
+                    ], 
+                    userRemoteConfigs: [[credentialsId: "$GIT_CREDENTIALS_ID", url: "$GIT_PROJECT_URL"]])
+            }
+        }
+        stage('Generate docs') {
+            steps {
+                bat '''
+                    "%DOXYGEN_PATH%" "%BUILD_DIR%\\Devops\\docs\\Doxyfile"
+                    '''
+            }
+        }
+        stage('Deploy') {
+            steps {
+                publishHTML([allowMissing: false, 
+                    alwaysLinkToLastBuild: false, 
+                    keepAll: false, 
+                    reportDir: 'Documentation\\html', 
+                    reportFiles: 'index.html', 
+                    reportName: 'Documentation', 
+                    useWrapperFileDirectly: true])
+            }
+        }
+    }
+
+    post {
+        always {
+        slackSend channel: "$SLACK_CHANNEL_NAME", 
+            color: ColorFromBuildResult("$currentBuild.currentResult"), 
+            message:"Build $currentBuild.currentResult: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        }
+    }
+}
