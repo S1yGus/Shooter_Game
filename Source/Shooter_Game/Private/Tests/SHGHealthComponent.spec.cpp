@@ -281,7 +281,7 @@ void FHealthComponent::Define()
                               AsyncTask(ENamedThreads::GameThread,
                                         [this, Damage]()
                                         {
-                                            TestTrueExpr(FMath::IsNearlyEqual(HealthComponent->GetHealth(), MaxHealth - Damage));
+                                            TestTrueExpr(FMath::IsNearlyEqual(HealthComponent->GetHealth(), MaxHealth - Damage, AutoHealModifier));
                                         });
 
                               DoneDelegate.Execute();

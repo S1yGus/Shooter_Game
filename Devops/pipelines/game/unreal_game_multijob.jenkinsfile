@@ -1,0 +1,65 @@
+def ColorFromBuildResult(result){
+    if("${result}" == 'SUCCESS') return '#18A558'
+    if("${result}" == 'ABORTED') return '#6e6e6e'
+    if("${result}" == 'UNSTABLE') return '#fcba03'
+    return '#FF0000'
+}
+
+pipeline {
+    agent {
+        node {
+            label 'Main'
+        }
+    }
+
+    /*environment {
+        SLACK_CHANNEL_NAME = ''
+    }*/
+
+    stages {
+        stage('Test') {
+            steps {
+                slackSend channel: "$SLACK_CHANNEL_NAME", 
+                    color: "$currentBuild.previousBuild" == 'null' ? '#18A558' : ColorFromBuildResult("$currentBuild.previousBuild.result"), 
+                    message:"Build started: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+
+                // build job: 'Shooter_Game test pipeline', parameters: [string(name: 'BUILD_DIR', value: 'E:\\JenkinsJobs\\Shooter_Game test pipeline')]
+            }
+        }
+        stage('Matrix') {
+            matrix {
+                agent {
+                    node {
+                        label 'Main'
+                    }
+                }
+                axes {
+                    axis {
+                        name 'CONFIGURATION'
+                        values 'Development', 'Shipping'
+                    }
+                }
+                stages {
+                    stage('Build') {
+                        steps {
+                            build job: 'Shooter_Game build pipeline', parameters: [string(name: 'BUILD_DIR', value: 'E:\\JenkinsJobs\\Shooter_Game build pipeline'), string(name: 'CONFIGURATION', value: "$CONFIGURATION")]
+                        }
+                    }
+                }
+            }
+        }
+        stage('Documentation') {
+            steps {
+                build job: 'Shooter_Game documentation pipeline', parameters: [string(name: 'BUILD_DIR', value: 'E:\\JenkinsJobs\\Shooter_Game documentation pipeline')]
+            }
+        }
+    }
+
+    post {
+        always {
+        slackSend channel: "$SLACK_CHANNEL_NAME", 
+            color: ColorFromBuildResult("$currentBuild.currentResult"), 
+            message:"Build $currentBuild.currentResult: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        }
+    }
+}
