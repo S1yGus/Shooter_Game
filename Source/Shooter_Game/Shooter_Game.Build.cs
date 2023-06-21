@@ -16,6 +16,11 @@ public class Shooter_Game : ModuleRules
         }
 
         PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "Niagara", "PhysicsCore", "GameplayTasks", "NavigationSystem",
-                                                            "GameplayCameras", "Slate", "SlateCore", "Json", "JsonUtilities", "FunctionalTesting" });
+                                                            "GameplayCameras", "Slate", "SlateCore", "Json", "JsonUtilities" });
+
+        if (Target.Configuration != UnrealTargetConfiguration.Shipping)
+        {
+            PublicDependencyModuleNames.Add("FunctionalTesting");
+        }
     }
 }
