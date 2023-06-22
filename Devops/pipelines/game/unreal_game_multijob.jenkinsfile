@@ -23,7 +23,7 @@ pipeline {
                     color: "$currentBuild.previousBuild" == 'null' ? '#18A558' : ColorFromBuildResult("$currentBuild.previousBuild.result"), 
                     message:"Build started: ${env.JOB_NAME} #${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
 
-                // build job: 'Shooter_Game test pipeline', parameters: [string(name: 'BUILD_DIR', value: 'E:\\JenkinsJobs\\Shooter_Game test pipeline')]
+                build job: 'Shooter_Game test pipeline', parameters: [string(name: 'BUILD_DIR', value: 'E:\\JenkinsJobs\\Shooter_Game test pipeline')]
             }
         }
         stage('Matrix') {
